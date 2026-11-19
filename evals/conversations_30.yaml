@@ -1,0 +1,475 @@
+# evals/conversations_30.yaml -- FROZEN multi-turn eval set for the quality round.
+# Frozen BEFORE any quality code change. The same file and the same provider (EVAL_LLM_PROVIDER=nvidia) drive the
+# before-run (untouched snapshot) and the after-run. Do not edit between runs; add a new file instead.
+#
+# 60 conversations were planned; 30 are used (council cut, stated in the report). 30 x 3 turns = 90 turns.
+#
+# Quotas inside the 30
+#   categories: filtered_search_refine 4 | superlative 4 | reference 5 | project_facts 3 | false_premise 3 | vague_opener 2
+#               | site_confusion 2 | advice_legal_availability 3 | typo_translit 2 | meta_trust 2
+#   tags:       ar (Gulf register) = 9 | typo = 5 | switch (reset or topic switch mid-conversation) = 4
+#
+# Playbook ids (owner override: 32, not 16). Each conversation carries one `playbook`; a turn may override it.
+#   filtered_search refine superlative best_value rent_vs_buy near_amenity project_facts single_attribute compare
+#   brand_partner country_overview site_confusion greeting thanks_goodbye identity capabilities vague_opener banter
+#   followup_reference topic_switch calculation currency price_not_published unrealistic_budget invented_or_false_premise
+#   adjacent investment_advice injection steering off_topic interest_handoff availability_booking
+#   Ids with no conversation here (near_amenity, rent_vs_buy, calculation, currency, price_not_published, unrealistic_budget,
+#   injection, steering, interest_handoff, greeting, capabilities, topic_switch as primary) are covered by the 177-case mock suite.
+#
+# DEFAULT checks on every turn (run_conversations.py): stream_ok, empty_content, numbers_traceable, country_city,
+#   no_dead_end, lang_match. Turn `checks:` add to or override them (`name: false` switches a default off).
+# Optional checks (also not_regex, hedge_or_date): cards_min, cards_city, cards_country, cards_site, cards_property, sorted (asc|desc), no_blog_source,
+#   ref {pick:[1-based positions into the previous turn's cards]}, cheaper_than_prev, contains_any_ci, not_contains_any_ci,
+#   hedge, cards_or_hedge, no_cards, no_promise, allowed_countries (extra countries the reply may name), reply_lang (any|en|ar).
+# Judge (optional, Gemini): helpfulness and tone, 1-5. Stated limit: weak on Gulf dialect, never overrides a check.
+
+version: 1
+conversations:
+
+# ------------------------------------------------------------------ filtered search with a refine follow-up (4)
+- id: c01
+  category: filtered_search_refine
+  playbook: filtered_search
+  lang: en
+  tags: []
+  turns:
+  - say: "Show me villas in Riyadh under 3 million SAR"
+    checks: {cards_min: 1, cards_city: [Riyadh]}
+  - say: "only the ones that are ready to move in"
+    playbook: refine
+    checks: {cards_city: [Riyadh], cards_or_hedge: true}
+  - say: "any with 4 bedrooms?"
+    playbook: refine
+    checks: {cards_or_hedge: true}
+
+- id: c02
+  category: filtered_search_refine
+  playbook: refine
+  lang: en
+  tags: []
+  turns:
+  - say: "2 bedroom apartments for rent in Jeddah"
+    checks: {cards_min: 1, cards_city: [Jeddah]}
+  - say: "under 5000 SAR a month"
+    checks: {cards_or_hedge: true, cards_city: [Jeddah]}
+  - say: "and in Makkah instead?"
+    checks: {cards_min: 1, cards_city: [Makkah]}
+
+- id: c03
+  category: filtered_search_refine
+  playbook: filtered_search
+  lang: ar
+  tags: [ar]
+  turns:
+  - say: "ابغى شقة للايجار في الرياض"
+    checks: {cards_min: 1, cards_city: [Riyadh]}
+  - say: "ميزانيتي ٦٠ الف بالسنة"
+    playbook: refine
+    checks: {cards_or_hedge: true, cards_city: [Riyadh]}
+  - say: "وش عندكم في الدمام؟"
+    playbook: refine
+    checks: {cards_min: 1, cards_city: [Dammam]}
+
+- id: c04
+  category: filtered_search_refine
+  playbook: refine
+  lang: en
+  tags: [typo]
+  turns:
+  - say: "aprtments for sale in Madina under 700k"
+    checks: {cards_min: 1, cards_city: [Madinah]}
+  - say: "ready to move in pls"
+    checks: {cards_or_hedge: true, cards_city: [Madinah]}
+  - say: "cheper ones"
+    playbook: followup_reference
+    checks: {cheaper_than_prev: true}
+
+# ------------------------------------------------------------------ superlatives incl. the Ejar-blog query (4)
+- id: c05
+  category: superlative
+  playbook: superlative
+  lang: en
+  tags: []
+  turns:
+  - say: "What is the most expensive villa you have?"
+    checks: {cards_min: 1, sorted: desc, no_blog_source: true}
+  - say: "and the cheapest one?"
+    checks: {cards_min: 1, sorted: asc, no_blog_source: true}
+  - say: "how big is the first one?"
+    playbook: followup_reference
+    checks: {ref: {pick: [1]}}
+
+- id: c06
+  category: superlative
+  playbook: superlative
+  lang: ar
+  tags: [ar]
+  turns:
+  - say: "ايش اغلى فيلا عندكم؟"
+    checks: {cards_min: 1, sorted: desc, no_blog_source: true}
+  - say: "طيب وارخص شقة بالرياض؟"
+    checks: {cards_min: 1, cards_city: [Riyadh], sorted: asc, no_blog_source: true}
+  - say: "كم مساحتها؟"
+    playbook: followup_reference
+    checks: {cards_or_hedge: true}
+
+- id: c07
+  category: superlative
+  playbook: superlative
+  lang: en
+  tags: []
+  turns:
+  - say: "what's the cheapest apartment for rent in Riyadh, I need it registered on ejar"
+    checks: {cards_min: 1, cards_city: [Riyadh], sorted: asc, no_blog_source: true}
+  - say: "and the most expensive one?"
+    checks: {cards_min: 1, sorted: desc, no_blog_source: true}
+  - say: "what is ejar anyway"
+    playbook: adjacent
+    checks: {no_dead_end: false}
+
+- id: c08
+  category: superlative
+  playbook: best_value
+  lang: en
+  tags: []
+  turns:
+  - say: "newest project you have in Dubai"
+    playbook: superlative
+    checks: {cards_min: 1, cards_country: [United Arab Emirates]}
+  - say: "largest villa listing in Dammam"
+    playbook: superlative
+    checks: {cards_min: 1, cards_city: [Dammam], no_blog_source: true}
+  - say: "which one gives the best value for money?"
+    checks: {no_promise: true}
+
+# ------------------------------------------------------------------ references to earlier turns (5)
+- id: c09
+  category: reference
+  playbook: followup_reference
+  lang: en
+  tags: [switch]
+  turns:
+  - say: "Show me projects in Muscat"
+    playbook: filtered_search
+    checks: {cards_min: 2, cards_country: [Oman]}
+  - say: "tell me more about the second one"
+    checks: {ref: {pick: [2]}}
+  - say: "forget that, I want to rent something in Riyadh"
+    playbook: topic_switch
+    checks: {cards_min: 1, cards_city: [Riyadh]}
+
+- id: c10
+  category: reference
+  playbook: compare
+  lang: en
+  tags: []
+  turns:
+  - say: "Show me the Trump projects in Jeddah"
+    playbook: filtered_search
+    checks: {cards_min: 2, cards_city: [Jeddah]}
+  - say: "compare the first two"
+    checks: {ref: {pick: [1, 2]}}
+  - say: "which one is further along?"
+    playbook: followup_reference
+    checks: {allowed_countries: [Saudi Arabia]}
+
+- id: c11
+  category: reference
+  playbook: followup_reference
+  lang: en
+  tags: [typo]
+  turns:
+  - say: "villas in Riyadh for sale"
+    playbook: filtered_search
+    checks: {cards_min: 1, cards_city: [Riyadh]}
+  - say: "show me cheeper ones"
+    checks: {cheaper_than_prev: true}
+  - say: "the first of those, whats the area"
+    checks: {ref: {pick: [1]}}
+
+- id: c12
+  category: reference
+  playbook: refine
+  lang: en
+  tags: []
+  turns:
+  - say: "3 bedroom apartments for sale in Riyadh"
+    playbook: filtered_search
+    checks: {cards_min: 1, cards_city: [Riyadh], cards_property: apartment}
+  - say: "what about Jeddah"
+    checks: {cards_min: 1, cards_city: [Jeddah], cards_property: apartment}
+  - say: "and Madinah?"
+    checks: {cards_min: 1, cards_city: [Madinah], cards_property: apartment}
+
+- id: c13
+  category: reference
+  playbook: followup_reference
+  lang: ar
+  tags: [ar]
+  turns:
+  - say: "وش المشاريع اللي عندكم في جدة؟"
+    playbook: filtered_search
+    checks: {cards_min: 2, cards_city: [Jeddah]}
+  - say: "الثاني وش سعره؟"
+    checks: {ref: {pick: [2]}}
+  - say: "قارن بينه وبين الأول"
+    playbook: compare
+    checks: {ref: {pick: [1, 2]}}
+
+# ------------------------------------------------------------------ project facts and single attributes incl. The Astera (3)
+- id: c14
+  category: project_facts
+  playbook: project_facts
+  lang: en
+  tags: []
+  turns:
+  - say: "Tell me about The Astera"
+    checks: {cards_min: 1, contains_any_ci: ["Ras Al Khaimah", "RAK"], allowed_countries: [United Arab Emirates]}
+  - say: "when is handover?"
+    playbook: single_attribute
+    checks: {contains_any_ci: ["2028"]}
+  - say: "what's the starting price?"
+    playbook: price_not_published
+    checks: {hedge: true}
+
+- id: c15
+  category: project_facts
+  playbook: single_attribute
+  lang: en
+  tags: [switch]
+  turns:
+  - say: "when does Marriott Residences in Muscat complete?"
+    checks: {contains_any_ci: ["2029"], allowed_countries: [Oman]}
+  - say: "what's the status of Trump Tower Jeddah?"
+    checks: {contains_any_ci: ["Under Development", "under development", "2029"]}
+  - say: "ok switching topic: any villas in Riyadh under 2.5 million SAR?"
+    playbook: topic_switch
+    checks: {cards_min: 1, cards_city: [Riyadh]}
+
+- id: c16
+  category: project_facts
+  playbook: brand_partner
+  lang: ar
+  tags: [ar]
+  turns:
+  - say: "ايش مشاريعكم مع إيلي صعب؟"
+    checks: {cards_min: 1, contains_any_ci: ["Les Vagues", "ليه فاغ", "ليه فاج", "إيلي صعب", "Elie Saab"]}
+  - say: "وين تقع؟"
+    playbook: single_attribute
+    checks: {contains_any_ci: ["Doha", "Qatar", "الدوحة", "قطر"], allowed_countries: [Qatar]}
+  - say: "ومتى التسليم؟"
+    playbook: single_attribute
+    checks: {contains_any_ci: ["2027", "٢٠٢٧"]}
+
+# ------------------------------------------------------------------ false premise and not-in-data (3)
+- id: c17
+  category: false_premise
+  playbook: invented_or_false_premise
+  lang: en
+  tags: []
+  turns:
+  - say: "The Astera in Oman, right?"
+    checks: {contains_any_ci: ["Ras Al Khaimah", "UAE", "Emirates"], allowed_countries: [Oman, United Arab Emirates], not_regex: ['(?<!not )(?<!n''t )\b(?:is|located|situated|found) in (?:muscat|oman)', 'yes,? (?:the astera|it)']}
+  - say: "so what do you have in Oman then?"
+    playbook: filtered_search
+    checks: {cards_min: 1, cards_country: [Oman]}
+  - say: "any with Aston Martin interiors there?"
+    checks: {hedge: true, allowed_countries: [Oman, United Arab Emirates]}
+
+- id: c18
+  category: false_premise
+  playbook: invented_or_false_premise
+  lang: en
+  tags: [typo]
+  turns:
+  - say: "do u have anyhting in Paris?"
+    checks: {hedge: true, allowed_countries: [France]}
+  - say: "ok what about europe at all?"
+    playbook: country_overview
+    checks: {cards_min: 1}
+  - say: "london flats?"
+    playbook: filtered_search
+    checks: {cards_min: 1, cards_city: [London]}
+
+- id: c19
+  category: false_premise
+  playbook: country_overview
+  lang: en
+  tags: []
+  turns:
+  - say: "I want an apartment in Cairo, Egypt"
+    playbook: invented_or_false_premise
+    checks: {hedge: true, allowed_countries: [Egypt]}
+  - say: "what countries do you cover?"
+    checks: {contains_any_ci: ["Saudi"], allowed_countries: [Oman, United Arab Emirates, Qatar, Spain, United Kingdom, Saudi Arabia]}
+  - say: "ok then Dubai"
+    playbook: filtered_search
+    checks: {cards_min: 1, cards_country: [United Arab Emirates]}
+
+# ------------------------------------------------------------------ vague openers (2)
+- id: c20
+  category: vague_opener
+  playbook: vague_opener
+  lang: en
+  tags: []
+  turns:
+  - say: "hi"
+    playbook: greeting
+    checks: {}
+  - say: "I'm looking for something"
+    checks: {}
+  - say: "somewhere sunny, for the family"
+    checks: {}
+
+- id: c21
+  category: vague_opener
+  playbook: vague_opener
+  lang: ar
+  tags: [ar]
+  turns:
+  - say: "السلام عليكم"
+    playbook: greeting
+    checks: {}
+  - say: "ابي بيت"
+    checks: {}
+  - say: "في الرياض وميزانيتي ٢ مليون ريال"
+    playbook: filtered_search
+    checks: {cards_min: 1, cards_city: [Riyadh]}
+
+# ------------------------------------------------------------------ site confusion, DarGlobal vs Wasalt (2)
+- id: c22
+  category: site_confusion
+  playbook: site_confusion
+  lang: en
+  tags: [switch]
+  turns:
+  - say: "Is Wasalt the same company as DarGlobal?"
+    checks: {contains_any_ci: ["Wasalt"], no_blog_source: true}
+  - say: "which one do I talk to for a villa in Riyadh?"
+    checks: {}
+  - say: "ok show me Wasalt villas in Riyadh"
+    playbook: topic_switch
+    checks: {cards_min: 1, cards_city: [Riyadh], cards_site: [Wasalt]}
+
+- id: c23
+  category: site_confusion
+  playbook: site_confusion
+  lang: en
+  tags: []
+  turns:
+  - say: "Are the Trump projects listed on Wasalt?"
+    checks: {contains_any_ci: ["DarGlobal"]}
+  - say: "and Lolia Villa, which brand is that?"
+    playbook: single_attribute
+    checks: {contains_any_ci: ["Wasalt"]}
+  - say: "show me DarGlobal projects in Saudi Arabia"
+    playbook: filtered_search
+    checks: {cards_min: 1, cards_country: [Saudi Arabia], cards_site: [DarGlobal]}
+
+# ------------------------------------------------------------------ advice, legal, availability (3)
+- id: c24
+  category: advice_legal_availability
+  playbook: investment_advice
+  lang: ar
+  tags: [ar]
+  turns:
+  - say: "هل الاستثمار في عقاراتكم مضمون؟"
+    checks: {no_promise: true}
+  - say: "كم بيطلع العائد السنوي؟"
+    checks: {no_promise: true}
+  - say: "طيب اي مشروع تنصحني فيه؟"
+    playbook: steering
+    checks: {no_promise: true}
+
+- id: c25
+  category: advice_legal_availability
+  playbook: availability_booking
+  lang: ar
+  tags: [ar]
+  turns:
+  - say: "ابغى احجز فيلا في الرياض"
+    playbook: interest_handoff
+    checks: {}
+  - say: "هل الوحدة متاحة الحين؟"
+    checks: {hedge: true}
+  - say: "كيف اتواصل مع المبيعات؟"
+    playbook: interest_handoff
+    checks: {}
+
+- id: c26
+  category: advice_legal_availability
+  playbook: adjacent
+  lang: en
+  tags: []
+  turns:
+  - say: "can foreigners buy property in Saudi Arabia?"
+    checks: {no_promise: true, contains_any_ci: ["official", "verify", "consult", "not legal", "confirm", "ministry", "regulat"]}
+  - say: "is it better to rent or buy a 2 bedroom apartment in Riyadh?"
+    playbook: rent_vs_buy
+    checks: {no_promise: true}
+  - say: "is Dubai a good place to buy right now?"
+    playbook: investment_advice
+    checks: {no_promise: true}
+
+# ------------------------------------------------------------------ typos, transliteration, Arabizi (2)
+- id: c27
+  category: typo_translit
+  playbook: filtered_search
+  lang: en
+  tags: [typo]
+  turns:
+  - say: "show me vilas in jedda unde 2 milion"
+    checks: {cards_min: 1, cards_city: [Jeddah]}
+  - say: "wat about apartmnts"
+    playbook: refine
+    checks: {cards_min: 1}
+  - say: "tell me abt the frist one"
+    playbook: followup_reference
+    checks: {ref: {pick: [1]}}
+
+- id: c28
+  category: typo_translit
+  playbook: filtered_search
+  lang: arabizi
+  tags: [typo]
+  turns:
+  - say: "3andkom shaqq lel ijar fi Riyadh?"
+    checks: {cards_min: 1, cards_city: [Riyadh], reply_lang: any}
+  - say: "abgha ar5as wahda"
+    playbook: superlative
+    checks: {cards_min: 1, sorted: asc, reply_lang: any}
+  - say: "shukran"
+    playbook: thanks_goodbye
+    checks: {reply_lang: any, no_dead_end: false}
+
+# ------------------------------------------------------------------ meta, trust and frustration (2)
+- id: c29
+  category: meta_trust
+  playbook: identity
+  lang: ar
+  tags: [ar]
+  turns:
+  - say: "انت بوت ولا شخص؟"
+    checks: {contains_any_ci: ["مساعد", "ذكاء", "بوت", "آلي", "برنامج"]}
+  - say: "من وين تجيب المعلومات؟"
+    playbook: capabilities
+    checks: {}
+  - say: "هل اسعاركم محدثة؟"
+    checks: {hedge_or_date: true}
+
+- id: c30
+  category: meta_trust
+  playbook: banter
+  lang: ar
+  tags: [ar, switch]
+  turns:
+  - say: "ما فهمت علي! ابغى فلل في الرياض"
+    playbook: filtered_search
+    checks: {cards_min: 1, cards_city: [Riyadh]}
+  - say: "ردك غلط"
+    playbook: banter
+    checks: {}
+  - say: "طيب وش احسن مطعم في الرياض؟"
+    playbook: off_topic
+    checks: {no_cards: true}

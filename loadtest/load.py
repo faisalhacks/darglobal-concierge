@@ -100,6 +100,7 @@ def main():
     ap.add_argument("--think-max", type=float, default=2.0)
     ap.add_argument("--mock-confirmed", action="store_true", help="target was started with LLM_MODE=mock")
     ap.add_argument("--out-dir", default=str(HERE / "results"))
+    ap.add_argument("--container", default="", help="docker container name; peak memory is sampled via `docker stats`")
     a = ap.parse_args()
     base = a.base_url.rstrip("/")
     try:
@@ -107,12 +108,34 @@ def main():
     except Exception as e:  # noqa: BLE001
         print(f"[abort] backend not reachable at {base}: {e}. No results written.", file=sys.stderr)
         return 2
+    if ((meta or {}).get("llm") or {}).get("mode") == "live":
+        print("[abort] target reports llm.mode=live. The load test must never spend the 50 requests/day; start it with LLM_MODE=mock.", file=sys.stderr)
+        return 3
+    mem = {"samples": [], "stop": False}
+    if a.container:
+        import subprocess
+
+        def _mem_loop():
+            while not mem["stop"]:
+                try:
+                    o = subprocess.run(["docker", "stats", "--no-stream", "--format", "{{.MemUsage}}", a.container],
+                                       capture_output=True, text=True, timeout=20).stdout.strip()
+                    used = o.split("/")[0].strip()  # e.g. 312.4MiB
+                    num = float("".join(ch for ch in used if ch.isdigit() or ch == "."))
+                    mb = num * (1024 if used.endswith("GiB") else 1 if used.endswith("MiB") else 1 / 1024)
+                    mem["samples"].append(round(mb, 1))
+                except Exception:  # noqa: BLE001
+                    pass
+                time.sleep(2)
+
+        threading.Thread(target=_mem_loop, daemon=True).start()
     stages = []
     for n in [int(x) for x in a.stages.split(",")]:
         print(f"stage: {n} sessions x {a.stage_seconds}s ...", flush=True)
         r = run_stage(base, n, a.stage_seconds, (a.think_min, a.think_max))
         print(json.dumps(r), flush=True)
         stages.append(r)
+    mem["stop"] = True
     total_crash = sum(s["crashes"] for s in stages)
     now = dt.datetime.now(dt.timezone.utc)
     out = {
@@ -120,6 +143,9 @@ def main():
         "dataset_version": (meta or {}).get("dataset_version"),
         "mock_llm": "declared (--mock-confirmed)" if a.mock_confirmed else "UNCONFIRMED: may include real-model latency/quota effects",
         "llm_available_reported_by_backend": (meta or {}).get("llm_available"),
+        "memory_mib": ({"container": a.container, "samples": len(mem["samples"]), "peak": max(mem["samples"], default=None),
+                        "last": (mem["samples"] or [None])[-1], "source": "docker stats --no-stream, every ~2 s (MemUsage column, includes page cache accounted to the container)"}
+                       if a.container else "not measured (no --container given)"),
         "stages": stages, "total_requests": sum(s["requests"] for s in stages),
         "total_crashes": total_crash, "target_zero_crashes_met": total_crash == 0,
         "caveats": ["Client threads and server usually share one machine; client overhead is included.",

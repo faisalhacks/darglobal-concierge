@@ -11,6 +11,17 @@ services:
         value: "7860"
       - key: LLM_MODE
         value: live
+      # 50 free requests/day for the whole account: stop at 45, one call per message, code planner routes.
+      - key: LLM_DAILY_BUDGET
+        value: "45"
+      - key: LLM_TOOL_ROUTING
+        value: "false"
+      # All five find-my-home journeys (H01 H02 H04 H05 A14) pass in mock, EN + AR (2026-11-19).
+      - key: FF_FIND_MY_HOME
+        value: "true"
+      # Render's edge appends one X-Forwarded-For hop; confirm with GET /readyz -> xff_hops_seen (deploy/README.md).
+      - key: TRUSTED_PROXY_HOPS
+        value: "1"
       - key: OPENROUTER_API_KEY
         sync: false
       - key: OPENROUTER_MODELS

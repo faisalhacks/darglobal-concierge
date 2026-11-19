@@ -1,0 +1,238 @@
+{
+  "slug": "aida",
+  "name": "AIDA",
+  "facts": [
+    {
+      "field": "name",
+      "value": "AIDA",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "city",
+      "value": "Muscat",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns",
+      "note": "RNS: 'set on the dramatic cliffs of Muscat'"
+    },
+    {
+      "field": "country",
+      "value": "Oman",
+      "source_url": "https://www.omanobserver.om/ampArticle/1134522",
+      "source_title": "Dar Global kicks off sales in Omran-backed AIDA development (Oman Observer)",
+      "source_date": "2023-03-22",
+      "source_type": "press"
+    },
+    {
+      "field": "jv_partner",
+      "value": "Omran Group",
+      "source_url": "https://www.omanobserver.om/ampArticle/1134522",
+      "source_title": "Dar Global kicks off sales in Omran-backed AIDA development (Oman Observer)",
+      "source_date": "2023-03-22",
+      "source_type": "press",
+      "note": "Observer: 'a joint venture with Omran Group'"
+    },
+    {
+      "field": "brand_partner",
+      "value": "The Trump Organization",
+      "source_url": "https://www.omanobserver.om/ampArticle/1134522",
+      "source_title": "Dar Global kicks off sales in Omran-backed AIDA development (Oman Observer)",
+      "source_date": "2023-03-22",
+      "source_type": "press",
+      "note": "'part of Dar Global's collaboration with the Trump Organization'"
+    },
+    {
+      "field": "brand_partner",
+      "value": "Trump (golf course)",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "status",
+      "value": "Under construction",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "sales_launch",
+      "value": "Sales officially launched (article dated 2023-03-22)",
+      "source_url": "https://www.omanobserver.om/ampArticle/1134522",
+      "source_title": "Dar Global kicks off sales in Omran-backed AIDA development (Oman Observer)",
+      "source_date": "2023-03-22",
+      "source_type": "press"
+    },
+    {
+      "field": "launch_period",
+      "value": "Q1 2023",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "site_area",
+      "value": "3.5 million square metres",
+      "source_url": "https://thenationalnews.com/business/property/2024/03/05/dar-global-reveals-trump-villas-design-for-muscat-resort-and-golf-course",
+      "source_title": "Dar Global reveals Trump villas design for Muscat resort and golf course (The National)",
+      "source_date": "2024-03-05",
+      "source_type": "press"
+    },
+    {
+      "field": "site_area",
+      "value": "3.5 million sq m",
+      "source_url": "https://gulfconstructiononline.com/Article/387509/aida-advances-with-landmark-assets",
+      "source_title": "AIDA advances with landmark assets (Gulf Construction)",
+      "source_date": "2025-06-01",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "site_area",
+      "value": "nearly 37.67 million sq ft",
+      "source_url": "https://gulfconstructiononline.com/Article/386641/Dar_Global_launches_Trump_Signature_Villas_in_Oman",
+      "source_title": "Dar Global launches Trump Signature Villas in Oman (Gulf Construction)",
+      "source_date": "2024-04-01",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "site_area",
+      "value": "4.3 million square meters",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns",
+      "note": "Conflicts with 3.5 million sq m reported in 2024-2025 press; keep both"
+    },
+    {
+      "field": "site_area",
+      "value": "3.5 million square kilometre",
+      "source_url": "https://www.omanobserver.om/ampArticle/1134522",
+      "source_title": "Dar Global kicks off sales in Omran-backed AIDA development (Oman Observer)",
+      "source_date": "2023-03-22",
+      "source_type": "press",
+      "note": "As printed by the source; unit appears to be a misprint, recorded verbatim, do not use"
+    },
+    {
+      "field": "elevation",
+      "value": "130 metres above sea level",
+      "source_url": "https://www.omanobserver.om/ampArticle/1155447",
+      "source_title": "Contracts awarded for construction of AIDA Phase 1 (Oman Observer)",
+      "source_date": "2024-06-24",
+      "source_type": "press"
+    },
+    {
+      "field": "distance",
+      "value": "10 minutes from Downtown Muscat",
+      "source_url": "https://www.omanobserver.om/ampArticle/1134522",
+      "source_title": "Dar Global kicks off sales in Omran-backed AIDA development (Oman Observer)",
+      "source_date": "2023-03-22",
+      "source_type": "press"
+    },
+    {
+      "field": "project_value",
+      "value": "$4 billion",
+      "source_url": "https://thenationalnews.com/business/property/2024/03/05/dar-global-reveals-trump-villas-design-for-muscat-resort-and-golf-course",
+      "source_title": "Dar Global reveals Trump villas design for Muscat resort and golf course (The National)",
+      "source_date": "2024-03-05",
+      "source_type": "press"
+    },
+    {
+      "field": "launched_units",
+      "value": "1,604",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "phase_1_composition",
+      "value": "91 villas and 60 townhouses",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "phasing",
+      "value": "developed over 8 to 10 years and launched in 10 phases",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "phasing",
+      "value": "overall development planned to unfold over ten years, divided into ten phases",
+      "source_url": "https://www.omanobserver.om/ampArticle/1155550",
+      "source_title": "Dar Global launches $500 million Trump International Oman (Oman Observer)",
+      "source_date": "2024-06-26",
+      "source_type": "press"
+    },
+    {
+      "field": "completion",
+      "value": "Phase I 2027-28; Phase II 2029-30; full masterplan by 2034",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "completion",
+      "value": "Phase 1 completion in 2027",
+      "source_url": "https://www.omanobserver.om/ampArticle/1155447",
+      "source_title": "Contracts awarded for construction of AIDA Phase 1 (Oman Observer)",
+      "source_date": "2024-06-24",
+      "source_type": "press"
+    },
+    {
+      "field": "completion",
+      "value": "first phase of the project is set for completion by 2027",
+      "source_url": "https://gulfconstructiononline.com/Article/387509/aida-advances-with-landmark-assets",
+      "source_title": "AIDA advances with landmark assets (Gulf Construction)",
+      "source_date": "2025-06-01",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "completion",
+      "value": "development expected to be finished by 2026; first phase ready by 2027; developed over 10 years",
+      "source_url": "https://thenationalnews.com/business/property/2024/03/05/dar-global-reveals-trump-villas-design-for-muscat-resort-and-golf-course",
+      "source_title": "Dar Global reveals Trump villas design for Muscat resort and golf course (The National)",
+      "source_date": "2024-03-05",
+      "source_type": "press",
+      "note": "Article itself contains both 2026 and 2027 timelines"
+    },
+    {
+      "field": "phase_1_villas_main_contract",
+      "value": "Towell Construction & Co LLC, contract value RO 14,242,810",
+      "source_url": "https://www.omanobserver.om/ampArticle/1155447",
+      "source_title": "Contracts awarded for construction of AIDA Phase 1 (Oman Observer)",
+      "source_date": "2024-06-24",
+      "source_type": "press"
+    },
+    {
+      "field": "phase_1_infrastructure_contract",
+      "value": "Oman Shapoorji Company LLC, contract value RO 9,345,653",
+      "source_url": "https://www.omanobserver.om/ampArticle/1155447",
+      "source_title": "Contracts awarded for construction of AIDA Phase 1 (Oman Observer)",
+      "source_date": "2024-06-24",
+      "source_type": "press"
+    },
+    {
+      "field": "financing",
+      "value": "In February 2025, Dar Global secured financing from the National Bank of Oman (NBO)",
+      "source_url": "https://gulfconstructiononline.com/Article/387509/aida-advances-with-landmark-assets",
+      "source_title": "AIDA advances with landmark assets (Gulf Construction)",
+      "source_date": "2025-06-01",
+      "source_type": "trade_press"
+    }
+  ],
+  "method": "third-party public sources (darglobal.co.uk not fetched)",
+  "collected_at": "2026-11-19T10:18:49+00:00"
+}

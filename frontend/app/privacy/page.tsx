@@ -5,6 +5,7 @@ import { PageShell } from "@/components/PageShell";
 export default function Privacy() {
   const { lang, meta } = useApp();
   const email = meta?.candidate?.email;
+  const hasDg = (meta?.coverage?.DarGlobal?.projects ?? meta?.counts_by_site?.DarGlobal?.projects ?? 0) > 0;
   if (lang === "ar") {
     return (
       <PageShell>
@@ -22,7 +23,11 @@ export default function Privacy() {
         </section>
         <section>
           <h2>البيانات</h2>
-          <p>البيانات مأخوذة من صفحات عامة فقط على wasalt.sa، مع حذف أي بيانات شخصية. تعذّر جمع صفحات darglobal.co.uk لأن الموقع يحجب العملاء الآليين، لذا لا تتضمن البيانات أي مشروع لدار جلوبال. صور المشاريع تُحمَّل في متصفحك مباشرة من شبكة صور وصلت (imagedelivery.net) دون إرسال المُحيل، ولا يُعاد استضافتها.</p>
+          {hasDg ? (
+            <p>البيانات مأخوذة من صفحات عامة فقط على wasalt.sa وdarglobal.co.uk، مع حذف أي بيانات شخصية. يحجب موقع دار جلوبال العملاء الآليين، لذا حُفظت صفحاته يدوياً في متصفح عادي صفحةً صفحة. صور المشاريع تُحمَّل في متصفحك مباشرة من شبكتي صور وصلت (imagedelivery.net) ودار جلوبال (cdn.darglobal.co.uk) دون إرسال المُحيل، ولا يُعاد استضافتها.</p>
+          ) : (
+            <p>البيانات مأخوذة من صفحات عامة فقط على wasalt.sa، مع حذف أي بيانات شخصية. يحجب موقع darglobal.co.uk العملاء الآليين، ولا تتضمن البيانات حالياً أي مشروع لدار جلوبال. صور المشاريع تُحمَّل في متصفحك مباشرة من شبكة صور وصلت (imagedelivery.net) دون إرسال المُحيل، ولا يُعاد استضافتها.</p>
+          )}
           <p>ليست نصيحة استثمارية. تحقّق من كل التفاصيل مع الجهة الرسمية.</p>
         </section>
         {email && (<section><h2>التواصل</h2><p>للأسئلة حول هذا النموذج: <a href={`mailto:${email}`} dir="ltr">{email}</a></p></section>)}
@@ -45,7 +50,11 @@ export default function Privacy() {
       </section>
       <section>
         <h2>Where the data comes from</h2>
-        <p>Only publicly available pages on wasalt.sa, collected at a polite rate. Pages on darglobal.co.uk could not be collected because the site blocks automated clients, so the dataset holds no DarGlobal projects. Personal details such as agent names and phone numbers are removed. Project images load in your browser directly from Wasalt&apos;s image CDN (imagedelivery.net), with no referrer sent; they are not re-hosted.</p>
+        {hasDg ? (
+          <p>Only publicly available pages: wasalt.sa, collected at a polite rate, and darglobal.co.uk, which blocks automated clients, so its pages were saved by hand in an ordinary browser, one at a time. Personal details such as agent names and phone numbers are removed. Project images load in your browser directly from Wasalt&apos;s image CDN (imagedelivery.net) and DarGlobal&apos;s (cdn.darglobal.co.uk), with no referrer sent; they are not re-hosted.</p>
+        ) : (
+          <p>Only publicly available pages on wasalt.sa, collected at a polite rate. darglobal.co.uk blocks automated clients, and no DarGlobal project page is in the dataset yet. Personal details such as agent names and phone numbers are removed. Project images load in your browser directly from Wasalt&apos;s image CDN (imagedelivery.net), with no referrer sent; they are not re-hosted.</p>
+        )}
         <p>Nothing here is investment advice. Prices and availability change; verify every detail with DarGlobal or Wasalt directly.</p>
       </section>
       {email && (<section><h2>Questions</h2><p>About this prototype: <a href={`mailto:${email}`}>{email}</a></p></section>)}

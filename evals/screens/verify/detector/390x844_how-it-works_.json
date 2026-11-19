@@ -1,0 +1,79 @@
+[
+  {
+    "antipattern": "tiny-text",
+    "name": "Tiny body text",
+    "description": "Body text below 12px is hard to read, especially on high-DPI screens. Use at least 14px for body content, 16px is ideal.",
+    "severity": "warning",
+    "category": "quality",
+    "file": "http://127.0.0.1:7896/how-it-works/",
+    "line": 0,
+    "snippet": "13px body text",
+    "selector": "text.d-lane:nth-of-type(1)"
+  },
+  {
+    "antipattern": "tiny-text",
+    "name": "Tiny body text",
+    "description": "Body text below 12px is hard to read, especially on high-DPI screens. Use at least 14px for body content, 16px is ideal.",
+    "severity": "warning",
+    "category": "quality",
+    "file": "http://127.0.0.1:7896/how-it-works/",
+    "line": 0,
+    "snippet": "13px body text",
+    "selector": "g:nth-of-type(1) > text.d-sub"
+  },
+  {
+    "antipattern": "tiny-text",
+    "name": "Tiny body text",
+    "description": "Body text below 12px is hard to read, especially on high-DPI screens. Use at least 14px for body content, 16px is ideal.",
+    "severity": "warning",
+    "category": "quality",
+    "file": "http://127.0.0.1:7896/how-it-works/",
+    "line": 0,
+    "snippet": "13px body text",
+    "selector": "g:nth-of-type(2) > text.d-sub"
+  },
+  {
+    "antipattern": "tiny-text",
+    "name": "Tiny body text",
+    "description": "Body text below 12px is hard to read, especially on high-DPI screens. Use at least 14px for body content, 16px is ideal.",
+    "severity": "warning",
+    "category": "quality",
+    "file": "http://127.0.0.1:7896/how-it-works/",
+    "line": 0,
+    "snippet": "13px body text",
+    "selector": "g:nth-of-type(6) > text.d-sub"
+  },
+  {
+    "antipattern": "tiny-text",
+    "name": "Tiny body text",
+    "description": "Body text below 12px is hard to read, especially on high-DPI screens. Use at least 14px for body content, 16px is ideal.",
+    "severity": "warning",
+    "category": "quality",
+    "file": "http://127.0.0.1:7896/how-it-works/",
+    "line": 0,
+    "snippet": "14px body text",
+    "selector": "g:nth-of-type(11) > text.d-title"
+  },
+  {
+    "antipattern": "tiny-text",
+    "name": "Tiny body text",
+    "description": "Body text below 12px is hard to read, especially on high-DPI screens. Use at least 14px for body content, 16px is ideal.",
+    "severity": "warning",
+    "category": "quality",
+    "file": "http://127.0.0.1:7896/how-it-works/",
+    "line": 0,
+    "snippet": "13px body text",
+    "selector": "g:nth-of-type(11) > text.d-sub"
+  },
+  {
+    "antipattern": "tiny-text",
+    "name": "Tiny body text",
+    "description": "Body text below 12px is hard to read, especially on high-DPI screens. Use at least 14px for body content, 16px is ideal.",
+    "severity": "warning",
+    "category": "quality",
+    "file": "http://127.0.0.1:7896/how-it-works/",
+    "line": 0,
+    "snippet": "13px body text",
+    "selector": "text.d-sub:nth-of-type(4)"
+  }
+]

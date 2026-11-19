@@ -1,0 +1,72 @@
+{
+  "slug": "albert-hall-mansion",
+  "name": "Albert Hall Mansions Penthouse (One of One)",
+  "facts": [
+    {
+      "field": "name",
+      "value": "Albert Hall Mansions Penthouse",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "city",
+      "value": "London",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "country",
+      "value": "United Kingdom",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "property_type",
+      "value": "penthouse",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "units",
+      "value": "1",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "status",
+      "value": "Under construction",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "launch",
+      "value": "Q2 2024",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "completion",
+      "value": "Q2 2027",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    }
+  ],
+  "method": "third-party public sources (darglobal.co.uk not fetched)",
+  "collected_at": "2026-11-19T10:18:49+00:00"
+}

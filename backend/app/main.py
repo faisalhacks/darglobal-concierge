@@ -12,7 +12,8 @@ import logging
 import os
 import secrets
 import time
-from collections import deque
+from collections import Counter, deque
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,11 +22,12 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from . import templates
 from .arabic import detect_lang
+from .planner import place_display
 from .chat import ChatRequest, Engine
 from .config import FLAG_NAMES, Settings, load_settings
 from .llm import MockLLM, OpenRouterClient
 from .retrieval import Retriever
-from .store import Store, compare_payload, listing_card, project_card
+from .store import Store, compare_payload, detail_level, listing_card, project_card
 
 log = logging.getLogger("concierge")
 
@@ -178,6 +180,45 @@ def sse(event: str, data: dict) -> str:
     return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
 
 
+def starter_chips(store: Store) -> dict:
+    """Contract C2: five starter questions per language, built only from rows that exist: a DarGlobal country, a
+    DarGlobal project with a collected detail page, a Wasalt search, a calculation, and the trap chip last."""
+    dg = [p for p in store.projects if p["site"] == "DarGlobal"] or list(store.projects)
+    en, ar = [], []
+    countries = Counter(p.get("country") for p in dg if p.get("country"))
+    if countries:
+        c = countries.most_common(1)[0][0]
+        en.append(f"What projects do you have in {c}?")
+        ar.append(f"ما المشاريع المتوفرة لديكم في {place_display(c, 'ar')}؟")
+    detail = next((p for p in dg if detail_level(p) == "page" and p.get("name_en")), None)
+    if detail:
+        en.append(f"Tell me about {detail['name_en']}")
+        ar.append(f"أخبرني عن {detail.get('name_ar') or detail['name_en']}")
+    rent = Counter(x.get("city") for x in store.listings if x.get("city") and x.get("listing_type") == "rent")
+    buy = Counter(x.get("city") for x in store.listings if x.get("city") and x.get("listing_type") == "buy")
+    if rent:
+        city = rent.most_common(1)[0][0]
+        en.append(f"Apartments for rent in {city}")
+        ar.append(f"شقق للإيجار في {place_display(city, 'ar')}")
+    elif buy:
+        city = buy.most_common(1)[0][0]
+        en.append(f"Properties to buy in {city}")
+        ar.append(f"عقارات للبيع في {place_display(city, 'ar')}")
+    en.append("20% down on 2,000,000 SAR")
+    ar.append("دفعة مقدمة 20% على 2,000,000 ريال")
+    fill_en = [m for _, m in templates.DEFAULT_CHIPS["en"][:4]]
+    fill_ar = [m for _, m in templates.DEFAULT_CHIPS["ar"][:4]]
+    for lst, fill in ((en, fill_en), (ar, fill_ar)):
+        for m in fill:
+            if len(lst) >= 4:
+                break
+            if m not in lst:
+                lst.append(m)
+    en.append(templates.DEFAULT_CHIPS["en"][4][1])
+    ar.append(templates.DEFAULT_CHIPS["ar"][4][1])
+    return {"en": en[:5], "ar": ar[:5]}
+
+
 def _make_llm(s: Settings):
     if s.llm_mode == "mock":
         return MockLLM(fail_with=os.environ.get("MOCK_LLM_FAIL") or None)
@@ -198,8 +239,20 @@ def create_app(settings: Settings | None = None, llm=None, embedder=None) -> Fas
     limiter = RateLimiter(s.rate_limit_n, s.rate_limit_window_s)
     budget = GlobalBudget(s.global_llm_per_min)
 
+    @asynccontextmanager
+    async def lifespan(_app):
+        retriever.warm()  # one embed() so the first question does not pay the ONNX warm-up
+        llm_obj = engine.llm
+        # Layer 1: drop models that are gone / no longer free. GET /models is not a completion: no quota is spent.
+        if s.llm_mode not in ("mock", "off") and s.llm_boot_model_check and hasattr(llm_obj, "check_models"):
+            try:
+                await llm_obj.check_models()
+            except Exception as e:  # noqa: BLE001 - boot must never fail on this
+                log.warning("model list check failed: %s", type(e).__name__)
+        yield
+
     app = FastAPI(title="Property Concierge (candidate prototype)", docs_url=None, redoc_url=None,
-                  openapi_url=None)
+                  openapi_url=None, lifespan=lifespan)
     app.state.settings, app.state.store, app.state.engine, app.state.retriever = s, store, engine, retriever
     app.state.limiter = limiter
     app.add_middleware(BodyLimit, max_bytes=s.max_body_bytes)
@@ -263,9 +316,20 @@ def create_app(settings: Settings | None = None, llm=None, embedder=None) -> Fas
 
         return StreamingResponse(gen(), media_type="text/event-stream", headers=headers)
 
+    chips_cache = starter_chips(store)
+
+    def llm_meta() -> dict:
+        router = getattr(engine.llm, "router", None)
+        mode = s.llm_mode_label
+        if mode == "off" or engine.llm is None or router is None:
+            return {"mode": "off", "state": "off", "budget": {"used": 0, "cap": s.llm_daily_budget}, "pool": []}
+        state = "maintenance" if s.maintenance_mode else router.state
+        return {"mode": mode, "state": state, "budget": router.budget(), "pool": router.snapshot()}
+
     # ------------------------------------------------------------------ data
     @app.get("/api/meta")
     async def meta():
+        llm_info = llm_meta()
         return {
             "dataset_version": store.version, "data_as_of": store.data_as_of, "counts": store.counts(),
             "counts_by_site": {site: {"projects": sum(1 for p in store.projects if str(p.get("site") or "").lower() == site.lower()),
@@ -273,8 +337,9 @@ def create_app(settings: Settings | None = None, llm=None, embedder=None) -> Fas
                                                       if str(x.get("site") or "Wasalt").lower() == site.lower())}
                                for site in ("DarGlobal", "Wasalt")},
             "completeness": _flat_completeness(store.meta.get("completeness") or {}), "models": s.openrouter_models,
-            "llm_available": s.llm_available and not s.maintenance_mode, "flags": s.flags,
+            "llm_available": llm_info["state"] == "ok", "flags": s.flags,
             "candidate": s.candidate, "retrieval": retriever.mode, "maintenance_mode": s.maintenance_mode,
+            "coverage": store.coverage(), "llm": llm_info, "starter_chips": chips_cache,
         }
 
     @app.get("/api/flags")
@@ -332,9 +397,13 @@ def create_app(settings: Settings | None = None, llm=None, embedder=None) -> Fas
         return {"ok": True}
 
     @app.get("/readyz")
-    async def readyz():
+    async def readyz(request: Request):
         ready = store.loaded
+        # Count only (never the addresses): how many X-Forwarded-For hops reached us, so the owner can set
+        # TRUSTED_PROXY_HOPS for the host (see deploy/README.md).
+        xff = [h for h in (request.headers.get("x-forwarded-for") or "").split(",") if h.strip()]
         body = {"ready": ready, "dataset_loaded": store.loaded, "retrieval": retriever.mode,
+                "index": retriever.index_state, "llm": llm_meta()["state"], "xff_hops_seen": len(xff),
                 "llm_configured": s.llm_available, "maintenance_mode": s.maintenance_mode}
         return JSONResponse(body, status_code=200 if ready else 503)
 
@@ -361,6 +430,8 @@ def create_app(settings: Settings | None = None, llm=None, embedder=None) -> Fas
         path = "/" + full_path
         if path.startswith("/api/"):
             return _not_found(True)
+        if (path.rstrip("/") == "/demo" or path.startswith("/demo/")) and not s.flags.get("FF_WIDGET_DEMO"):
+            return _not_found(False)  # the widget demo does not exist on a deployment where its flag is off
         f = _safe(full_path) if full_path else None
         if f:
             long_cache = "/_next/static/" in path

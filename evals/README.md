@@ -14,3 +14,6 @@ for bound cases; without it they are reported as skipped, never passed.
     python evals/runner.py --base-url http://localhost:7860 --rpm 12
     backend/.venv/Scripts/python evals/experiments.py        # E1 needs the backend deps (rank_bm25 etc.)
     python loadtest/load.py --mock-confirmed                 # 5 -> 20 -> 50 sessions
+- `make_report.py` regenerates `REPORT.md` and the README numbers block from result files only (`--check` for staleness).
+- Runner flags added: `--max-llm-calls N` (hard stop; required when the target reports llm.mode=live; judge is off in live runs), `--split tune|heldout`, `--llm-mode`. Result file adds `targets.*.ci95/n`, `by_language`, `by_split`, `run_context.llm_mode`; `live_subset.json` and `E1.json` are attached to `latest.json` by the next full mock run.
+- `results/INVALID_db_swapped_mid_run_*.json`: a run whose database was replaced by the data lane mid-run; kept for transparency, never used.

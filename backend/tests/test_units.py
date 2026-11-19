@@ -183,12 +183,16 @@ def test_cards_built_from_db(store):
     c = project_card(p)
     assert c == {"id": "p-dubai-a", "slug": "fixture-marina-tower", "name": "Fixture Marina Tower", "site": "DarGlobal",
                  "city": "Dubai", "country": "United Arab Emirates",
-                 "price_from": {"amount": 1800000, "currency": "AED"}, "status": "Off-plan", "image_url": None,
+                 "price_from": {"amount": 1800000, "currency": "AED"}, "price_label": "1,800,000 AED",
+                 "detail": "page", "source_site": "DarGlobal", "city_display": "Dubai", "country_display": "United Arab Emirates", "status": "Off-plan", "image_url": None,
                  "source_url": "https://fixture.invalid/darglobal/projects/fixture-marina-tower"}
     assert project_card(p, "ar")["name"] == "برج فيكستشر مارينا"
+    nop = project_card(store.project_by_id("p-dubai-b"), "ar")
+    assert nop["price_from"] is None and nop["price_label"] == "السعر عند الطلب"
+    assert project_card(store.project_by_id("p-dubai-b"))["price_label"] == "Price on request"
     lc = listing_card(store.listing_by_id("l-1"))
     assert lc["listing_type"] == "buy" and lc["price"] == {"amount": 1200000, "currency": "SAR"} and lc["beds"] == 2
-    assert set(lc) == {"id", "title", "site", "listing_type", "price", "beds", "baths", "area_m2", "district", "city",
+    assert set(lc) - {"city_display"} == {"id", "title", "site", "listing_type", "price", "beds", "baths", "area_m2", "district", "city",
                        "image_url", "source_url"}
 
 
@@ -286,3 +290,56 @@ def test_place_browse_question_is_info_word_boundary():
     from backend.app.planner import question_is_info
     assert not question_is_info("what can i buy in al khobar?")  # "how" inside "khobar"
     assert question_is_info("how do auctions work in riyadh?")
+
+
+# ---------------- verification fixes (source labels, chips, data sanity) ----------------
+def test_third_party_source_is_labelled_honestly():
+    from app.store import detail_level, source_of, source_site
+    rns = "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    assert source_site(rns, "DarGlobal") == "LSE filing via ticker.app"
+    assert source_site("https://thenationalnews.com/x", "DarGlobal") == "The National (news)"
+    assert source_site("https://darglobal.co.uk/w-residences", "DarGlobal") == "DarGlobal"
+    assert source_site("https://wasalt.sa/en/property/1", "Wasalt") == "Wasalt"
+    assert detail_level({"source_url": rns}) == "thirdparty"
+    assert detail_level({"source_url": "https://darglobal.co.uk/projects"}) == "index"
+    assert detail_level({"source_url": "https://darglobal.co.uk/w-residences"}) == "page"
+    assert source_of({"site": "DarGlobal", "source_url": rns})["site"] != "DarGlobal"
+
+
+def test_project_chips_only_from_published_fields(client):
+    from app.chat import Answer
+    eng = client.app.state.engine
+    p = {"id": "x", "name_en": "No Price Tower", "site": "DarGlobal", "city": None, "price_from_amount": None,
+         "unit_types": ["1 BR", "2 BR"], "handover_year": None, "area_min_m2": None, "area_max_m2": None}
+    chips = eng._project_chips(Answer("project_info", projects=[p]), "en")
+    labels = " | ".join(c["label"] for c in chips)
+    assert "Prices" not in labels and "Handover" not in labels and "Unit types at No Price Tower" in labels
+    assert all(c["label"] for c in chips)
+
+
+def test_chips_never_repeat_a_question_already_asked():
+    from app import templates
+    chips = [{"label": "A", "message": "What are the prices at X?"}, {"label": "B", "message": "When is handover for X?"}]
+    out = templates.drop_repeats(chips, "When is handover for X?", "en", asked=["What are the prices at X?"])
+    assert all(c["message"] not in ("What are the prices at X?", "When is handover for X?") for c in out)
+
+
+def test_trap_chip_label_equals_message():
+    from app import templates
+    for lang in ("en", "ar"):
+        label, msg = templates.DEFAULT_CHIPS[lang][4]
+        assert label == msg
+
+
+def test_no_city_equals_a_project_name_in_shipped_db():
+    import os
+    import sqlite3
+    db = os.path.join(os.path.dirname(__file__), "..", "..", "data", "concierge.sqlite")
+    if not os.path.exists(db):
+        import pytest
+        pytest.skip("no built dataset")
+    con = sqlite3.connect(db)
+    names = {r[0].lower() for r in con.execute("select name_en from projects where name_en is not null")}
+    cities = {r[0].lower() for r in con.execute("select city from projects where city is not null")}
+    assert not (names & cities), names & cities
+    assert "aida" not in cities  # AIDA is a master development in Oman, not a city

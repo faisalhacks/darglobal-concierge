@@ -1,0 +1,41 @@
+{
+  "slug": "trump-golf-villas-aida",
+  "name": "Trump Golf Villas (AIDA)",
+  "facts": [
+    {
+      "field": "name",
+      "value": "Trump Golf Villas",
+      "source_url": "https://www.prnewswire.com/ae/news-releases/dar-global-launches-over-us1-9-billion-in-global-luxury-real-estate-projects-in-2024--sets-sights-on-expansion-into-us-in-2025--302345950.html",
+      "source_title": "Dar Global launches over US$1.9 billion in global luxury real estate projects in 2024 (PR Newswire)",
+      "source_date": "2025-01-08",
+      "source_type": "press_release_wire",
+      "note": "Unclear whether this is the same product as Trump Signature Villas or Fairway Villas"
+    },
+    {
+      "field": "location",
+      "value": "Muscat Riviera, Oman; 'perched 130 meters above the Muscat Riviera'",
+      "source_url": "https://www.prnewswire.com/ae/news-releases/dar-global-launches-over-us1-9-billion-in-global-luxury-real-estate-projects-in-2024--sets-sights-on-expansion-into-us-in-2025--302345950.html",
+      "source_title": "Dar Global launches over US$1.9 billion in global luxury real estate projects in 2024 (PR Newswire)",
+      "source_date": "2025-01-08",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "project_value",
+      "value": "US$40M",
+      "source_url": "https://www.prnewswire.com/ae/news-releases/dar-global-launches-over-us1-9-billion-in-global-luxury-real-estate-projects-in-2024--sets-sights-on-expansion-into-us-in-2025--302345950.html",
+      "source_title": "Dar Global launches over US$1.9 billion in global luxury real estate projects in 2024 (PR Newswire)",
+      "source_date": "2025-01-08",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "launch_year",
+      "value": "2024 (listed among projects unveiled in 2024)",
+      "source_url": "https://www.prnewswire.com/ae/news-releases/dar-global-launches-over-us1-9-billion-in-global-luxury-real-estate-projects-in-2024--sets-sights-on-expansion-into-us-in-2025--302345950.html",
+      "source_title": "Dar Global launches over US$1.9 billion in global luxury real estate projects in 2024 (PR Newswire)",
+      "source_date": "2025-01-08",
+      "source_type": "press_release_wire"
+    }
+  ],
+  "method": "third-party public sources (darglobal.co.uk not fetched)",
+  "collected_at": "2026-11-19T10:18:49+00:00"
+}

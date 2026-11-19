@@ -1,0 +1,107 @@
+{
+  "slug": "trump-international-oman",
+  "name": "Trump International Oman (hotel and golf club, AIDA)",
+  "facts": [
+    {
+      "field": "name",
+      "value": "Trump International Oman",
+      "source_url": "https://www.omanobserver.om/ampArticle/1155550",
+      "source_title": "Dar Global launches $500 million Trump International Oman (Oman Observer)",
+      "source_date": "2024-06-26",
+      "source_type": "press"
+    },
+    {
+      "field": "city",
+      "value": "Aida, Muscat",
+      "source_url": "https://www.prnewswire.com/ae/news-releases/dar-global-launches-over-us1-9-billion-in-global-luxury-real-estate-projects-in-2024--sets-sights-on-expansion-into-us-in-2025--302345950.html",
+      "source_title": "Dar Global launches over US$1.9 billion in global luxury real estate projects in 2024 (PR Newswire)",
+      "source_date": "2025-01-08",
+      "source_type": "press_release_wire",
+      "note": "PRW lists AIDA components under Muscat/Aida"
+    },
+    {
+      "field": "country",
+      "value": "Oman",
+      "source_url": "https://www.omanobserver.om/ampArticle/1155550",
+      "source_title": "Dar Global launches $500 million Trump International Oman (Oman Observer)",
+      "source_date": "2024-06-26",
+      "source_type": "press"
+    },
+    {
+      "field": "brand_partner",
+      "value": "The Trump Organisation",
+      "source_url": "https://www.omanobserver.om/ampArticle/1155550",
+      "source_title": "Dar Global launches $500 million Trump International Oman (Oman Observer)",
+      "source_date": "2024-06-26",
+      "source_type": "press"
+    },
+    {
+      "field": "jv_partner",
+      "value": "Omran Group",
+      "source_url": "https://www.omanobserver.om/ampArticle/1155550",
+      "source_title": "Dar Global launches $500 million Trump International Oman (Oman Observer)",
+      "source_date": "2024-06-26",
+      "source_type": "press"
+    },
+    {
+      "field": "project_value",
+      "value": "$500 million",
+      "source_url": "https://www.omanobserver.om/ampArticle/1155550",
+      "source_title": "Dar Global launches $500 million Trump International Oman (Oman Observer)",
+      "source_date": "2024-06-26",
+      "source_type": "press"
+    },
+    {
+      "field": "project_value",
+      "value": "$500-million",
+      "source_url": "https://gulfconstructiononline.com/Article/387509/aida-advances-with-landmark-assets",
+      "source_title": "AIDA advances with landmark assets (Gulf Construction)",
+      "source_date": "2025-06-01",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "hotel_keys",
+      "value": "140-key luxury resort",
+      "source_url": "https://gulfconstructiononline.com/Article/387509/aida-advances-with-landmark-assets",
+      "source_title": "AIDA advances with landmark assets (Gulf Construction)",
+      "source_date": "2025-06-01",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "golf_course",
+      "value": "18-hole championship golf course",
+      "source_url": "https://gulfconstructiononline.com/Article/387509/aida-advances-with-landmark-assets",
+      "source_title": "AIDA advances with landmark assets (Gulf Construction)",
+      "source_date": "2025-06-01",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "hotel_opening",
+      "value": "scheduled to open in December 2028",
+      "source_url": "https://gulfconstructiononline.com/Article/387509/aida-advances-with-landmark-assets",
+      "source_title": "AIDA advances with landmark assets (Gulf Construction)",
+      "source_date": "2025-06-01",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "completion",
+      "value": "Phase two, which includes the hotel and additional villas, is set to be completed within 36 months",
+      "source_url": "https://www.omanobserver.om/ampArticle/1155550",
+      "source_title": "Dar Global launches $500 million Trump International Oman (Oman Observer)",
+      "source_date": "2024-06-26",
+      "source_type": "press",
+      "note": "Relative to 2024-06-26 article date; not converted to a year"
+    },
+    {
+      "field": "component_listing",
+      "value": "Trump International Hotel & Trump Cliff Villas, Oman, US$495M, 'a premium mixed-use development spanning 3.5 million square meters'",
+      "source_url": "https://www.prnewswire.com/ae/news-releases/dar-global-launches-over-us1-9-billion-in-global-luxury-real-estate-projects-in-2024--sets-sights-on-expansion-into-us-in-2025--302345950.html",
+      "source_title": "Dar Global launches over US$1.9 billion in global luxury real estate projects in 2024 (PR Newswire)",
+      "source_date": "2025-01-08",
+      "source_type": "press_release_wire",
+      "note": "Only third-party source found for 'Trump Cliff Villas'; no unit/bedroom data found in reputable press"
+    }
+  ],
+  "method": "third-party public sources (darglobal.co.uk not fetched)",
+  "collected_at": "2026-11-19T10:18:49+00:00"
+}

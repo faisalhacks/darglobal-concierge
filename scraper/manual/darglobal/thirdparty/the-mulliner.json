@@ -1,0 +1,154 @@
+{
+  "slug": "the-mulliner",
+  "name": "The Mulliner (149 Old Park Lane)",
+  "facts": [
+    {
+      "field": "name",
+      "value": "The Mulliner",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "name",
+      "value": "No. 149 Old Park Lane",
+      "source_url": "https://www.zawya.com/en/press-release/companies-news/dar-global-completes-sale-of-historic-149-old-park-lane-marketed-at-25mln-u1dl99j0",
+      "source_title": "Dar Global completes sale of historic 149 Old Park Lane marketed at £25mln (Zawya press release)",
+      "source_date": "undated on page",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "location",
+      "value": "corner of Old Park Lane and Piccadilly, with direct views over Green Park",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "city",
+      "value": "London",
+      "source_url": "https://meconstructionnews.com/61270/dar-global-completes-sale-of-149-old-park-lane",
+      "source_title": "Dar Global completes sale of 149 Old Park Lane (Middle East Construction News)",
+      "source_date": "2024-11-19",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "country",
+      "value": "United Kingdom",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "partner",
+      "value": "Leconfield (sale made in partnership with Leconfield)",
+      "source_url": "https://www.zawya.com/en/press-release/companies-news/dar-global-completes-sale-of-historic-149-old-park-lane-marketed-at-25mln-u1dl99j0",
+      "source_title": "Dar Global completes sale of historic 149 Old Park Lane marketed at £25mln (Zawya press release)",
+      "source_date": "undated on page",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "partner",
+      "value": "funded by equity investors Fairway Capital and DAR Global and developed by Leconfield Property Group",
+      "source_url": "https://londonlovesproperty.com/mayfair-rolls-royce-hq-pad-sold-for-26-25-million-to-young-international-buyer",
+      "source_title": "Mayfair Rolls Royce HQ pad sold for £26.25 million to young international buyer (London Loves Property)",
+      "source_date": "2025-01-07",
+      "source_type": "press"
+    },
+    {
+      "field": "units",
+      "value": "1",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "status",
+      "value": "Completed",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "status",
+      "value": "Sale completed",
+      "source_url": "https://meconstructionnews.com/61270/dar-global-completes-sale-of-149-old-park-lane",
+      "source_title": "Dar Global completes sale of 149 Old Park Lane (Middle East Construction News)",
+      "source_date": "2024-11-19",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "launch",
+      "value": "Q2 2022",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "bedrooms",
+      "value": "three bedrooms with ensuites",
+      "source_url": "https://www.zawya.com/en/press-release/companies-news/dar-global-completes-sale-of-historic-149-old-park-lane-marketed-at-25mln-u1dl99j0",
+      "source_title": "Dar Global completes sale of historic 149 Old Park Lane marketed at £25mln (Zawya press release)",
+      "source_date": "undated on page",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "bedrooms",
+      "value": "four-bedroom apartment",
+      "source_url": "https://londonlovesproperty.com/mayfair-rolls-royce-hq-pad-sold-for-26-25-million-to-young-international-buyer",
+      "source_title": "Mayfair Rolls Royce HQ pad sold for £26.25 million to young international buyer (London Loves Property)",
+      "source_date": "2025-01-07",
+      "source_type": "press",
+      "note": "Conflicts with three bedrooms in Dar Global release; unclear if same unit"
+    },
+    {
+      "field": "size",
+      "value": "5,222 sq.ft lateral residence",
+      "source_url": "https://londonlovesproperty.com/mayfair-rolls-royce-hq-pad-sold-for-26-25-million-to-young-international-buyer",
+      "source_title": "Mayfair Rolls Royce HQ pad sold for £26.25 million to young international buyer (London Loves Property)",
+      "source_date": "2025-01-07",
+      "source_type": "press"
+    },
+    {
+      "field": "marketed_price",
+      "value": "marketed at £25mln (as reported in release; page undated)",
+      "source_url": "https://www.zawya.com/en/press-release/companies-news/dar-global-completes-sale-of-historic-149-old-park-lane-marketed-at-25mln-u1dl99j0",
+      "source_title": "Dar Global completes sale of historic 149 Old Park Lane marketed at £25mln (Zawya press release)",
+      "source_date": "undated on page",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "sale_price",
+      "value": "£26.25 million (as reported on 2025-01-07)",
+      "source_url": "https://londonlovesproperty.com/mayfair-rolls-royce-hq-pad-sold-for-26-25-million-to-young-international-buyer",
+      "source_title": "Mayfair Rolls Royce HQ pad sold for £26.25 million to young international buyer (London Loves Property)",
+      "source_date": "2025-01-07",
+      "source_type": "press",
+      "note": "Different figure from 'marketed at £25mln'"
+    },
+    {
+      "field": "heritage",
+      "value": "Originally known as Gloucester House, the Grade II-listed building",
+      "source_url": "https://meconstructionnews.com/61270/dar-global-completes-sale-of-149-old-park-lane",
+      "source_title": "Dar Global completes sale of 149 Old Park Lane (Middle East Construction News)",
+      "source_date": "2024-11-19",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "heritage",
+      "value": "Between 1906 and 1971 the Old Park Lane building served as the Mayfair headquarters of Rolls Royce motorcars",
+      "source_url": "https://londonlovesproperty.com/mayfair-rolls-royce-hq-pad-sold-for-26-25-million-to-young-international-buyer",
+      "source_title": "Mayfair Rolls Royce HQ pad sold for £26.25 million to young international buyer (London Loves Property)",
+      "source_date": "2025-01-07",
+      "source_type": "press"
+    }
+  ],
+  "method": "third-party public sources (darglobal.co.uk not fetched)",
+  "collected_at": "2026-11-19T10:18:49+00:00"
+}

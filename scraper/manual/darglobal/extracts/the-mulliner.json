@@ -1,0 +1,16 @@
+{
+ "url": "https://darglobal.co.uk/the-mulliner",
+ "title": "The Mulliner - DarGlobal",
+ "lang": "en",
+ "meta": {},
+ "headings": ["THE MULLINER", "149 OLD PARK LANE | LONDON", "A MOMENTOUS WELCOME", "AMENITIES", "MORE THAN AN ADDRESS"],
+ "text": "THE MULLINER. 149 OLD PARK LANE | LONDON. Originally known as Gloucester House, No.149 Old Park Lane is a landmark building in London's architectural heritage, situated on the corner of Old Park Lane and Piccadilly, overlooking Green Park. No.149 is one of the finest Grade II properties on Old Park Lane and has been redeveloped and designed to the highest of standards throughout. PROPERTY TYPE: 5-Bedroom Apartment. STATUS: Completed and sold out. AREA (SQM): 485.22. It has retained many of the original classical and Art Nouveau features of the original design. AMENITIES: Concierge Services; Elevator; 24-hour Porterage; Daikin AC, underfloor heating, Loxone building management system and MVHR system; Lutron Lighting; Sonos Home Sound System; bespoke oak kitchen with Gaggenau, Bertazzoni, Miele and Caple appliances; bathrooms with Gessi sanitaryware and Italian marble vanity tops; polished marble, oak parquet and herringbone timber floors; staff room; historic fireplaces; temperature-controlled wine cabinet; on-site 24-hour security, SSAIB-approved alarm, CCTV and 2N door entry. LOCATION: at the corner of Old Park Lane and Piccadilly, with easy access to Knightsbridge, Belgravia and Mayfair, including the Ritz and Mandarin hotels and Harrods.",
+ "images": [],
+ "jsonld": "",
+ "next_data_present": false,
+ "facts_hint": ["Status: Completed and sold out", "5-Bedroom Apartment", "Area (sqm): 485.22", "149 Old Park Lane, London (corner of Piccadilly)", "Grade II"],
+ "price_published": false,
+ "notes": "Page says 5 bedrooms / 485.22 sqm; third-party sources mention 3 or 4 bedrooms and 5,222 sq ft for a unit; keep all with source and date. Read with get_page_text; form/footer/phone omitted.",
+ "collected_at": "2026-11-19T11:41:00Z",
+ "method": "claude-in-chrome, user's own browser session, human pace"
+}

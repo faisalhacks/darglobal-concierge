@@ -18,23 +18,27 @@ PLACE_ALIASES: dict[str, list[str]] = {
     "Dubai": ["dubai", "دبي"],
     "Abu Dhabi": ["abu dhabi", "abudhabi", "ابوظبي", "ابو ظبي"],
     "Ras Al Khaimah": ["ras al khaimah", "rak", "راس الخيمه"],
-    "United Arab Emirates": ["uae", "united arab emirates", "emirates", "الامارات"],
+    "United Arab Emirates": ["uae", "united arab emirates", "emirates", "الامارات", "الامارات العربيه المتحده",
+                             "دوله الامارات"],
     "Riyadh": ["riyadh", "الرياض", "رياض"],
-    "Jeddah": ["jeddah", "jedda", "جده"],
+    "Jeddah": ["jeddah", "jedda", "jeddha", "jiddah", "جده"],
     "Makkah": ["makkah", "mecca", "مكه"],
     "Madinah": ["madinah", "medina", "المدينه المنوره"],
     "Dammam": ["dammam", "الدمام"],
     "Khobar": ["khobar", "al khobar", "الخبر"],
-    "Saudi Arabia": ["saudi arabia", "saudi", "ksa", "السعوديه"],
+    "Saudi Arabia": ["saudi arabia", "saudi", "ksa", "السعوديه", "المملكه العربيه السعوديه", "المملكه"],
     "Muscat": ["muscat", "مسقط"],
     "Oman": ["oman", "عمان", "سلطنه عمان"],
     "Doha": ["doha", "الدوحه"],
-    "Qatar": ["qatar", "قطر"],
+    "Qatar": ["qatar", "قطر", "دوله قطر"],
     "Bahrain": ["bahrain", "البحرين"],
     "London": ["london", "لندن"],
     "United Kingdom": ["uk", "united kingdom", "england", "britain", "بريطانيا", "المملكه المتحده"],
     "Marbella": ["marbella", "ماربيا", "ماربيلا"],
-    "Spain": ["spain", "اسبانيا"],
+    "Spain": ["spain", "اسبانيا", "اسبانيه"],
+    "Benahavís": ["benahavis", "benahavís", "بيناهافيس"],
+    "Cortesin": ["cortesin", "كورتيسين"],
+    "Simaisma": ["simaisma", "سميسمه"],
     "Maldives": ["maldives", "المالديف"],
     "Bosnia": ["bosnia", "البوسنه"],
     "Greece": ["greece", "اليونان"],
@@ -46,7 +50,7 @@ PLACE_AR = {
     "Riyadh": "الرياض", "Jeddah": "جدة", "Makkah": "مكة المكرمة", "Madinah": "المدينة المنورة", "Dammam": "الدمام",
     "Khobar": "الخبر", "Saudi Arabia": "السعودية", "Muscat": "مسقط", "Oman": "عُمان", "Doha": "الدوحة",
     "Qatar": "قطر", "Bahrain": "البحرين", "London": "لندن", "United Kingdom": "المملكة المتحدة",
-    "Marbella": "ماربيا", "Spain": "إسبانيا", "Maldives": "المالديف", "Bosnia": "البوسنة", "Greece": "اليونان",
+    "Marbella": "ماربيا", "Spain": "إسبانيا", "Al Khobar": "الخبر", "Simaisma": "سميسمة", "Maldives": "المالديف", "Bosnia": "البوسنة", "Greece": "اليونان",
 }
 
 
@@ -97,6 +101,8 @@ class Plan:
     ambiguous: bool = False
     follow_up: bool = False
     unknown: str | None = None  # a named project/place the user asked about that is not in the dataset
+    text: str | None = None  # rewritten message for a follow-up ("And if it was 150 m2?" -> full calculation)
+    step: int = 0  # find-my-home step (1 = ask place, 2 = ask budget, 3 = ask purpose, 4 = shortlist)
 
 
 # ---------------- existence gate (SPEC §0 never invent, R7 traps) ----------------
@@ -104,13 +110,22 @@ _NAMED_EN = re.compile(r"\b(?:project|development|tower|building|compound|commun
                        r"(?:called|named)\s+[\"'“]?([a-z0-9][a-z0-9' -]{1,40}?)[\"'”]?"
                        r"(?=\s+(?:in|and|at|with|located|by|that|which)\b|\s*[?,.!]|$)", re.I)
 _NAMED_AR = re.compile(r"(?:مشروع|مشروعا|برج|مجمع)\s+(?:اسمه|يسمي|باسم|يدعي)\s+(.{2,40}?)(?=\s+(?:في|و)\s|\s*و?سعر|[?,.!]|$)")
+_ABOUT_EN = re.compile(r"\b(?i:tell me about|what about|info(?:rmation)? (?:on|about)|details (?:on|of|about)|"
+                       r"what is|what's)\s+(?i:the\s+)?([A-Z][\w'&-]*(?:\s+[A-Z0-9][\w'&-]*){1,5})")
+_PROPERTY_EN = re.compile(r"\b((?:[A-Z][\w'&-]+\s+){1,4}(?:Residences?|Towers?|Villas|Heights|Palace|Gardens|Bay|Hills|"
+                          r"Estates?|Mansions|Plaza|Lagoon|Island|Resort|Penthouses?|Lofts?|Suites|Court|Point|Collection)"
+                          r"(?:\s+[A-Z][\w'&-]+){0,2})\b")
+_PROJECT_AR = re.compile(r"(?:سعر|عن|تفاصيل|موقع|تسليم)\s+مشروع\s+(.{2,40}?)(?=\s+(?:في|ب|و)\s|\s*[?,.!]|$)")
 _PLACE_EN = re.compile(r"\b(?:in|at|near|around)\s+(?:the\s+|your\s+|a\s+)?([A-Z][a-z]{2,}(?:\s+[A-Z][a-zA-Z0-9]{1,})*)")
 _NOT_PLACES = {"english", "arabic", "sar", "aed", "usd", "january", "february", "march", "april", "may", "june",
                "july", "august", "september", "october", "november", "december", "total", "cash", "installments"}
 UNPUBLISHED = [
     ("mortgage_rate", r"(mortgage|interest|financing|finance)\s+(interest\s+)?rates?|rates?\s+(of|for)\s+(mortgage|interest)"
                       r"|apr\b|سعر الفائده|نسبه الفائده|نسبه التمويل"),
-    ("units_sold", r"units?\s+(have\s+|has\s+)?(been\s+|already\s+)?sold|how many (units|apartments|villas) (are|were) sold"),
+    ("cancellation", r"(?<![a-z])(cancel|cancell?ed|cancell?ation|scrapped|abandoned)(?![a-z])|الغاء|الغي|الغيت"),
+    ("units_sold", r"units?\s+(have\s+|has\s+)?(been\s+|already\s+)?sold|how many (units|apartments|villas) (are|were) sold"
+                   r"|how many (units|apartments|villas|homes)\b.{0,80}\b(sold|left|remaining|available)\b"
+                   r"|كم (وحده|شقه|فيلا).{0,40}(بيع|بيعت|مباعه|متبقيه)"),
 ]
 
 
@@ -156,8 +171,20 @@ def unknown_entity(message: str, norm: str, ent: Entities, store: Store) -> str 
         m = rx.search(src)
         if m and not _known_name(m.group(1), store):
             return m.group(1).strip()
+    for m in _PROPERTY_EN.finditer(raw):  # "Obsidian Palm Residences", "Zephyr Lagoon Towers"
+        name = m.group(1).strip()
+        if not ent.project_ids and not _known_name(name, store) and not _known_place(name, store):
+            return name
+    m = _PROJECT_AR.search(norm)  # "ما سعر مشروع نخيل الاوبسيديان في مسقط"
+    if m and not ent.project_ids:
+        cand = m.group(1).strip()
+        if cand and not _is_generic(cand) and not _known_name(cand, store) and not _known_place(cand, store):
+            return cand
     if ent.project_ids or ent.city or ent.country:
         return None
+    m = _ABOUT_EN.search(raw)
+    if m and not _known_place(m.group(1), store):
+        return m.group(1).strip()
     for m in _PLACE_EN.finditer(message or ""):
         cand = m.group(1).strip()
         if not _known_place(cand, store):
@@ -165,8 +192,21 @@ def unknown_entity(message: str, norm: str, ent: Entities, store: Store) -> str 
     return None
 
 
+_AR_PROCLITIC = r"(?:[وفبلك]|وب|ول|فب)?"
+
+
 def _has(norm: str, words) -> bool:
     return any(re.search(rf"(?<![\w]){re.escape(w)}(?![\w])", norm) for w in words)
+
+
+def _has_place(norm: str, alias: str) -> bool:
+    """Alias match that also accepts Arabic proclitics (و/ف/ب/ل/ك) glued to the word, e.g. "بدبي", "بالرياض"."""
+    if re.search(r"[\u0600-\u06FF]", alias):
+        a = re.escape(alias)
+        if alias.startswith("ال"):  # "بالرياض" / "للرياض": the proclitic absorbs or replaces the article
+            a = rf"(?:{a}|{re.escape(alias[2:])})"
+        return bool(re.search(rf"(?<![\w]){_AR_PROCLITIC}{a}(?![\w])", norm))
+    return _has(norm, [alias])
 
 
 # ---------------- entity extraction ----------------
@@ -232,7 +272,7 @@ def extract_places(norm: str, store: Store) -> tuple[str | None, str | None, str
     # longest aliases first so "abu dhabi" wins over shorter tokens
     pairs = sorted(((a, canon) for canon, al in PLACE_ALIASES.items() for a in al), key=lambda x: -len(x[0]))
     for alias, canon in pairs:
-        if _has(norm, [alias]):
+        if _has_place(norm, alias):
             key = normalize_text(canon)
             if key not in cities and key not in countries:
                 # DB spelling may differ ("Al Khobar" vs "Khobar")
@@ -264,14 +304,27 @@ def _is_generic(alias: str) -> bool:
     return all(t in _GENERIC_NAME_TOKENS or t.isdigit() for t in toks)
 
 
+# Arabic spellings users type for DarGlobal projects whose rows carry no name_ar. Query matching only: they are never
+# shown as a project name (cards and prose use the published names).
+PROJECT_QUERY_ALIASES: dict[str, list[str]] = {
+    "dg-da-vinci-tower-interiors-by-pagani": ["برج دافنشي", "برج دا فينشي", "دافنشي", "دا فينشي"],
+    "dg-les-vagues-by-elie-saab": ["لي فاغ", "ليه فاغ", "لي فاج", "لي فاغ ايلي صعب", "ايلي صعب"],
+    "dg-the-astera-interiors-by-aston-martin": ["ذا استيرا", "استيرا", "ذي استيرا", "استون مارتن"],
+    "dg-urban-oasis-by-missoni": ["اوربان اواسيس", "اوربان اوايسس", "ميسوني"],
+    "dg-w-residences": ["دبليو ريزيدنسز", "دبليو رزيدنس", "مساكن دبليو"],
+    "dg-trump-international-hotel-and-tower-dubai": ["برج ترامب دبي", "فندق وبرج ترامب الدولي دبي", "ترامب دبي"],
+}
+
+
 def project_aliases(p: dict) -> list[str]:
-    out = []
+    out = [normalize_text(a) for a in PROJECT_QUERY_ALIASES.get(p.get("id") or "", [])]
     for k in ("name_en", "name_ar"):
         v = p.get(k)
         if not v:
             continue
         n = normalize_text(v)
-        cands = [n, n.split(" - ")[0].strip()]
+        cands = [n, n.split(" - ")[0].strip(), n.split(", ")[0].strip(),
+                 re.split(r"\s+(?:interiors by|design inspired by|by)\s+", n)[0].strip()]
         cands += [re.sub(r"^(the|مشروع)\s+", "", c) for c in cands]
         for c in cands:
             c = re.sub(r"\s+", " ", c).strip(" -")
@@ -290,20 +343,26 @@ def extract_projects(norm: str, store: Store) -> list[str]:
             if idx >= 0 and (idx == 0 or not norm[idx - 1].isalnum()):
                 best = idx if best is None else min(best, idx)
                 continue
-            # fuzzy: compare alias against same-length word windows
+            # fuzzy: compare alias against same-length word windows. A one-word alias needs >= 6 letters and a
+            # closer match ("area" must not match the project "Marea").
             n = len(alias.split())
-            if n == 1 and alias in _GENERIC_NAME_TOKENS:
+            if n == 1 and (alias in _GENERIC_NAME_TOKENS or len(alias) < 6):
                 continue
             for i in range(0, max(len(words) - n + 1, 0)):
                 window = " ".join(words[i:i + n])
-                if len(window) >= 4 and difflib.SequenceMatcher(None, window, alias).ratio() >= 0.86:
+                if len(window) >= 4 and difflib.SequenceMatcher(None, window, alias).ratio() >= (0.86 if n > 1 else 0.92):
                     pos = norm.find(window)
                     best = pos if best is None else min(best, pos)
                     break
         if best is not None:
-            hits.append((best, p["id"]))
+            span = max((len(a) for a in project_aliases(p) if norm.find(a) == best), default=0)
+            hits.append((best, -span, p["id"]))
     hits.sort()
-    return list(dict.fromkeys(pid for _, pid in hits))
+    # "Amour Sans Detour 2" also contains "Amour Sans Detour": drop a match that lies inside a longer one.
+    spans = [(pos, pos - neg, pid) for pos, neg, pid in hits]
+    kept = [pid for s0, e0, pid in spans
+            if not any(s1 <= s0 and e0 <= e1 and (e1 - s1) > (e0 - s0) for s1, e1, _ in spans)]
+    return list(dict.fromkeys(kept))
 
 
 def extract_entities(text: str, store: Store) -> Entities:
@@ -342,10 +401,14 @@ def extract_entities(text: str, store: Store) -> Entities:
 ADVICE = [r"\bguarantee", r"\broi\b", r"return on investment", r"\bgood investment\b", r"\bbest investment\b",
           r"should i (buy|invest)", r"\bwill (the )?(prices?|values?|it) (rise|go up|increase|appreciate)",
           r"capital (appreciation|gain)", r"\bprofit\b", r"\bworth investing\b", r"\bis it a good time\b",
+          r"\byields?\b", r"\bwhat will (the )?(price|value|prices|values)\b", r"\bwill .{0,60}\b(be worth|appreciate)\b",
+          r"\b(price|value)s? .{0,40}\bin 20[3-9]\d\b",
           r"ضمان", r"مضمون", r"عائد", r"هل استثمر", r"استثمار جيد", r"افضل استثمار", r"ربح", r"هل اشتري"]
 CONTACT = [r"\bcontact\b", r"\bcall me\b", r"\bbook (a )?(viewing|visit|tour|appointment)", r"\bsales (team|agent|office)",
            r"\bspeak (to|with) (a |an )?(human|agent|person|someone)", r"\bphone number\b", r"\bwhatsapp\b",
-           r"\bget in touch\b", r"تواصل", r"اتصل", r"رقم الهاتف", r"حجز (موعد|معاينه|زياره)", r"فريق المبيعات"]
+           r"\bget in touch\b", r"\b(talk|speak|chat) (to|with) (the |a |your )?sales\b", r"\bsales (contact|people)\b",
+           r"\breach (the )?sales\b", r"تواصل", r"اتصل", r"رقم الهاتف", r"حجز (موعد|معاينه|زياره)", r"فريق المبيعات",
+           r"التحدث (مع|الي) (فريق )?المبيعات"]
 CALC = [r"\d\s*%\s*(down|deposit|upfront|مقدم|دفعه)", r"(down ?payment|deposit|دفعه مقدمه|مقدم)",
         r"per (m2|sqm|square met)", r"price per", r"سعر المتر", r"\binstall?ments?\b", r"اقساط|قسط",
         r"\bconvert\b", r"(حول|تحويل)\s.*\s(الي|ب)", r"\bin (usd|aed|sar|dollars|dirhams|riyals)\b"]
@@ -360,15 +423,28 @@ SEARCH = [r"\b(apartment|apartments|flat|flats|villa|villas|townhouse|penthouse|
           r"\b\d+\s*[- ]?(bed|beds|bedroom|br)\b", r"\b(for rent|for sale|to rent)\b", r"\bunder\s*\d",
           r"شقق|شقه|فيلا|فلل|للايجار|للبيع|عقارات"]
 LOCATION = [r"\bprojects?\b", r"\bdevelopments?\b", r"\bwhat (do you have|is available)\b", r"\bwhere\b",
+            r"\bwhat (does|do) [a-z ]{2,20} have\b", r"\bwhat('s| is) (there|available)\b",
             r"مشاريع|مشروع|ماذا لديكم|المتوفره|المتوفر"]
 BRAND = [r"\bbranded\b", r"\bbrand partners?\b", r"\bpartners?\b", r"\bpartnership",
          r"علامات تجاريه|العلامات التجاريه|علامه تجاريه|شركاء|الشركاء"]
 PROJECT_WORDS = [r"\bprojects?\b", r"\bdevelopments?\b", r"مشاريع|مشروع"]
-FMH = [r"\bfind (me )?(a |my )?home\b", r"\bhelp me (find|choose)\b", r"ساعدني في (ايجاد|اختيار)", r"ابحث لي عن منزل"]
+FMH = [r"\bfind (me )?(a |my )?home\b", r"\bhelp me (find|choose)\b", r"ساعدني (في|علي) (ايجاد|اختيار|العثور)",
+       r"ابحث لي عن منزل"]
+# Steering by protected traits (nationality, religion, ethnicity, gender, family status): decline politely and offer
+# neutral published facts instead (fair-housing style; evals S01-S05).
+_TRAITS = (r"(indians?|arabs?|muslims?|non-?muslims?|christians?|jews|jewish|hindus?|westerners?|europeans?|british|"
+           r"pakistanis?|russians?|chinese|filipinos?|africans?|americans?|white|black|asians?)")
+STEERING = [rf"\b(people like me|lots of|mostly|only|among|majority|full of|no)\b.{{0,40}}\b{_TRAITS}\b",
+            rf"\b{_TRAITS}\b.{{0,40}}\b(live|living|reside|community|neighbou?rhoods?|areas?)\b.{{0,40}}\b(only|lots|most|many|where)\b",
+            r"\bhow many (westerners|indians|arabs|foreigners|muslims|christians|expats)\b",
+            r"\bwhere (non-?)?(muslims|christians|foreigners|westerners)\b",
+            r"\b(single (woman|women|man|men)|married couples?|family status|bachelors?)\b.{0,80}\b(better|filter|best|only|rank|versus|vs)\b",
+            r"\b(filter|rank|sort|choose)\b.{0,40}\b(religion|ethnicity|nationality|race|family status|gender)\b",
+            r"لا يسكنها|لا يسكنه|فقط للعرب|للعرب فقط|للمسلمين فقط|بدون اجانب|غير المسلمين|حسب الجنسيه|حسب الدين"]
 GREETING = [r"^(hi|hello|hey|salam|good (morning|evening|afternoon)|greetings)\b[!. ]*$",
             r"^(مرحبا|اهلا|السلام عليكم|صباح الخير|مساء الخير)[!. ]*$"]
 FOLLOW_UP = [r"^(and |what about |how about )?(the )?(price|prices|cost|handover|status|location|size|area|amenities|units?|"
-             r"payment plan|completion|when)\b", r"\b(it|this one|that one|this project|that project)\b",
+             r"payment plan|completion|when)\b", r"\b(it|its|it's|this one|that one|this project|that project)\b",
              r"^(وماذا عن|ماذا عن|كم|متى|و?السعر|و?الاسعار|التسليم)", r"(هذا المشروع|ذلك المشروع)"]
 
 
@@ -385,6 +461,43 @@ def _any(patterns, norm: str) -> bool:
     return any(re.search(p, norm) for p in patterns)
 
 
+def _fmh_step(history: list[dict] | None) -> int:
+    """Stateless find-my-home: the step is read from the last assistant turn (one of the three fixed questions)."""
+    from . import templates
+    last = next((h.get("content") or "" for h in reversed(history or []) if h.get("role") == "assistant"), "")
+    for step, key in ((2, "fmh_q1"), (3, "fmh_q2"), (4, "fmh_q3")):
+        if any(templates.t(key, lg) in last for lg in ("en", "ar")):
+            return step
+    return 0
+
+
+def _last_user(history: list[dict] | None) -> str | None:
+    return next((h.get("content") for h in reversed(history or []) if h.get("role") == "user" and h.get("content")),
+                None)
+
+
+_AREA = re.compile(r"(\d[\d,]*(?:\.\d+)?)\s*(m2|m²|sqm|sq\.? ?m|square met(?:er|re)s?|م2|متر(?: مربع)?)", re.I)
+_PCT = re.compile(r"(\d+(?:\.\d+)?)\s*%")
+_CONTINUE = re.compile(r"^(and|what about|how about|also|then|و|وماذا عن|ماذا عن|طيب)(?![\w])|^و(?=\S)")
+
+
+def _calc_follow_up(message: str, history: list[dict] | None, store: Store) -> str | None:
+    """"And if it was 150 m2?" after a calculation: the previous request with the changed figure substituted."""
+    prev = _last_user(history)
+    if not prev or not (_AREA.search(message) or _PCT.search(message)):
+        return None
+    if plan(prev, store).intent != "calculation":
+        return None
+    out = prev
+    m_new, m_old = _AREA.search(message), _AREA.search(prev)
+    if m_new and m_old:
+        out = out[:m_old.start(1)] + m_new.group(1) + out[m_old.end(1):]
+    p_new, p_old = _PCT.search(message), _PCT.search(out)
+    if p_new and p_old:
+        out = out[:p_old.start(1)] + p_new.group(1) + out[p_old.end(1):]
+    return out if out != prev else None
+
+
 def plan(message: str, store: Store, history: list[dict] | None = None, flags: dict | None = None) -> Plan:
     flags = flags or {}
     norm = normalize_text(message)
@@ -392,6 +505,12 @@ def plan(message: str, store: Store, history: list[dict] | None = None, flags: d
 
     if is_injection(message):
         return Plan("injection", ent)
+    if flags.get("FF_FIND_MY_HOME") and history:
+        step = _fmh_step(history)
+        if step:
+            return Plan("find_my_home", ent, step=step)
+    if _any(STEERING, norm):
+        return Plan("steering", ent)
     if _any(GREETING, norm):
         return Plan("greeting", ent)
     if _any(ADVICE, norm):
@@ -406,9 +525,36 @@ def plan(message: str, store: Store, history: list[dict] | None = None, flags: d
     if _any(CALC, norm) and re.search(r"\d", norm):
         return Plan("calculation", ent)
 
+    if history:
+        merged = _calc_follow_up(message, history, store)
+        if merged:
+            return Plan("calculation", extract_entities(merged, store), follow_up=True, text=merged)
+
     unknown = unknown_entity(message, norm, ent, store)
     if unknown:
         return Plan("general", ent, unknown=unknown)
+
+    if history and not ent.project_ids:
+        prev = _last_user(history)
+        prev_plan = plan(prev, store) if prev else None
+        # "What is its price?" after asking about a name that is not in the data: still not in the data.
+        if prev_plan and prev_plan.unknown and _any(FOLLOW_UP, norm):
+            return Plan("general", ent, follow_up=True, unknown=prev_plan.unknown)
+        # "And in Dubai?" / "Only DarGlobal ones please": same question, new place or site filter.
+        short = len(norm.split()) <= 6
+        if prev_plan and short and prev_plan.intent in ("location_overview", "search", "brand_partner"):
+            pe = prev_plan.entities
+            if (ent.city or ent.country) and _CONTINUE.search(norm):
+                for k in ("listing_type", "beds", "budget_min", "budget_max", "currency", "property_type", "site",
+                          "brand"):
+                    if getattr(ent, k) is None:
+                        setattr(ent, k, getattr(pe, k))
+                return Plan(prev_plan.intent, ent, follow_up=True)
+            if ent.site and not (ent.city or ent.country):
+                ent.city, ent.country, ent.place = pe.city, pe.country, pe.place
+                ent.listing_type = ent.listing_type or pe.listing_type
+                intent = "location_overview" if ent.site == "DarGlobal" else prev_plan.intent
+                return Plan(intent, ent, follow_up=True)
 
     follow_up = False
     if not ent.project_ids and history and _any(FOLLOW_UP, norm):
@@ -424,7 +570,12 @@ def plan(message: str, store: Store, history: list[dict] | None = None, flags: d
     if flags.get("FF_FIND_MY_HOME") and _any(FMH, norm):
         return Plan("find_my_home", ent)
     if ent.project_ids:
-        return Plan("project_info", ent, follow_up=follow_up)
+        places = {normalize_text(v) for v in (ent.city, ent.country) if v}
+        named_like_place = all(normalize_text(store.project_by_id(pid).get("name_en") or "") in places
+                               for pid in ent.project_ids if store.project_by_id(pid))
+        # "Projects in Aida" names the place Aida, not only the project of the same name.
+        if not (places and named_like_place and _any(LOCATION, norm)):
+            return Plan("project_info", ent, follow_up=follow_up)
     question = bool(re.match(r"^(can|could|how|why|what is|what are|what's|is|are|do|does|should|who|explain|"
                              r"هل|كيف|لماذا|ما هو|ما هي|ماهو|ماهي)\b", norm))
     has_place = bool(ent.city or ent.country)

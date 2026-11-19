@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 from dataclasses import dataclass
 
 import numpy as np
@@ -56,11 +57,51 @@ BRIDGE = {
 }
 
 
+def stem(t: str) -> str:
+    """Tiny English plural fold for matching only ("auctions" -> "auction"); Arabic is left to the normaliser."""
+    if t.isascii() and len(t) > 4 and t.endswith("s") and not t.endswith("ss"):
+        return t[:-3] + "y" if t.endswith("ies") else t[:-1]
+    return t
+
+
 def expand_query(toks: list[str]) -> list[str]:
     out = list(toks)
     for t in toks:
         out += BRIDGE.get(t, [])
+        s = stem(t)
+        if s != t:
+            out.append(s)
     return out
+
+
+# Pages that list or index other pages (sitemaps, search-result pages, blog indexes). They are kept in the index
+# (a listing question may need them) but ranked below content pages for questions that want an explanation.
+DEMOTE_PAGE_TYPES = {"sitemap_index", "index", "srp", "guides_index", "listing_index", "search_results"}
+DEMOTE_FACTOR = 0.35
+_TAGS = re.compile(r"<[^>]+>")
+
+
+def is_index_like(text: str) -> bool:
+    """True for chunk text that lists items/prices (e.g. an auctions results page) rather than explains anything."""
+    t = re.sub(r"\s+", " ", _TAGS.sub(" ", text or ""))
+    listy = len(re.findall(r"\(\d+\)|View Details|Started on|Ends on|Deposit starts", t))
+    digits = len(re.findall(r"\d", t)) / max(len(t), 1)
+    sentences = len(re.findall(r"[.!?؟](\s|$)", t))
+    return listy >= 2 or sentences == 0 or (digits > 0.08 and sentences < 2)
+
+
+def strip_header(text: str, chunk: dict | None = None) -> str:
+    """Drop a contextual chunk header before quoting a chunk in prose.
+
+    Contract C1: headers look like `name_en | name_ar | city, country | site | section: ` and end at the first ': '.
+    Older page chunks use `Page title: `. A project fact chunk ("Project: X. Site: ...") is not a header."""
+    t = text or ""
+    head, sep, rest = t.partition(": ")
+    if not sep or len(head) > 240 or "\n" in head or not rest.strip():
+        return t
+    if " | " in head or (chunk or {}).get("entity_type") == "page":
+        return rest
+    return t
 
 
 @dataclass
@@ -72,19 +113,31 @@ class Hit:
 
 
 class Embedder:
-    """Thin wrapper over fastembed (ONNX, CPU, no torch). Returns None if unavailable."""
+    """ONNX embeddings on CPU (no torch). Prefers the lean loader (backend/app/embedder.py) on the baked model files;
+    falls back to fastembed (which can download the model) when they are not present. `ok` is False if neither works."""
 
-    def __init__(self, cache_dir: str | None = None):
+    def __init__(self, cache_dir: str | None = None, prefer_lite: bool = True):
         self.model = None
-        try:
-            from fastembed import TextEmbedding  # noqa: WPS433
-            kw = {"model_name": EMBED_MODEL}
-            if cache_dir:
-                kw["cache_dir"] = cache_dir
-            self.model = TextEmbedding(**kw)
-        except Exception as e:  # pragma: no cover - environment dependent
-            log.warning("embedding model unavailable, BM25-only: %s", type(e).__name__)
-            self.model = None
+        self.backend = None
+        threads = int(os.environ.get("EMBED_THREADS", "2") or 2)
+        if prefer_lite:
+            try:
+                from .embedder import LiteEmbedder, find_model_dir
+                d = find_model_dir(cache_dir)
+                if d:
+                    self.model, self.backend = LiteEmbedder(d, threads), "onnx"
+            except Exception as e:  # pragma: no cover - environment dependent
+                log.warning("lean ONNX loader failed (%s); trying fastembed", type(e).__name__)
+        if self.model is None:
+            try:
+                from fastembed import TextEmbedding  # noqa: WPS433
+                kw = {"model_name": EMBED_MODEL, "threads": threads}
+                if cache_dir:
+                    kw["cache_dir"] = cache_dir
+                self.model, self.backend = TextEmbedding(**kw), "fastembed"
+            except Exception as e:  # pragma: no cover - environment dependent
+                log.warning("embedding model unavailable, BM25-only: %s", type(e).__name__)
+                self.model = None
 
     @property
     def ok(self) -> bool:
@@ -105,38 +158,71 @@ class Retriever:
         self.cos_threshold = cos_threshold
         self._tok = [tokenize(c.get("text") or "") or ["_"] for c in self.chunks]
         self.bm25 = BM25Okapi(self._tok) if self.chunks else None
+        page_types = {pg["id"]: (pg.get("page_type") or "").lower() for pg in store.pages}
+        self._demote = np.array([
+            (c.get("entity_type") == "page" and page_types.get(c.get("entity_id") or "", "") in DEMOTE_PAGE_TYPES)
+            or is_index_like(c.get("text") or "") for c in self.chunks], dtype=bool)
         self.vecs: np.ndarray | None = None
         self.embedder = None
         self.mode = "bm25"
+        # ok | stale (index built for another dataset version, or ids mismatch) | bm25_only (no index / no model / off)
+        self.index_state = "bm25_only"
         if embeddings != "off" and self.chunks:
             self._load_vectors(index_dir, cache_dir, embedder)
 
     def _load_vectors(self, index_dir, cache_dir, embedder):
         ids_path = os.path.join(index_dir or "", "ids.json")
         vec_path = os.path.join(index_dir or "", "embeddings.npy")
+        meta_path = os.path.join(index_dir or "", "meta.json")
         if not (index_dir and os.path.exists(ids_path) and os.path.exists(vec_path)) and embedder is None:
             log.warning("no embedding index at %s; BM25-only", index_dir)
             return
+        if embedder is None and os.path.exists(meta_path):
+            # The index is built outside the image and COPYed in; a different dataset version means stale vectors.
+            try:
+                with open(meta_path, encoding="utf-8") as f:
+                    built_for = (json.load(f) or {}).get("dataset_version")
+            except (OSError, ValueError):
+                built_for = None
+            if built_for and built_for != self.store.version:
+                log.warning("embedding index is for dataset %s, not %s; BM25-only", built_for, self.store.version)
+                self.index_state = "stale"
+                return
+        if not (embedder is not None and not os.path.exists(vec_path)):
+            with open(ids_path, encoding="utf-8") as f:
+                ids = json.load(f)
+            pos = {cid: i for i, cid in enumerate(ids)}
+            if any(c["id"] not in pos for c in self.chunks):
+                log.warning("embedding index is stale (ids mismatch); BM25-only")
+                self.index_state = "stale"
+                return
         emb = embedder or Embedder(cache_dir)
         if not emb.ok:
             return
         if embedder is not None and not os.path.exists(vec_path):
             vecs = emb.embed([c.get("text") or "" for c in self.chunks])
         else:
-            ids = json.load(open(ids_path, encoding="utf-8"))
-            vecs_all = np.load(vec_path)
-            pos = {cid: i for i, cid in enumerate(ids)}
-            if any(c["id"] not in pos for c in self.chunks):
-                log.warning("embedding index is stale (ids mismatch); BM25-only")
-                return
-            vecs = vecs_all[[pos[c["id"]] for c in self.chunks]]
-        self.vecs = vecs.astype(np.float32)
+            # Memory-mapped: the vectors stay in the page cache instead of a private copy per process.
+            vecs_all = np.load(vec_path, mmap_mode="r")
+            order = [pos[c["id"]] for c in self.chunks]
+            vecs = vecs_all if order == list(range(len(order))) and vecs_all.shape[0] == len(order) \
+                else np.ascontiguousarray(vecs_all[order])
+        self.vecs = vecs if vecs.dtype == np.float32 else vecs.astype(np.float32)
         self.embedder = emb
         self.mode = "hybrid"
+        self.index_state = "ok"
+
+    def warm(self) -> None:
+        """One embed() at startup so the first user query does not pay the ONNX session warm-up."""
+        if self.embedder is not None:
+            try:
+                self.embedder.embed(["warm up"])
+            except Exception as e:  # pragma: no cover
+                log.warning("embedding warm-up failed: %s", type(e).__name__)
 
     # ------------------------------------------------------------------
     def search(self, query: str, entity_ids: list[str] | None = None, top_k: int = TOP_K,
-               filter_fn=None) -> list[Hit]:
+               filter_fn=None, demote_index: bool = False) -> list[Hit]:
         if not self.chunks:
             return []
         qtok = expand_query(tokenize(query))
@@ -166,6 +252,8 @@ class Retriever:
             for i, c in enumerate(self.chunks):
                 if allowed[i] and c.get("entity_id") in ents:
                     fused[i] += 1.0 / RRF_K
+        if demote_index:  # explanation wanted: content pages before sitemaps / result lists
+            fused[self._demote] *= DEMOTE_FACTOR
         cand = [i for i in np.argsort(-fused) if fused[i] > 0][:top_k]
         return [Hit(self.chunks[i], float(fused[i]), float(bm[i]), float(cos[i]) if cos is not None else None)
                 for i in cand]

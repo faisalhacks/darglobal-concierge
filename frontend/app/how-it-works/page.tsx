@@ -32,8 +32,8 @@ function Diagram() {
           .d-box{fill:var(--surface-2);stroke:var(--border)}
           .d-box--accent{stroke:var(--gold)}
           .d-title{fill:var(--text);font:600 14px var(--sans)}
-          .d-sub{fill:var(--text-muted);font:400 12px var(--sans)}
-          .d-lane{fill:var(--text-muted);font:500 12px var(--sans)}
+          .d-sub{fill:var(--text-muted);font:400 13px var(--sans)}
+          .d-lane{fill:var(--text-muted);font:500 13px var(--sans)}
           .d-line{fill:none;stroke:var(--text-muted);stroke-width:1.2}
           .d-sep{stroke:var(--border);stroke-dasharray:4 4}
           .d-arrow{fill:var(--text-muted)}
@@ -76,23 +76,84 @@ function Diagram() {
   );
 }
 
-export default function HowItWorks() {
-  const { meta, lang } = useApp();
-  const comp = meta ? Object.entries(meta.completeness ?? {}) : [];
+const FIELD: Record<string, string> = {
+  name_en: "English name", name_ar: "Arabic name", city: "City", country: "Country", source_url: "Source page",
+  price_from_amount: "Starting price", price_amount: "Price", status: "Status", handover_year: "Handover year",
+  lat: "Map position", lng: "Map position", description_en: "English description", description_ar: "Arabic description",
+  image_urls: "Photos", area_m2: "Area", beds: "Bedrooms", baths: "Bathrooms", district: "District",
+  property_types: "Property types", unit_types: "Unit types", amenities: "Amenities", developer: "Developer",
+  brand_partner: "Brand partner", title: "Title", listing_type: "Sale or rent", project_ref: "Linked project",
+};
+const GROUP: Record<string, string> = { projects: "Projects", listings: "Listings", pages: "Pages" };
+const POOL_STATE: Record<string, string> = { healthy: "answering", cooling: "paused after a rate limit", removed: "removed for today" };
+const LLM_STATE: Record<string, string> = {
+  ok: "A model is answering.",
+  quota: "Today's free request quota is used up; answers are assembled from the dataset until it resets.",
+  cooling: "The free models are paused after a rate limit; answers are assembled from the dataset meanwhile.",
+  off: "No model is connected; every answer is assembled from the dataset.",
+  maintenance: "Maintenance mode; every answer is assembled from the dataset.",
+};
+
+function Completeness({ comp }: { comp: [string, number][] }) {
+  const groups = new Map<string, { field: string; r: number }[]>();
+  for (const [k, r] of comp) {
+    const [g, f] = k.includes(".") ? k.split(".", 2) : ["", k];
+    const name = FIELD[f] ?? f.replace(/_/g, " ");
+    const list = groups.get(g) ?? [];
+    if (!list.some((x) => x.field === name)) list.push({ field: name, r });
+    groups.set(g, list);
+  }
   return (
-    <PageShell>
+    <div className="split">
+      {[...groups.entries()].map(([g, rows]) => (
+        <div key={g || "all"}>
+          {g && <h3>{GROUP[g] ?? g}</h3>}
+          <table className="data-table data-table--plain">
+            <thead><tr><th>Field</th><th className="num">Published on the page</th></tr></thead>
+            <tbody>
+              {rows.map(({ field, r }) => (
+                <tr key={field}><td>{field}</td><td className="num">{Math.round(r * 100)}%</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default function HowItWorks() {
+  const { meta, lang, llmState } = useApp();
+  const comp = meta ? (Object.entries(meta.completeness ?? {}).filter(([, v]) => typeof v === "number") as [string, number][]) : [];
+  const dg = meta?.coverage?.DarGlobal ?? (meta?.counts_by_site?.DarGlobal ? { projects: meta.counts_by_site.DarGlobal.projects, detail_pages: 0, prices_published: false } : undefined);
+  const ws = meta?.coverage?.Wasalt ?? meta?.counts_by_site?.Wasalt;
+  const hasDg = (dg?.projects ?? 0) > 0;
+  const pool = meta?.llm?.pool ?? [];
+  const budget = meta?.llm?.budget;
+  return (
+    <PageShell englishOnly>
       <div lang="en" dir="ltr">
         <h1>How the concierge answers</h1>
         <p className="lede">
-          It reads only what is published on the public sites, decides in code what kind of question it is, and lets a free language
-          model write the sentences. Everything else on screen is assembled from the dataset.
+          It reads only what is published on the public sites and decides in code what kind of question it is. Most answers are
+          assembled in code from the dataset; a free language model writes the sentences only for open questions.
         </p>
 
         <section>
           <h2>Known limits</h2>
           <ul>
-            <li><strong>No DarGlobal data.</strong> darglobal.co.uk answers automated clients with a challenge page, so its project pages could not be collected. The dataset holds Wasalt projects, listings and guides only, and DarGlobal questions get a &ldquo;no verified information&rdquo; answer.</li>
-            <li><strong>No model on this deployment yet.</strong> Without an OpenRouter key every answer is built in code: a template or a quoted passage, plus cards and sources. The output checks below are unit tested; they have not yet run against real model output.</li>
+            {hasDg ? (
+              <li>
+                <strong>DarGlobal pages were collected by hand.</strong> darglobal.co.uk answers automated clients with a challenge page,
+                so the pages were opened in an ordinary browser at a human pace and saved one at a time. The dataset holds
+                {" "}{fmtNumber(dg?.projects ?? 0, "en")} DarGlobal projects: {fmtNumber(dg?.detail_pages ?? 0, "en")} with a full project page, and the
+                rest known only by name and location from the projects page. DarGlobal publishes no prices, so every DarGlobal
+                card says &ldquo;Price on request&rdquo;.
+              </li>
+            ) : (
+              <li><strong>No DarGlobal data yet.</strong> darglobal.co.uk answers automated clients with a challenge page, so no DarGlobal project page is in this dataset, and DarGlobal questions get a &ldquo;no verified information&rdquo; answer.</li>
+            )}
+            <li><strong>A small free model budget.</strong> The free model account allows about 50 requests a day in total. Most answers are therefore assembled in code from the dataset (a template or a quoted passage, plus cards and sources), and common questions are answered from a cache built in advance.</li>
             <li><strong>Rent periods.</strong> Wasalt listing pages do not state whether a rent is per month or per year, so rent prices are shown with &ldquo;period not published&rdquo;.</li>
           </ul>
         </section>
@@ -108,9 +169,9 @@ export default function HowItWorks() {
             <li><div><strong>Screen.</strong> The message is trimmed, capped at 1,000 characters, normalised (full-width forms, hidden characters, spaced-out letters, leetspeak) and checked for injection patterns in English, Arabic and transliteration. Earlier turns of the conversation go through the same screen. A clear attempt gets a fixed reply and never reaches a model. The pattern list is a tripwire; the structural checks below are what hold when a paraphrase slips past it.</div></li>
             <li><div><strong>Existence check.</strong> If the question names a project or a place that is not in the data, the answer says so and attaches no cards or sources, instead of showing nearby real projects that would read as confirmation.</div></li>
             <li><div><strong>Plan.</strong> A code planner names the intent (a project, a city, a comparison, a calculation, contact, out of scope) and pulls out entities such as city, budget and bedrooms.</div></li>
-            <li><div><strong>Fetch.</strong> Clear intents call a read-only tool directly. Only ambiguous ones let the model pick a tool, at most once.</div></li>
+            <li><div><strong>Fetch.</strong> Clear intents call a read-only tool directly. On this deployment the planner also decides the ambiguous ones, so a message never spends a model call on choosing a tool.</div></li>
             <li><div><strong>Retrieve.</strong> BM25 and multilingual embeddings each rank the passages and reciprocal rank fusion merges them. Measured honestly (experiment E1): on exact project-name lookups BM25 alone did better than the fusion (Arabic hit@1 0.94 vs 0.67, English 1.00 vs 0.92), and city queries scored near zero precision for every method. Those queries were the project names themselves, so E1 shows lexical lookup works; it does not yet show that paraphrases land.</div></li>
-            <li><div><strong>Write.</strong> One model call drafts the prose from the retrieved passages, which are marked as untrusted text. Two calls at most per message.</div></li>
+            <li><div><strong>Write.</strong> One model call drafts the prose from the retrieved passages, which are marked as untrusted text: one call per message at most, and none when a cached answer for the same question and dataset version exists.</div></li>
             <li><div><strong>Check.</strong> Every price in the prose must appear in the retrieved context; otherwise it becomes &ldquo;not published&rdquo;. URLs and system-prompt fragments are removed.</div></li>
             <li><div><strong>Assemble.</strong> Cards, comparison tables, calculations, sources and the date of the data are built in code and streamed after the prose.</div></li>
           </ol>
@@ -124,24 +185,38 @@ export default function HowItWorks() {
             <dt>Path</dt><dd>Answered in code, model chose a tool, or fixed template.</dd>
             <dt>Tool</dt><dd>The read-only tool that was called, if any.</dd>
             <dt>Retrieved passages</dt><dd>The passage IDs and their fused scores, highest first.</dd>
-            <dt>Model and calls</dt><dd>Which free model wrote the prose, and how many calls it took (0, 1 or 2).</dd>
+            <dt>Model and calls</dt><dd>Which free model wrote the prose, and how many calls it took (0 or 1 on this deployment).</dd>
             <dt>Time and cache</dt><dd>End-to-end time on the server, and whether a cached answer was reused.</dd>
-            <dt>Degraded</dt><dd>Shown when no model was available and the answer was assembled from the dataset alone.</dd>
+            <dt>No model used</dt><dd>When the answer was assembled from the dataset alone, the Model line says why: the daily quota, a rate limit, a timeout or maintenance.</dd>
           </dl>
         </section>
 
         <section>
           <h2>Model chain</h2>
-          <p>Only free models on OpenRouter are used. If the first does not answer in time, the next is tried; if none answers, a fixed template is sent with the same sources and cards.</p>
-          {meta?.models?.length ? (
-            <ol className="steps">
-              {meta.models.map((m) => <li key={m}><div><code>{m}</code></div></li>)}
-              <li><div>Fixed template with sources and cards</div></li>
-            </ol>
-          ) : (
-            <p className="muted">{meta ? "No model is configured on this deployment, so every answer uses the template path." : "Model details load from the server."}</p>
-          )}
-          {meta && <p className="muted">Language model available now: {meta.llm_available ? "yes" : "no"}.</p>}
+          <p>Only free models on OpenRouter are used. If the first does not answer in time, the next is tried; if none answers, the answer is assembled from the dataset with the same sources and cards.</p>
+          {meta ? (
+            <>
+              <p>{LLM_STATE[llmState ?? "off"]}{budget && budget.cap > 0 ? ` ${fmtNumber(budget.used, "en")} of today's ${fmtNumber(budget.cap, "en")} model requests are used.` : ""}</p>
+              {pool.length > 0 ? (
+                <div className="table-wrap">
+                  <table className="data-table">
+                    <thead><tr><th>Order</th><th>Model</th><th>State now</th></tr></thead>
+                    <tbody>
+                      {pool.map((m, i) => (
+                        <tr key={m.model}><td className="num">{i + 1}</td><td dir="ltr">{m.model}</td><td>{POOL_STATE[m.state] ?? m.state}</td></tr>
+                      ))}
+                      <tr><td className="num">{pool.length + 1}</td><td>Answer assembled from the dataset</td><td>always available</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              ) : meta.models?.length ? (
+                <ol className="plain-list">
+                  {meta.models.map((m) => <li key={m} dir="ltr">{m}</li>)}
+                  <li>Answer assembled from the dataset</li>
+                </ol>
+              ) : null}
+            </>
+          ) : <p className="muted">Model details load from the server.</p>}
         </section>
 
         <section>
@@ -161,29 +236,17 @@ export default function HowItWorks() {
           {meta ? (
             <>
               <dl className="deflist">
-                <dt>Dataset</dt><dd><code>{meta.dataset_version}</code>, collected {fmtDate(meta.data_as_of, lang === "ar" ? "en" : lang)}</dd>
-                <dt>Projects</dt><dd>{fmtNumber(meta.counts.projects, "en")}</dd>
-                <dt>Listings</dt><dd>{fmtNumber(meta.counts.listings, "en")}</dd>
-                <dt>Pages</dt><dd>{fmtNumber(meta.counts.pages, "en")}</dd>
-                <dt>Passages</dt><dd>{fmtNumber(meta.counts.chunks, "en")}</dd>
+                <dt>Collected</dt><dd>{fmtDate(meta.data_as_of, lang === "ar" ? "en" : lang)}</dd>
+                <dt>Dataset version</dt><dd dir="ltr">{meta.dataset_version}</dd>
+                <dt>DarGlobal</dt><dd>{hasDg ? `${fmtNumber(dg?.projects ?? 0, "en")} projects, ${fmtNumber(dg?.detail_pages ?? 0, "en")} with a full project page; no prices published` : "No project pages collected"}</dd>
+                <dt>Wasalt</dt><dd>{fmtNumber(ws?.projects ?? 0, "en")} projects and {fmtNumber((ws as { listings?: number } | undefined)?.listings ?? 0, "en")} listings</dd>
+                <dt>Pages and passages</dt><dd>{fmtNumber(meta.counts.pages, "en")} pages, split into {fmtNumber(meta.counts.chunks, "en")} searchable passages</dd>
               </dl>
               {comp.length > 0 && (
                 <>
-                  <h3>Field completeness</h3>
-                  <p className="muted">Share of records where the field is published on the source page. Gaps are shown as &ldquo;Not published&rdquo;, never filled in.</p>
-                  <div className="table-wrap">
-                    <table className="data-table">
-                      <thead><tr><th>Field</th><th className="num">Published</th></tr></thead>
-                      <tbody>
-                        {comp.map(([f, r]) => (
-                          <tr key={f}>
-                            <td><code>{f}</code></td>
-                            <td className="num"><span className="meter" style={{ ["--w" as string]: `${Math.round(r * 100)}%` }} aria-hidden="true" />{Math.round(r * 100)}%</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                  <h3>How complete each field is</h3>
+                  <p className="muted">Share of records where the source page publishes the field. Gaps are shown as &ldquo;Not published&rdquo;, never filled in.</p>
+                  <Completeness comp={comp} />
                 </>
               )}
             </>

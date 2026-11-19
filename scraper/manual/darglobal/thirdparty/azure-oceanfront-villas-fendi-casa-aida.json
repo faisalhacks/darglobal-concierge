@@ -1,0 +1,81 @@
+{
+  "slug": "azure-oceanfront-villas-fendi-casa-aida",
+  "name": "Azure Oceanfront Villas, Interiors by Fendi Casa (AIDA)",
+  "facts": [
+    {
+      "field": "name",
+      "value": "Azure Oceanfront Villas, Interiors by Fendi Casa",
+      "source_url": "https://www.zawya.com/en/business/real-estate/dar-global-teams-up-with-fendi-for-top-oman-oceanfront-living-project-ekfyfjsn",
+      "source_title": "Dar Global teams up with Fendi for top Oman oceanfront living project (Zawya)",
+      "source_date": "undated on page",
+      "source_type": "press",
+      "note": "Source does not use the term 'DarGlobal Mansions'; mapping to that name is unconfirmed"
+    },
+    {
+      "field": "location",
+      "value": "AIDA clifftop community in Muscat, Oman",
+      "source_url": "https://www.aap.com.au/aapreleases/cision20260629ae94224/",
+      "source_title": "Dar Global and Fendi Casa announce Azure Oceanfront Villas in Oman (PR Newswire via AAP)",
+      "source_date": "2026-06-30",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "country",
+      "value": "Oman",
+      "source_url": "https://www.aap.com.au/aapreleases/cision20260629ae94224/",
+      "source_title": "Dar Global and Fendi Casa announce Azure Oceanfront Villas in Oman (PR Newswire via AAP)",
+      "source_date": "2026-06-30",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "brand_partner",
+      "value": "Fendi Casa (interiors)",
+      "source_url": "https://www.aap.com.au/aapreleases/cision20260629ae94224/",
+      "source_title": "Dar Global and Fendi Casa announce Azure Oceanfront Villas in Oman (PR Newswire via AAP)",
+      "source_date": "2026-06-30",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "units",
+      "value": "19 mansions with direct beach access",
+      "source_url": "https://www.aap.com.au/aapreleases/cision20260629ae94224/",
+      "source_title": "Dar Global and Fendi Casa announce Azure Oceanfront Villas in Oman (PR Newswire via AAP)",
+      "source_date": "2026-06-30",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "units",
+      "value": "19 mansions with direct beach access",
+      "source_url": "https://www.zawya.com/en/business/real-estate/dar-global-teams-up-with-fendi-for-top-oman-oceanfront-living-project-ekfyfjsn",
+      "source_title": "Dar Global teams up with Fendi for top Oman oceanfront living project (Zawya)",
+      "source_date": "undated on page",
+      "source_type": "press"
+    },
+    {
+      "field": "property_type",
+      "value": "villas / mansions",
+      "source_url": "https://www.zawya.com/en/business/real-estate/dar-global-teams-up-with-fendi-for-top-oman-oceanfront-living-project-ekfyfjsn",
+      "source_title": "Dar Global teams up with Fendi for top Oman oceanfront living project (Zawya)",
+      "source_date": "undated on page",
+      "source_type": "press"
+    },
+    {
+      "field": "amenities",
+      "value": "each villa includes private amenities such as an outdoor pool and a state-of-the-art gym",
+      "source_url": "https://www.aap.com.au/aapreleases/cision20260629ae94224/",
+      "source_title": "Dar Global and Fendi Casa announce Azure Oceanfront Villas in Oman (PR Newswire via AAP)",
+      "source_date": "2026-06-30",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "launch",
+      "value": "Launch announced (release dated 2026-06-30)",
+      "source_url": "https://www.aap.com.au/aapreleases/cision20260629ae94224/",
+      "source_title": "Dar Global and Fendi Casa announce Azure Oceanfront Villas in Oman (PR Newswire via AAP)",
+      "source_date": "2026-06-30",
+      "source_type": "press_release_wire"
+    }
+  ],
+  "method": "third-party public sources (darglobal.co.uk not fetched)",
+  "collected_at": "2026-11-19T10:18:49+00:00"
+}

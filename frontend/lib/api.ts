@@ -10,8 +10,9 @@ export async function getJSON<T>(path: string, signal?: AbortSignal): Promise<T>
 
 export const getMeta = (signal?: AbortSignal) => getJSON<ApiMeta>("/api/meta", signal);
 
-/** Only official domains become clickable links (SPEC §18). */
-const ALLOWED = ["darglobal.co.uk", "darglobal.com", "wasalt.sa", "wasalt.com"];
+/** Only official domains, plus the two named third-party sources the dataset cites (always labelled as such, never as
+ * DarGlobal), become clickable links (SPEC §18). */
+const ALLOWED = ["darglobal.co.uk", "darglobal.com", "wasalt.sa", "wasalt.com", "ticker.app", "thenationalnews.com"];
 export function safeUrl(url: string | null | undefined): string | null {
   if (!url) return null;
   try {

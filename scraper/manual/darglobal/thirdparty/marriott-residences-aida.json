@@ -1,0 +1,112 @@
+{
+  "slug": "marriott-residences-aida",
+  "name": "Marriott Residences Aida, Oman",
+  "facts": [
+    {
+      "field": "name",
+      "value": "Marriott Residences Aida",
+      "source_url": "https://www.hospitalitynet.org/announcement/41011332.html",
+      "source_title": "Marriott Residences Aida announcement (Hospitality Net)",
+      "source_date": "2024-07-24",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "location",
+      "value": "Aida masterplan community in Muscat, Oman; positioned along the shoreline",
+      "source_url": "https://gulfconstructiononline.com/Article/386902/Dar_Global_launches_$100m_Marriott_Residences_at_Aida",
+      "source_title": "Dar Global launches $100m Marriott Residences at Aida (Gulf Construction)",
+      "source_date": "2024-08-01",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "country",
+      "value": "Oman",
+      "source_url": "https://gulfconstructiononline.com/Article/386902/Dar_Global_launches_$100m_Marriott_Residences_at_Aida",
+      "source_title": "Dar Global launches $100m Marriott Residences at Aida (Gulf Construction)",
+      "source_date": "2024-08-01",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "brand_partner",
+      "value": "Marriott International (to be managed by Marriott International)",
+      "source_url": "https://gulfconstructiononline.com/Article/386902/Dar_Global_launches_$100m_Marriott_Residences_at_Aida",
+      "source_title": "Dar Global launches $100m Marriott Residences at Aida (Gulf Construction)",
+      "source_date": "2024-08-01",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "units",
+      "value": "224 units",
+      "source_url": "https://gulfconstructiononline.com/Article/386902/Dar_Global_launches_$100m_Marriott_Residences_at_Aida",
+      "source_title": "Dar Global launches $100m Marriott Residences at Aida (Gulf Construction)",
+      "source_date": "2024-08-01",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "units",
+      "value": "224 units",
+      "source_url": "https://gulfconstructiononline.com/Article/387509/aida-advances-with-landmark-assets",
+      "source_title": "AIDA advances with landmark assets (Gulf Construction)",
+      "source_date": "2025-06-01",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "unit_types",
+      "value": "one-, two-, and three-bedroom residences",
+      "source_url": "https://gulfconstructiononline.com/Article/386902/Dar_Global_launches_$100m_Marriott_Residences_at_Aida",
+      "source_title": "Dar Global launches $100m Marriott Residences at Aida (Gulf Construction)",
+      "source_date": "2024-08-01",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "unit_types",
+      "value": "1, 2, and 3-bedroom residences",
+      "source_url": "https://www.hospitalitynet.org/announcement/41011332.html",
+      "source_title": "Marriott Residences Aida announcement (Hospitality Net)",
+      "source_date": "2024-07-24",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "project_value",
+      "value": "$100 million",
+      "source_url": "https://gulfconstructiononline.com/Article/386902/Dar_Global_launches_$100m_Marriott_Residences_at_Aida",
+      "source_title": "Dar Global launches $100m Marriott Residences at Aida (Gulf Construction)",
+      "source_date": "2024-08-01",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "project_value",
+      "value": "US$100M; 'exclusive beachfront properties in Aida'",
+      "source_url": "https://www.prnewswire.com/ae/news-releases/dar-global-launches-over-us1-9-billion-in-global-luxury-real-estate-projects-in-2024--sets-sights-on-expansion-into-us-in-2025--302345950.html",
+      "source_title": "Dar Global launches over US$1.9 billion in global luxury real estate projects in 2024 (PR Newswire)",
+      "source_date": "2025-01-08",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "status",
+      "value": "Construction currently underway (as of 2024-07-24)",
+      "source_url": "https://www.hospitalitynet.org/announcement/41011332.html",
+      "source_title": "Marriott Residences Aida announcement (Hospitality Net)",
+      "source_date": "2024-07-24",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "completion",
+      "value": "Q4 2027",
+      "source_url": "https://gulfconstructiononline.com/Article/386902/Dar_Global_launches_$100m_Marriott_Residences_at_Aida",
+      "source_title": "Dar Global launches $100m Marriott Residences at Aida (Gulf Construction)",
+      "source_date": "2024-08-01",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "completion",
+      "value": "Q4 2027",
+      "source_url": "https://www.hospitalitynet.org/announcement/41011332.html",
+      "source_title": "Marriott Residences Aida announcement (Hospitality Net)",
+      "source_date": "2024-07-24",
+      "source_type": "trade_press"
+    }
+  ],
+  "method": "third-party public sources (darglobal.co.uk not fetched)",
+  "collected_at": "2026-11-19T10:18:49+00:00"
+}

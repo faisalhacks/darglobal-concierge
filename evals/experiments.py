@@ -96,7 +96,7 @@ def e1(args, db):
             notes.append(f"{method}: function not found, not measured")
             continue
         for qs, items in sets.items():
-            hit1 = hit6 = mrr = prec = n = 0
+            hit1 = hit3 = hit6 = mrr = prec = n = 0
             t0 = time.monotonic()
             for q, gold in items:
                 try:
@@ -113,6 +113,8 @@ def e1(args, db):
                 if qs.endswith("_name"):
                     if ents and ents[0] == gold:
                         hit1 += 1
+                    if gold in ents[:3]:
+                        hit3 += 1
                     if gold in ents:
                         hit6 += 1
                         mrr += 1 / (ents.index(gold) + 1)
@@ -121,7 +123,7 @@ def e1(args, db):
                     prec += (sum(1 for c in cs if c == gold) / len(cs)) if cs else 0
             if n:
                 table.setdefault(method, {})[qs] = (
-                    {"n": n, "hit@1": round(hit1 / n, 3), f"hit@{K}": round(hit6 / n, 3), "mrr": round(mrr / n, 3)}
+                    {"n": n, "hit@1": round(hit1 / n, 3), "recall@1": round(hit1 / n, 3), "recall@3": round(hit3 / n, 3), f"recall@{K}": round(hit6 / n, 3), f"hit@{K}": round(hit6 / n, 3), "mrr": round(mrr / n, 3)}
                     if qs.endswith("_name") else {"n": n, f"precision@{K}": round(prec / n, 3)}
                 ) | {"ms_per_query": round((time.monotonic() - t0) * 1000 / n, 1)}
     if not table:

@@ -43,8 +43,22 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" dir="ltr">
+    <html lang="en" dir="ltr" suppressHydrationWarning>
+      <head>
+        {/* Resolve the interface language before first paint. The page itself stays hidden (AppProvider, at most 1.5 s)
+            until the language and /api/meta are known, so nothing visibly shifts on load (CLS). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){var d=document.documentElement,l=null;try{var q=new URLSearchParams(location.search).get('lang');" +
+              "l=q==='ar'||q==='en'?q:localStorage.getItem('concierge.lang')}catch(e){}" +
+              "if(l!=='ar'&&l!=='en'){l=(navigator.language||'').toLowerCase().indexOf('ar')===0?'ar':'en'}" +
+              "d.lang=l;d.dir=l==='ar'?'rtl':'ltr'})();",
+          }}
+        />
+      </head>
       <body>
+        <noscript><style>{".app-root{visibility:visible!important}"}</style></noscript>
         <AppProvider>{children}</AppProvider>
       </body>
     </html>

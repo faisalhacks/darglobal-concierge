@@ -19,10 +19,14 @@ def assert_contract(d):
     assert set(m) == {"request_id", "lang", "intent", "dataset_version", "data_as_of"}
     assert m["lang"] in ("en", "ar") and m["dataset_version"] == "fixture-v1" and m["data_as_of"] == "2026-11-18"
     t = d["trace"][0]
-    assert set(t) == {"intent", "path", "tool", "retrieved", "llm_calls", "model", "latency_ms", "cache_hit", "degraded"}
+    assert set(t) == {"intent", "path", "tool", "retrieved", "llm_calls", "model", "fallback_hops", "latency_ms",
+                      "cache_hit", "degraded", "degraded_reason"}
+    assert t["degraded_reason"] in (None, "rate_limited", "quota", "timeout", "all_models_down", "maintenance", "no_model")
+    assert isinstance(t["fallback_hops"], int) and (t["degraded_reason"] is None) == (not t["degraded"])
+    assert "unavailable" not in d["_text"]  # no per-message apology sentence (contract C2)
     assert t["path"] in ("code", "llm_tool", "template") and t["llm_calls"] <= 2
     for s in d["sources"][0]:
-        assert set(s) == {"site", "title", "url", "scraped_at"} and s["site"] in ("DarGlobal", "Wasalt")
+        assert set(s) - {"brand"} == {"site", "title", "url", "scraped_at"} and s["site"] in ("DarGlobal", "Wasalt")
     for c in d["chips"][0]:
         assert set(c) == {"label", "message"}
     assert d["done"] == [{}]
@@ -91,7 +95,7 @@ def test_r6_arabic(client, ask):
 def test_r7_nonexistent(client, ask, q):
     d = ask(client, q)
     assert_contract(d)
-    assert "no verified information" in d["_text"]
+    assert "no verified information" in d["_text"] or "could not find anything called" in d["_text"]
     assert "cards" not in d
 
 
@@ -179,8 +183,9 @@ def test_no_key_is_degraded(make_client, ask):
     assert_contract(d)
     t = d["trace"][0]
     assert t["degraded"] and t["llm_calls"] == 0
-    # No key configured is permanent, not an outage: the copy must not claim the writer is "unavailable right now".
-    assert "without an AI writer" in d["_text"] and "unavailable" not in d["_text"] and "1,800,000 AED" in d["_text"]
+    # No apology sentence: the answer is the code-built facts; the state is in the trace (and /api/meta.llm).
+    assert t["degraded_reason"] == "no_model" and "1,800,000 AED" in d["_text"]
+    assert "unavailable" not in d["_text"] and "AI writer" not in d["_text"]
     assert d["cards"][0]["projects"] and d["sources"][0]
     d = ask(c, "How do Wasalt auctions work?")
     assert_contract(d)
@@ -200,7 +205,8 @@ def test_mock_429_always_degrades(make_client, ask):
     d = ask(c, "Tell me about Fixture Marina Tower")
     assert_contract(d)
     assert d["trace"][0]["llm_calls"] == 2 and d["trace"][0]["degraded"]
-    assert "AI writer is unavailable" in d["_text"] and d["cards"][0]["projects"]
+    assert d["trace"][0]["degraded_reason"] == "rate_limited" and d["cards"][0]["projects"]
+    assert "AI writer" not in d["_text"] and "1,800,000 AED" in d["_text"]
 
 
 def test_output_screen_on_llm(make_client, ask):

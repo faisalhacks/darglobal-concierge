@@ -1,35 +1,768 @@
 {
- "dataset_version": "20261119-a983bac1",
+ "dataset_version": "20261119-e5604e7e",
  "counts": {
-  "projects": 30,
+  "projects": 71,
   "listings": 1661,
-  "pages": 67,
-  "chunks": 2389,
+  "pages": 92,
+  "chunks": 2641,
   "projects_by_site": {
-   "DarGlobal": 0,
+   "DarGlobal": 41,
    "Wasalt": 30
   },
   "listings_by_type": {
    "buy": 1255,
    "rent": 406
+  },
+  "projects_detail_by_site": {
+   "DarGlobal": {
+    "page": 6,
+    "index": 32,
+    "thirdparty_only": 3,
+    "with_thirdparty_facts": 23,
+    "with_any_detail_facts": 29
+   }
+  },
+  "projects_by_site_country": {
+   "DarGlobal": {
+    "Oman": 15,
+    "Qatar": 2,
+    "Saudi Arabia": 10,
+    "Spain": 3,
+    "United Arab Emirates": 9,
+    "United Kingdom": 2
+   },
+   "Wasalt": {
+    "Saudi Arabia": 30
+   }
+  },
+  "pages_by_type": {
+   "about": 2,
+   "auctions": 1,
+   "city_guide": 47,
+   "contact": 2,
+   "guide": 8,
+   "guides_index": 1,
+   "home": 2,
+   "project_sources": 23,
+   "services": 1,
+   "sitemap_index": 1,
+   "terms": 4
   }
  },
  "mini_counts": {
-  "projects": 10,
+  "projects": 13,
   "listings": 10,
-  "pages": 10,
-  "chunks": 100,
+  "pages": 13,
+  "chunks": 133,
   "projects_by_site": {
-   "DarGlobal": 0,
+   "DarGlobal": 3,
    "Wasalt": 10
   },
   "listings_by_type": {
    "buy": 7,
    "rent": 3
+  },
+  "projects_detail_by_site": {
+   "DarGlobal": {
+    "page": 2,
+    "index": 1,
+    "thirdparty_only": 0,
+    "with_thirdparty_facts": 1,
+    "with_any_detail_facts": 3
+   }
+  },
+  "projects_by_site_country": {
+   "DarGlobal": {
+    "Oman": 1,
+    "Qatar": 1,
+    "United Arab Emirates": 1
+   },
+   "Wasalt": {
+    "Saudi Arabia": 10
+   }
+  },
+  "pages_by_type": {
+   "about": 2,
+   "auctions": 1,
+   "city_guide": 7,
+   "contact": 2,
+   "project_sources": 1
   }
  },
  "pii_hits": 0,
  "mini_pii_hits": 0,
+ "darglobal": {
+  "collection_method": "claude-in-chrome, user's own browser session, human pace",
+  "index_h3_names": 38,
+  "projects": 41,
+  "detail_slugs": [
+   "dg-da-vinci-tower-interiors-by-pagani",
+   "dg-les-vagues-by-elie-saab",
+   "dg-the-astera-interiors-by-aston-martin",
+   "dg-trump-international-hotel-and-tower-dubai",
+   "dg-urban-oasis-by-missoni",
+   "dg-w-residences"
+  ],
+  "oman_rows": 15,
+  "priced_rows": 0,
+  "chunks": 252,
+  "thirdparty_chunks": 101,
+  "projects_by_level": {
+   "page": [
+    "dg-da-vinci-tower-interiors-by-pagani",
+    "dg-les-vagues-by-elie-saab",
+    "dg-the-astera-interiors-by-aston-martin",
+    "dg-trump-international-hotel-and-tower-dubai",
+    "dg-urban-oasis-by-missoni",
+    "dg-w-residences"
+   ],
+   "index": [
+    "dg-7and8-albert-hall-mansions",
+    "dg-aida",
+    "dg-amaya",
+    "dg-amour-sans-detour",
+    "dg-amour-sans-detour-2",
+    "dg-azure-oceanfront-villas-interiors-by-fendi-casa",
+    "dg-coastal-investment-villas",
+    "dg-d-villas-at-jumeirah-golf-estates",
+    "dg-darglobal-mansions-interiors-by-fendi-casa",
+    "dg-dg1",
+    "dg-fairway-villas",
+    "dg-marea-interiors-by-missoni",
+    "dg-marriott-residences",
+    "dg-neptune-interiors-by-mouawad",
+    "dg-nickelodeon-hotels-and-resorts",
+    "dg-padel-living-residences",
+    "dg-painite-villas-design-inspired-by-automobili-lamborghini",
+    "dg-sunrise-haven",
+    "dg-the-great-escape",
+    "dg-the-great-escape-2",
+    "dg-the-mulliner",
+    "dg-the-pagani-penthouse",
+    "dg-tierra-viva-design-inspired-by-automobili-lamborghini",
+    "dg-top-of-the-astera",
+    "dg-trump-cliff-villas",
+    "dg-trump-executive-residences",
+    "dg-trump-golf-villas",
+    "dg-trump-international-hotel-oman",
+    "dg-trump-international-simaisma-qatar",
+    "dg-trump-mansions",
+    "dg-trump-park-residences",
+    "dg-trump-tower-jeddah"
+   ],
+   "thirdparty_only": [
+    "dg-rayana",
+    "dg-trump-plaza-jeddah",
+    "dg-trump-signature-villas"
+   ]
+  },
+  "projects_without_chunk": [],
+  "claim_word_chunks": 0,
+  "extract_files": [
+   "aida-trump-international-apartments.json",
+   "davinci-tower-by-pagani.json",
+   "les-vagues.json",
+   "marriott-residences-aida-oman.json",
+   "neptune.json",
+   "projects.json",
+   "the-astera.json",
+   "the-mulliner.json",
+   "trump-international-hotel-and-tower-dubai.json",
+   "trump-tower-jeddah.json",
+   "urban-oasis-by-missoni.json",
+   "w-residences.json"
+  ],
+  "index": [
+   {
+    "url": "https://darglobal.co.uk/projects",
+    "h3_names": 38,
+    "missing_in_text": [],
+    "location_filter_list": [
+     "United Arab Emirates",
+     "Spain",
+     "Qatar",
+     "Oman",
+     "United Kingdom",
+     "Saudi Arabia"
+    ],
+    "unresolved": [
+     {
+      "id": "dg-trump-mansions",
+      "name": "Trump Mansions",
+      "location_published": "Rayana, Wadi Safar, Riyadh"
+     }
+    ]
+   }
+  ],
+  "detail": [
+   {
+    "url": "https://darglobal.co.uk/davinci-tower-by-pagani",
+    "excluded_sections": [
+     "WHY INVEST: WHY INVEST (investment / yield / capital-growth claims)",
+     "OTHER PROJECTS: OTHER PROJECTS (cross-sell cards for other projects)",
+     "REGISTER YOUR INTEREST: REGISTER YOUR INTEREST (lead form boilerplate)"
+    ],
+    "faq_excluded": [
+     "Can international buyers obtain UAE residency by purchasing here?"
+    ],
+    "claim_sentences_dropped": 0,
+    "text_repairs": 0,
+    "area_note": "used text sqm",
+    "image_rule": "JSON-LD images of the page",
+    "matched_index_row": "dg-da-vinci-tower-interiors-by-pagani",
+    "id": "dg-da-vinci-tower-interiors-by-pagani"
+   },
+   {
+    "url": "https://darglobal.co.uk/les-vagues",
+    "excluded_sections": [
+     "WHY INVEST: WHY INVEST (investment / yield / capital-growth claims)",
+     "REGISTER YOUR INTEREST: REGISTER YOUR INTEREST (lead form boilerplate)"
+    ],
+    "faq_excluded": [
+     "Why invest in Qatar real estate?",
+     "Is Les Vagues by Elie Saab a good investment?",
+     "How do I register interest or buy at Les Vagues by Elie Saab?"
+    ],
+    "claim_sentences_dropped": 0,
+    "text_repairs": 0,
+    "area_note": "text states '86 to 389 sqm', used label Area (SQM) (84-383 m2)",
+    "image_rule": "JSON-LD images of the page",
+    "matched_index_row": "dg-les-vagues-by-elie-saab",
+    "id": "dg-les-vagues-by-elie-saab"
+   },
+   {
+    "url": "https://darglobal.co.uk/the-astera",
+    "excluded_sections": [
+     "WHY INVEST: WHY INVEST (investment / yield / capital-growth claims)",
+     "OTHER PROJECTS: OTHER PROJECTS (cross-sell cards for other projects)",
+     "REGISTER YOUR INTEREST: REGISTER YOUR INTEREST (lead form boilerplate)"
+    ],
+    "faq_excluded": [
+     "Is The Astera a good investment in Ras Al Khaimah?",
+     "What is the UAE Golden Visa benefit for buyers at The Astera?",
+     "How does the Wynn Resort affect Al Marjan Island property values?",
+     "How do I register interest or buy at The Astera?"
+    ],
+    "claim_sentences_dropped": 0,
+    "text_repairs": 0,
+    "area_note": "used text sqm",
+    "image_rule": "JSON-LD images of the page",
+    "matched_index_row": "dg-the-astera-interiors-by-aston-martin",
+    "id": "dg-the-astera-interiors-by-aston-martin"
+   },
+   {
+    "url": "https://darglobal.co.uk/trump-international-hotel-and-tower-dubai",
+    "excluded_sections": [
+     "REGISTER YOUR INTEREST: REGISTER YOUR INTEREST (lead form boilerplate)",
+     "We value our privacy: cookie banner"
+    ],
+    "faq_excluded": [
+     "Is Trump International Hotel & Tower Dubai a good investment?",
+     "How do I register interest or enquire about buying at Trump International Hotel & Tower Dubai?"
+    ],
+    "claim_sentences_dropped": 0,
+    "text_repairs": 0,
+    "area_note": "used text sqm",
+    "image_rule": "JSON-LD images of the page",
+    "matched_index_row": "dg-trump-international-hotel-and-tower-dubai",
+    "id": "dg-trump-international-hotel-and-tower-dubai"
+   },
+   {
+    "url": "https://darglobal.co.uk/urban-oasis-by-missoni",
+    "excluded_sections": [
+     "WHY INVEST: WHY INVEST (investment / yield / capital-growth claims)",
+     "OTHER PROJECTS: OTHER PROJECTS (cross-sell cards for other projects)",
+     "REGISTER YOUR INTEREST: REGISTER YOUR INTEREST (lead form boilerplate)"
+    ],
+    "faq_excluded": [
+     "What was the investment case for Urban Oasis by Missoni?"
+    ],
+    "claim_sentences_dropped": 0,
+    "text_repairs": 0,
+    "area_note": "used label Area (SQFT) x 0.092903",
+    "image_rule": "JSON-LD images of the page",
+    "matched_index_row": "dg-urban-oasis-by-missoni",
+    "id": "dg-urban-oasis-by-missoni"
+   },
+   {
+    "url": "https://darglobal.co.uk/w-residences",
+    "excluded_sections": [
+     "WHY INVEST: WHY INVEST (investment / yield / capital-growth claims)",
+     "OTHER PROJECTS: OTHER PROJECTS (cross-sell cards for other projects)",
+     "REGISTER YOUR INTEREST: REGISTER YOUR INTEREST (lead form boilerplate)"
+    ],
+    "faq_excluded": [
+     "What are the investment advantages of Dubai real estate?"
+    ],
+    "claim_sentences_dropped": 0,
+    "text_repairs": 0,
+    "area_note": "used label Area (SQFT) x 0.092903",
+    "image_rule": "JSON-LD images of the page",
+    "matched_index_row": "dg-w-residences",
+    "id": "dg-w-residences"
+   }
+  ],
+  "skipped": [
+   {
+    "file": "aida-trump-international-apartments.json",
+    "reason": "not a project detail page (no H1 + fact labels); not ingested"
+   },
+   {
+    "file": "marriott-residences-aida-oman.json",
+    "reason": "not a project detail page (no H1 + fact labels); not ingested"
+   },
+   {
+    "file": "neptune.json",
+    "reason": "not a project detail page (no H1 + fact labels); not ingested"
+   },
+   {
+    "file": "the-mulliner.json",
+    "reason": "not a project detail page (no H1 + fact labels); not ingested"
+   },
+   {
+    "file": "trump-tower-jeddah.json",
+    "reason": "not a project detail page (no H1 + fact labels); not ingested"
+   }
+  ],
+  "darglobal_unresolved": [
+   {
+    "id": "dg-trump-mansions",
+    "name": "Trump Mansions",
+    "location_published": "Rayana, Wadi Safar, Riyadh"
+   }
+  ],
+  "thirdparty": {
+   "files": [
+    "aida.json",
+    "albert-hall-mansion.json",
+    "azure-oceanfront-villas-fendi-casa-aida.json",
+    "d-villas-jge.json",
+    "fairway-villas-aida.json",
+    "la-collina.json",
+    "marea.json",
+    "marriott-residences-aida.json",
+    "neptune.json",
+    "rayana-wadi-safar.json",
+    "sunrise-haven-aida.json",
+    "the-great-escape-aida.json",
+    "the-mulliner.json",
+    "tierra-viva.json",
+    "trump-golf-villas-aida.json",
+    "trump-international-golf-club-qatar.json",
+    "trump-international-oman.json",
+    "trump-plaza-jeddah.json",
+    "trump-signature-villas-aida.json",
+    "trump-tower-jeddah.json"
+   ],
+   "skipped_empty": [
+    "fairway-villas-aida.json",
+    "la-collina.json",
+    "sunrise-haven-aida.json"
+   ],
+   "matches": [
+    {
+     "file": "aida.json",
+     "id": "dg-aida",
+     "how": "reviewed",
+     "fuzzy_suggestion": "dg-aida",
+     "fuzzy_score": 1.0
+    },
+    {
+     "file": "albert-hall-mansion.json",
+     "id": "dg-7and8-albert-hall-mansions",
+     "how": "reviewed",
+     "fuzzy_suggestion": null,
+     "fuzzy_score": 0.5
+    },
+    {
+     "file": "azure-oceanfront-villas-fendi-casa-aida.json",
+     "id": "dg-azure-oceanfront-villas-interiors-by-fendi-casa",
+     "how": "reviewed",
+     "fuzzy_suggestion": "dg-azure-oceanfront-villas-interiors-by-fendi-casa",
+     "fuzzy_score": 1.0
+    },
+    {
+     "file": "d-villas-jge.json",
+     "id": "dg-d-villas-at-jumeirah-golf-estates",
+     "how": "reviewed",
+     "fuzzy_suggestion": "dg-d-villas-at-jumeirah-golf-estates",
+     "fuzzy_score": 1.0
+    },
+    {
+     "file": "marea.json",
+     "id": "dg-marea-interiors-by-missoni",
+     "how": "reviewed",
+     "fuzzy_suggestion": "dg-marea-interiors-by-missoni",
+     "fuzzy_score": 1.0
+    },
+    {
+     "file": "marriott-residences-aida.json",
+     "id": "dg-marriott-residences",
+     "how": "reviewed",
+     "fuzzy_suggestion": null,
+     "fuzzy_score": 0.67
+    },
+    {
+     "file": "neptune.json",
+     "id": "dg-neptune-interiors-by-mouawad",
+     "how": "reviewed",
+     "fuzzy_suggestion": "dg-neptune-interiors-by-mouawad",
+     "fuzzy_score": 1.0
+    },
+    {
+     "file": "rayana-wadi-safar.json",
+     "id": "dg-rayana",
+     "how": "new row",
+     "fuzzy_suggestion": null,
+     "fuzzy_score": 0.0
+    },
+    {
+     "file": "the-great-escape-aida.json",
+     "id": "dg-the-great-escape",
+     "how": "reviewed",
+     "fuzzy_suggestion": "dg-the-great-escape",
+     "fuzzy_score": 1.0
+    },
+    {
+     "file": "the-mulliner.json",
+     "id": "dg-the-mulliner",
+     "how": "reviewed",
+     "fuzzy_suggestion": "dg-the-mulliner",
+     "fuzzy_score": 1.0
+    },
+    {
+     "file": "tierra-viva.json",
+     "id": "dg-tierra-viva-design-inspired-by-automobili-lamborghini",
+     "how": "reviewed",
+     "fuzzy_suggestion": "dg-tierra-viva-design-inspired-by-automobili-lamborghini",
+     "fuzzy_score": 1.0
+    },
+    {
+     "file": "trump-golf-villas-aida.json",
+     "id": "dg-trump-golf-villas",
+     "how": "reviewed",
+     "fuzzy_suggestion": "dg-trump-golf-villas",
+     "fuzzy_score": 1.0
+    },
+    {
+     "file": "trump-international-golf-club-qatar.json",
+     "id": "dg-trump-international-simaisma-qatar",
+     "how": "reviewed",
+     "fuzzy_suggestion": null,
+     "fuzzy_score": 0.5
+    },
+    {
+     "file": "trump-international-oman.json",
+     "id": "dg-trump-international-hotel-oman",
+     "how": "reviewed",
+     "fuzzy_suggestion": null,
+     "fuzzy_score": 0.75
+    },
+    {
+     "file": "trump-plaza-jeddah.json",
+     "id": "dg-trump-plaza-jeddah",
+     "how": "new row",
+     "fuzzy_suggestion": null,
+     "fuzzy_score": 0.5
+    },
+    {
+     "file": "trump-signature-villas-aida.json",
+     "id": "dg-trump-signature-villas",
+     "how": "new row",
+     "fuzzy_suggestion": null,
+     "fuzzy_score": 0.5
+    },
+    {
+     "file": "trump-tower-jeddah.json",
+     "id": "dg-trump-tower-jeddah",
+     "how": "reviewed",
+     "fuzzy_suggestion": "dg-trump-tower-jeddah",
+     "fuzzy_score": 1.0
+    }
+   ],
+   "new_rows": [
+    {
+     "id": "dg-rayana",
+     "file": "rayana-wadi-safar.json",
+     "name": "Rayana",
+     "city": "Riyadh",
+     "country": "Saudi Arabia",
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-trump-plaza-jeddah",
+     "file": "trump-plaza-jeddah.json",
+     "name": "Trump Plaza Jeddah",
+     "city": "Jeddah",
+     "country": "Saudi Arabia",
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-trump-signature-villas",
+     "file": "trump-signature-villas-aida.json",
+     "name": "Trump Signature Villas",
+     "city": "Muscat",
+     "country": "Oman",
+     "source_url": "https://thenationalnews.com/business/property/2024/03/05/dar-global-reveals-trump-villas-design-for-muscat-resort-and-golf-course"
+    }
+   ],
+   "cross_attached": [
+    {
+     "from": "rayana-wadi-safar.json",
+     "field": "location",
+     "to": "dg-trump-mansions"
+    },
+    {
+     "from": "rayana-wadi-safar.json",
+     "field": "country",
+     "to": "dg-trump-mansions"
+    },
+    {
+     "from": "rayana-wadi-safar.json",
+     "field": "property_type",
+     "to": "dg-trump-mansions"
+    },
+    {
+     "from": "the-great-escape-aida.json",
+     "field": "related_phase",
+     "to": "dg-the-great-escape-2"
+    },
+    {
+     "from": "trump-international-oman.json",
+     "field": "component_listing",
+     "to": "dg-trump-cliff-villas"
+    },
+    {
+     "from": "trump-plaza-jeddah.json",
+     "field": "master_development",
+     "to": "dg-amaya"
+    },
+    {
+     "from": "trump-plaza-jeddah.json",
+     "field": "unit_types",
+     "to": "dg-trump-executive-residences"
+    },
+    {
+     "from": "trump-plaza-jeddah.json",
+     "field": "unit_types",
+     "to": "dg-trump-park-residences"
+    }
+   ],
+   "excluded_facts": [
+    {
+     "file": "aida.json",
+     "field": "site_area",
+     "value": "3.5 million square kilometre",
+     "source_url": "https://www.omanobserver.om/ampArticle/1134522",
+     "reason": "curator note: misprint, do not use"
+    },
+    {
+     "file": "the-mulliner.json",
+     "field": "marketed_price",
+     "value": "marketed at £25mln (as reported in release; page undated)",
+     "source_url": "https://www.zawya.com/en/press-release/companies-news/dar-global-completes-sale-of-historic-149-old-park-lane-marketed-at-25mln-u1dl99j0",
+     "reason": "price figure (only the two Trump Tower Jeddah press figures are kept)"
+    },
+    {
+     "file": "the-mulliner.json",
+     "field": "sale_price",
+     "value": "£26.25 million (as reported on 2025-01-07)",
+     "source_url": "https://londonlovesproperty.com/mayfair-rolls-royce-hq-pad-sold-for-26-25-million-to-young-international-buyer",
+     "reason": "price figure (only the two Trump Tower Jeddah press figures are kept)"
+    }
+   ],
+   "structured_updates": [
+    {
+     "id": "dg-7and8-albert-hall-mansions",
+     "column": "property_types",
+     "value": [
+      "penthouse"
+     ],
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-7and8-albert-hall-mansions",
+     "column": "status",
+     "value": "Under construction",
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-7and8-albert-hall-mansions",
+     "column": "handover_year",
+     "value": 2027,
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-aida",
+     "column": "status",
+     "value": "Under construction",
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-d-villas-at-jumeirah-golf-estates",
+     "column": "status",
+     "value": "Under construction; main construction contracts awarded",
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-d-villas-at-jumeirah-golf-estates",
+     "column": "handover_year",
+     "value": 2028,
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-marea-interiors-by-missoni",
+     "column": "status",
+     "value": "Under construction; main construction contract awarded for Blocks C and D",
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-marea-interiors-by-missoni",
+     "column": "handover_year",
+     "value": 2027,
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-neptune-interiors-by-mouawad",
+     "column": "status",
+     "value": "Under construction",
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-neptune-interiors-by-mouawad",
+     "column": "handover_year",
+     "value": 2027,
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-rayana",
+     "column": "status",
+     "value": "Under construction",
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-rayana",
+     "column": "handover_year",
+     "value": 2030,
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-the-great-escape",
+     "column": "status",
+     "value": "main construction contracts awarded for Great Escape Apartments",
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-the-mulliner",
+     "column": "status",
+     "value": "Completed",
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-tierra-viva-design-inspired-by-automobili-lamborghini",
+     "column": "status",
+     "value": "Under construction",
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-tierra-viva-design-inspired-by-automobili-lamborghini",
+     "column": "handover_year",
+     "value": 2028,
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-trump-plaza-jeddah",
+     "column": "status",
+     "value": "Under construction",
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-trump-plaza-jeddah",
+     "column": "handover_year",
+     "value": 2030,
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-trump-tower-jeddah",
+     "column": "status",
+     "value": "Under construction; main construction contract awarded",
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    },
+    {
+     "id": "dg-trump-tower-jeddah",
+     "column": "handover_year",
+     "value": 2029,
+     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+    }
+   ],
+   "corrections": [
+    {
+     "id": "dg-trump-mansions",
+     "column": "country",
+     "from": null,
+     "to": "Saudi Arabia",
+     "why": "DarGlobal publishes the location as 'Rayana, Wadi Safar, Riyadh' (no country token); third-party sources place Rayana in Wadi Safar, Diriyah, Riyadh, Saudi Arabia",
+     "source_url": "https://www.arabnews.pk/node/2628976"
+    }
+   ],
+   "redacted_titles": [
+    {
+     "source_url": "https://www.zawya.com/en/press-release/companies-news/dar-global-completes-sale-of-historic-149-old-park-lane-marketed-at-25mln-u1dl99j0",
+     "title_as_published": "Dar Global completes sale of historic 149 Old Park Lane marketed at £25mln (Zawya press release)",
+     "title_used": "Dar Global completes sale of historic 149 Old Park Lane [price figure omitted] (Zawya press release)"
+    },
+    {
+     "source_url": "https://londonlovesproperty.com/mayfair-rolls-royce-hq-pad-sold-for-26-25-million-to-young-international-buyer",
+     "title_as_published": "Mayfair Rolls Royce HQ pad sold for £26.25 million to young international buyer (London Loves Property)",
+     "title_used": "Mayfair Rolls Royce HQ pad [price figure omitted] to young international buyer (London Loves Property)"
+    }
+   ],
+   "sources_n": 34,
+   "projects_with_facts": [
+    "dg-7and8-albert-hall-mansions",
+    "dg-aida",
+    "dg-amaya",
+    "dg-azure-oceanfront-villas-interiors-by-fendi-casa",
+    "dg-d-villas-at-jumeirah-golf-estates",
+    "dg-marea-interiors-by-missoni",
+    "dg-marriott-residences",
+    "dg-neptune-interiors-by-mouawad",
+    "dg-rayana",
+    "dg-the-great-escape",
+    "dg-the-great-escape-2",
+    "dg-the-mulliner",
+    "dg-tierra-viva-design-inspired-by-automobili-lamborghini",
+    "dg-trump-cliff-villas",
+    "dg-trump-executive-residences",
+    "dg-trump-golf-villas",
+    "dg-trump-international-hotel-oman",
+    "dg-trump-international-simaisma-qatar",
+    "dg-trump-mansions",
+    "dg-trump-park-residences",
+    "dg-trump-plaza-jeddah",
+    "dg-trump-signature-villas",
+    "dg-trump-tower-jeddah"
+   ]
+  }
+ },
+ "darglobal_unresolved": [
+  {
+   "id": "dg-trump-mansions",
+   "name": "Trump Mansions",
+   "location_published": "Rayana, Wadi Safar, Riyadh",
+   "resolved_by_thirdparty": "country -> Saudi Arabia (https://www.arabnews.pk/node/2628976)"
+  }
+ ],
+ "chunk_headers": {
+  "chunks_total": 2641,
+  "chunks_needing_header": 737,
+  "with_header": 737,
+  "format": "{name_en} | {name_ar} | {city}, {country} | {site} | {section}: "
+ },
+ "contact_pages": [
+  "https://darglobal.co.uk/get-in-touch",
+  "https://wasalt.sa/en/corporate"
+ ],
  "srp_site_counts": {
   "https://wasalt.sa/en/apartments-for-rent-in-dammam": {
    "site_count": 658,

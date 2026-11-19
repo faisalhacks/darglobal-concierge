@@ -1,0 +1,16 @@
+{
+ "url": "https://darglobal.co.uk/neptune",
+ "title": "Neptune, Interiors by Mouawad | Branded Villas Riyadh",
+ "lang": "en",
+ "meta": {},
+ "headings": ["NEPTUNE, INTERIORS BY MOUAWAD", "RIYADH | SAUDI ARABIA", "A JEWEL IN THE CITY", "AMENITIES", "WHY INVEST", "PRIME LOCATION", "Frequently Asked Questions"],
+ "text": "NEPTUNE, INTERIORS BY MOUAWAD. RIYADH | SAUDI ARABIA. Neptune, Interiors by Mouawad is an exclusive collection of branded five-bedroom villas in the north of Riyadh, Saudi Arabia, developed by DarGlobal. Mouawad, the Swiss-Lebanese jewellery house, provided the interior design throughout each villa, ranging from 300 to 420 sqm built-up area. Located near the Expo 2030 site. PROPERTY TYPE: Branded Villas. STATUS: Under Development. UNIT TYPE: 5 Bedrooms. AREA (SQM): 300 - 448. LOCATION: Riyadh, KSA. AMENITIES (surrounding community): Schools; Community Centre; Sports Hub; Restaurants and Cafes; Public Parks; Entertainment Centres; Early Childhood Centres; Retail and Grocery; Playgrounds; Mosques; Health Care Clinics. PRIME LOCATION: Located in the northern part of Riyadh, moments away from Expo 2030. FAQ: What villa sizes are available? Five-bedroom villas with built-up areas ranging from 300 to 420 sqm; each includes a master bedroom with walk-in closet and en-suite, secondary bedrooms, a family kitchen, guest living area, and terrace. When will it be completed? The project is under development with completion scheduled for December 2027. DarGlobal is the master developer. Contact the sales team for current unit availability, pricing, and payment plan terms.",
+ "images": [],
+ "jsonld": "",
+ "next_data_present": false,
+ "facts_hint": ["Status: Under Development", "5 bedrooms", "Area (sqm): 300 - 448 (spec box) vs 300 to 420 sqm built-up (description and FAQ)", "Completion scheduled December 2027 (page FAQ)", "North Riyadh, near Expo 2030 site"],
+ "price_published": false,
+ "notes": "Page disagrees with itself on area (300-448 spec box vs 300-420 text); keep both. Marketing 'why invest' claims omitted from facts. Read with get_page_text; form/footer/phone omitted.",
+ "collected_at": "2026-11-19T11:40:00Z",
+ "method": "claude-in-chrome, user's own browser session, human pace"
+}

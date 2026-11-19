@@ -1,0 +1,104 @@
+{
+  "slug": "d-villas-jge",
+  "name": "D-Villas (DG Villas) at Jumeirah Golf Estates",
+  "facts": [
+    {
+      "field": "name",
+      "value": "D-Villas",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "name",
+      "value": "DG Villas",
+      "source_url": "https://meconstructionnews.com/62780/dar-global-launches-dg-villas-collection-at-jumeirah-golf-estates",
+      "source_title": "Dar Global launches DG Villas collection at Jumeirah Golf Estates (Middle East Construction News)",
+      "source_date": "2025-03-14",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "location",
+      "value": "Jumeirah Golf Estates, Dubai",
+      "source_url": "https://meconstructionnews.com/62780/dar-global-launches-dg-villas-collection-at-jumeirah-golf-estates",
+      "source_title": "Dar Global launches DG Villas collection at Jumeirah Golf Estates (Middle East Construction News)",
+      "source_date": "2025-03-14",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "country",
+      "value": "United Arab Emirates",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "unit_types",
+      "value": "4- and 5-bedroom villa floor plans",
+      "source_url": "https://www.zawya.com/en/press-release/companies-news/dar-global-crafts-an-exceptional-residential-experience-with-the-launch-of-exclusive-dg-villas-at-jumeirah-golf-estates-ca6tzg0a",
+      "source_title": "Dar Global crafts an exceptional residential experience with the launch of exclusive DG Villas at Jumeirah Golf Estates (Zawya press release)",
+      "source_date": "undated on page",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "unit_types",
+      "value": "Four- and five-bedroom villa floor plans",
+      "source_url": "https://meconstructionnews.com/62780/dar-global-launches-dg-villas-collection-at-jumeirah-golf-estates",
+      "source_title": "Dar Global launches DG Villas collection at Jumeirah Golf Estates (Middle East Construction News)",
+      "source_date": "2025-03-14",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "units",
+      "value": "210",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "project_value",
+      "value": "USD381 million (AED1.4 Billion)",
+      "source_url": "https://www.zawya.com/en/press-release/companies-news/dar-global-crafts-an-exceptional-residential-experience-with-the-launch-of-exclusive-dg-villas-at-jumeirah-golf-estates-ca6tzg0a",
+      "source_title": "Dar Global crafts an exceptional residential experience with the launch of exclusive DG Villas at Jumeirah Golf Estates (Zawya press release)",
+      "source_date": "undated on page",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "project_value",
+      "value": "US $381mn",
+      "source_url": "https://meconstructionnews.com/62780/dar-global-launches-dg-villas-collection-at-jumeirah-golf-estates",
+      "source_title": "Dar Global launches DG Villas collection at Jumeirah Golf Estates (Middle East Construction News)",
+      "source_date": "2025-03-14",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "launch",
+      "value": "Q1 2025",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "status",
+      "value": "Under construction; main construction contracts awarded",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "completion",
+      "value": "Q2 2028",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    }
+  ],
+  "method": "third-party public sources (darglobal.co.uk not fetched)",
+  "collected_at": "2026-11-19T10:18:49+00:00"
+}

@@ -9,7 +9,7 @@ export default function NotFound() {
   const ar = lang === "ar";
   return (
     <div style={{ minHeight: "100dvh", display: "flex", flexDirection: "column" }}>
-      <SiteHeader />
+      <SiteHeader showStatus={false} />
       <main id="main" className="notfound">
         <Mark size={32} />
         <h1>{ar ? "هذه الصفحة غير موجودة" : "This page is not here"}</h1>

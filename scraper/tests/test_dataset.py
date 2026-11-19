@@ -47,9 +47,21 @@ def test_non_empty_and_meta(con):
     assert json.loads(counts)["listings"] == con.execute("SELECT count(*) FROM listings").fetchone()[0]
 
 
+def _thirdparty_urls() -> set[str]:
+    """Source URLs of the sourced third-party DarGlobal facts (scraper/manual/darglobal/thirdparty/*.json)."""
+    out = set()
+    for p in (REPO / "scraper" / "manual" / "darglobal" / "thirdparty").glob("*.json"):
+        out |= {f["source_url"] for f in json.loads(p.read_text(encoding="utf-8")).get("facts") or []}
+    return out
+
+
 def test_required_fields_and_urls(con):
+    tp = _thirdparty_urls()
     for site, url in con.execute("SELECT site, source_url FROM projects UNION ALL SELECT 'Wasalt', source_url FROM listings"):
-        assert url.startswith("https://wasalt.sa/") or url.startswith("https://darglobal.co.uk/")
+        if site == "Wasalt":
+            assert url.startswith("https://wasalt.sa/"), url
+        else:  # DarGlobal: its own site, or a recorded third-party source (RNS mirror / press / wire release)
+            assert url.startswith("https://darglobal.co.uk/") or url in tp, url
     assert con.execute("SELECT count(*) FROM listings WHERE listing_type NOT IN ('buy','rent')").fetchone()[0] == 0
     assert con.execute("SELECT count(*) FROM projects WHERE coalesce(name_en, name_ar) IS NULL").fetchone()[0] == 0
 

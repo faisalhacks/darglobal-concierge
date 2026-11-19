@@ -7,6 +7,7 @@ function safeExternal(url: string | null | undefined): string | null {
   try { const u = new URL(url); return u.protocol === "https:" ? u.toString() : null; } catch { return null; }
 }
 
+/** compact: one line on the chat screen (short disclaimer with Privacy inline). */
 export function SiteFooter({ compact = false }: { compact?: boolean }) {
   const { t, meta } = useApp();
   const c = meta?.candidate;
@@ -16,9 +17,13 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
   const hasCandidate = Boolean(c?.name || github || linkedin || email);
   return (
     <footer className={`site-footer${compact ? " site-footer--compact" : ""}`}>
-      <p className="site-footer__disclaimer">{t.footerDisclaimer}</p>
+      <p className="site-footer__disclaimer">
+        <span className="site-footer__long">{t.footerDisclaimer}</span>
+        <span className="site-footer__short">{t.footerShort}</span>
+        {compact && <> <Link className="site-footer__privacy" href="/privacy/">{t.navPrivacy}</Link></>}
+      </p>
       <div className="site-footer__row">
-        <Link href="/privacy/">{t.navPrivacy}</Link>
+        {!compact && <Link href="/privacy/">{t.navPrivacy}</Link>}
         {hasCandidate && (
           <p className="site-footer__candidate">
             {c?.name && <span>{t.footerBuilt} <span lang="en" dir="ltr">{c.name}</span></span>}

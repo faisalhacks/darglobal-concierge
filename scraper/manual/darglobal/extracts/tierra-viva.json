@@ -1,0 +1,16 @@
+{
+ "url": "https://darglobal.co.uk/tierra-viva",
+ "title": "Tierra Viva by Lamborghini | Luxury Villas Benahavis",
+ "lang": "en",
+ "meta": {},
+ "headings": ["TIERRA VIVA, DESIGN INSPIRED BY AUTOMOBILI LAMBORGHINI", "BENAHAVÍS | SPAIN", "PHOTO GALLERY", "AMENITIES", "WHY INVEST", "LOCATION", "Frequently Asked Questions"],
+ "text": "TIERRA VIVA, DESIGN INSPIRED BY AUTOMOBILI LAMBORGHINI. BENAHAVIS | SPAIN. Tierra Viva is an ultra-luxury, gated villa community in the hills of Benahavis, Costa Del Sol, developed by DarGlobal with design inspired by Automobili Lamborghini. A limited collection of villas ranging from 700 to 1,450 sqm sits tiered across the hillside, each positioned for panoramic views of the Mediterranean Sea. Located 15 minutes from Marbella and minutes from Puerto Banus and 12 golf clubs. PROPERTY TYPE: Villa. STATUS: Under Development. UNIT TYPE: Limited Collection Villas. AREA (SQM): 680 - 1,515. AMENITIES: Gated Community; Premium 24/7 Security; the Painite villas with car lift; Sauna; Steam Room. LOCATION: in the hills of Los Jaralillos, Benahavis, 15 minutes from Marbella, close to 12 golf clubs, Andalusian villages and Puerto Banus. FAQ: When will Tierra Viva be completed? Tierra Viva is under development with completion scheduled for June 2028. Construction is actively underway, with progress updates on the DarGlobal website. Contact the sales team for current payment plan terms and unit availability. What amenities? Gated community with 24/7 premium security, an exclusive residents' clubhouse, sauna, steam room, and private pool areas; select Painite villas include an in-villa car lift.",
+ "images": [],
+ "jsonld": "",
+ "next_data_present": false,
+ "facts_hint": ["Status: Under Development", "Area (sqm): 680 - 1,515 (spec box) vs 700 to 1,450 sqm (description and FAQ)", "Completion scheduled June 2028 (page FAQ)", "Benahavis, Costa del Sol, Spain"],
+ "price_published": false,
+ "notes": "Page disagrees with itself on area; keep both. Page's 'why invest' claims (e.g. 'Highest ROI in Europe') are marketing statements and are NOT facts for the bot; excluded. Read with get_page_text; form/footer/phone omitted.",
+ "collected_at": "2026-11-19T11:44:00Z",
+ "method": "claude-in-chrome, user's own browser session, human pace"
+}

@@ -1,0 +1,89 @@
+{
+  "slug": "the-great-escape-aida",
+  "name": "The Great Escape (AIDA)",
+  "facts": [
+    {
+      "field": "name",
+      "value": "The Great Escape (TGE) Apartments",
+      "source_url": "https://www.zawya.com/en/press-release/companies-news/dar-global-appoints-al-adrak-trading-and-contracting-llc-for-main-works-on-the-great-escape-apartments-and-aida-phase-1-villas-oman-pvi3miod",
+      "source_title": "Dar Global appoints Al Adrak Trading and Contracting LLC for main works on The Great Escape Apartments and AIDA Phase 1 Villas (Zawya press release)",
+      "source_date": "undated on page",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "location",
+      "value": "AIDA Phase 1, Oman",
+      "source_url": "https://www.zawya.com/en/press-release/companies-news/dar-global-appoints-al-adrak-trading-and-contracting-llc-for-main-works-on-the-great-escape-apartments-and-aida-phase-1-villas-oman-pvi3miod",
+      "source_title": "Dar Global appoints Al Adrak Trading and Contracting LLC for main works on The Great Escape Apartments and AIDA Phase 1 Villas (Zawya press release)",
+      "source_date": "undated on page",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "property_type",
+      "value": "apartments",
+      "source_url": "https://www.zawya.com/en/press-release/companies-news/dar-global-appoints-al-adrak-trading-and-contracting-llc-for-main-works-on-the-great-escape-apartments-and-aida-phase-1-villas-oman-pvi3miod",
+      "source_title": "Dar Global appoints Al Adrak Trading and Contracting LLC for main works on The Great Escape Apartments and AIDA Phase 1 Villas (Zawya press release)",
+      "source_date": "undated on page",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "phase",
+      "value": "The TGE Apartments and AIDA Phase 1 Villas form the heart of Phase 1",
+      "source_url": "https://www.zawya.com/en/press-release/companies-news/dar-global-appoints-al-adrak-trading-and-contracting-llc-for-main-works-on-the-great-escape-apartments-and-aida-phase-1-villas-oman-pvi3miod",
+      "source_title": "Dar Global appoints Al Adrak Trading and Contracting LLC for main works on The Great Escape Apartments and AIDA Phase 1 Villas (Zawya press release)",
+      "source_date": "undated on page",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "main_contractor",
+      "value": "Al Adrak Trading & Contracting LLC",
+      "source_url": "https://www.zawya.com/en/press-release/companies-news/dar-global-appoints-al-adrak-trading-and-contracting-llc-for-main-works-on-the-great-escape-apartments-and-aida-phase-1-villas-oman-pvi3miod",
+      "source_title": "Dar Global appoints Al Adrak Trading and Contracting LLC for main works on The Great Escape Apartments and AIDA Phase 1 Villas (Zawya press release)",
+      "source_date": "undated on page",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "main_contract_award",
+      "value": "early May 2025",
+      "source_url": "https://gulfconstructiononline.com/Article/387509/aida-advances-with-landmark-assets",
+      "source_title": "AIDA advances with landmark assets (Gulf Construction)",
+      "source_date": "2025-06-01",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "handover",
+      "value": "Q4 2026 (TGE Apartments and Villas)",
+      "source_url": "https://www.zawya.com/en/press-release/companies-news/dar-global-appoints-al-adrak-trading-and-contracting-llc-for-main-works-on-the-great-escape-apartments-and-aida-phase-1-villas-oman-pvi3miod",
+      "source_title": "Dar Global appoints Al Adrak Trading and Contracting LLC for main works on The Great Escape Apartments and AIDA Phase 1 Villas (Zawya press release)",
+      "source_date": "undated on page",
+      "source_type": "press_release_wire"
+    },
+    {
+      "field": "handover",
+      "value": "Q4 2026",
+      "source_url": "https://gulfconstructiononline.com/Article/387509/aida-advances-with-landmark-assets",
+      "source_title": "AIDA advances with landmark assets (Gulf Construction)",
+      "source_date": "2025-06-01",
+      "source_type": "trade_press"
+    },
+    {
+      "field": "status",
+      "value": "main construction contracts awarded for Great Escape Apartments",
+      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+      "source_title": "Dar Global PLC - Full Year Results (RNS 1301W), mirrored on ticker.app",
+      "source_date": "2026-03-11",
+      "source_type": "rns"
+    },
+    {
+      "field": "related_phase",
+      "value": "The Great Escape 2, residential complex in Aida, Muscat, US$70M",
+      "source_url": "https://www.prnewswire.com/ae/news-releases/dar-global-launches-over-us1-9-billion-in-global-luxury-real-estate-projects-in-2024--sets-sights-on-expansion-into-us-in-2025--302345950.html",
+      "source_title": "Dar Global launches over US$1.9 billion in global luxury real estate projects in 2024 (PR Newswire)",
+      "source_date": "2025-01-08",
+      "source_type": "press_release_wire",
+      "note": "Separate phase; no unit data found in press"
+    }
+  ],
+  "method": "third-party public sources (darglobal.co.uk not fetched)",
+  "collected_at": "2026-11-19T10:18:49+00:00"
+}

@@ -1,6 +1,12 @@
 """Parse saved snapshots -> data/concierge.sqlite (SPEC section 7). NO network access.
 
-    python scraper/build_dataset.py
+    python -m scraper.build_dataset        (or: python scraper/build_dataset.py)
+
+Sources: Wasalt snapshots in scraper/snapshots/ (scraper/fetch.py, robots-compliant), DarGlobal pages the owner
+collected in their own browser into scraper/manual/darglobal/extracts/*.json (parsed by scraper/darglobal_manual.py),
+and sourced third-party facts about DarGlobal projects in scraper/manual/darglobal/thirdparty/*.json (LSE RNS mirror,
+press, wire-hosted company releases; merged by scraper/darglobal_thirdparty.py).
+Any new extract / third-party file is picked up on the next run with no code change.
 
 Outputs: data/concierge.sqlite, data/fixtures/mini.sqlite, data/completeness.json, data/PII_SCAN.md,
          data/build_report.json
@@ -21,6 +27,13 @@ from urllib.parse import quote, unquote, urlparse
 from pydantic import BaseModel, field_validator
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
+try:  # python -m scraper.build_dataset
+    from . import darglobal_manual as dgm
+    from . import darglobal_thirdparty as dgt
+except ImportError:  # python scraper/build_dataset.py, or tests with scraper/ on sys.path
+    import darglobal_manual as dgm
+    import darglobal_thirdparty as dgt
+
 ROOT = Path(__file__).resolve().parent
 REPO = ROOT.parent
 SNAP = ROOT / "snapshots"
@@ -29,6 +42,8 @@ DATA.mkdir(exist_ok=True)
 (DATA / "fixtures").mkdir(exist_ok=True)
 
 IMG_BASE = "https://imagedelivery.net/1DNKFJPRaeUdy_j8F7HT3w/production"
+CONTACT_DG = "https://darglobal.co.uk/get-in-touch"     # taken from the already-fetched sitemap snapshot
+CONTACT_WASALT = "https://wasalt.sa/en/corporate"       # official corporate page, already in snapshots
 
 SCHEMA = """
 CREATE TABLE projects(
@@ -426,6 +441,79 @@ def project_fact_text(p: Project) -> tuple[str, str]:
     return en, ar
 
 
+def chunk_header(name_en, name_ar, city, country, site, section) -> str:
+    """Contextual header '{name_en} | {name_ar} | {city}, {country} | {site} | {section}: ' (empty parts omitted).
+    The only ': ' in the header is the final one, so a consumer can strip the header up to the first ': '."""
+    loc = ", ".join(x for x in (city, country) if x)
+    parts = [re.sub(r"\s*:\s*", " - ", str(x)).replace("|", "/").strip() for x in (name_en, name_ar, loc, site, section) if x]
+    return " | ".join(p for p in parts if p) + ": "
+
+
+def dg_fact_source(p: Project, x: dict) -> str:
+    """URL the DarGlobal fact chunk cites: the DarGlobal page its name/location came from (a row enriched from the RNS
+    carries the RNS as source_url), or the primary third-party source for a third-party-only row."""
+    return x.get("dg_source_url") or p.source_url
+
+
+def dg_fact_text(p: Project, x: dict) -> tuple[str, str]:
+    """Fact chunk for a DarGlobal project, built only from structured fields and published strings."""
+    name = p.name_en or p.name_ar
+    loc_pub = x.get("location_published") or ", ".join(v for v in (p.city, p.country) if v) or "Not published"
+    country_ar = dgm.COUNTRY_AR.get(p.country or "", p.country or "البلد غير مذكور")
+    tp = x.get("thirdparty")
+    tp_en = (f"Further facts about {name} come from {len(tp['sources'])} third-party public source(s) "
+             f"({', '.join(tp['source_tags'])}); each is in its own source chunk with its URL and date, and the list "
+             f"is in the 'Public sources' chunk. ") if tp else ""
+    tp_ar = "تتوفر معلومات إضافية من مصادر عامة خارجية، لكل منها رابطه وتاريخه. " if tp else ""
+    if x.get("dg_source_url", p.source_url) is None and tp:   # third-party-only row: no DarGlobal entry by this name
+        en = (f"Project: {name}. Developer: DarGlobal. Location (as reported by third-party sources): "
+              f"{', '.join(v for v in (p.city, p.country) if v) or 'Not published'}. "
+              + (f"Brand partner: {p.brand_partner}. " if p.brand_partner else "")
+              + "Not listed under this name on the DarGlobal projects page collected on 2026-11-19"
+              + (f"; related DarGlobal listings: {', '.join(x['related'])}. " if x.get("related") else ". ")
+              + tp_en
+              + (f"Status (Dar Global PLC RNS): {p.status}. " if p.status else "")
+              + (f"Expected completion year (RNS): {p.handover_year}. " if p.handover_year else "")
+              + "Price: not published by DarGlobal.")
+        ar = (f"المشروع: {name}. المطور: دار جلوبال. الموقع حسب مصادر خارجية: {p.city or 'غير منشور'}، {country_ar}. "
+              + tp_ar + "السعر: غير منشور من دار جلوبال.")
+        return en, ar
+    if x.get("dg_source_url", p.source_url) == dgm.INDEX_URL:
+        if x.get("country_note"):
+            cn = f" ({x['country_note']})"
+        else:
+            cn = "" if p.country else " (country not stated)"
+        en = (f"Project: {name}. Developer: DarGlobal. Location (as published): {loc_pub}{cn}. "
+              + (f"Brand partner: {p.brand_partner}. " if p.brand_partner else "")
+              + (f"Card text: {x['card_caption']}. " if x.get("card_caption") else "")
+              + "Listed on the DarGlobal projects page (darglobal.co.uk/projects); detail page not collected. "
+              + tp_en
+              + "Price: not published by DarGlobal.")
+        ar = (f"المشروع: {name}. المطور: دار جلوبال. الموقع: {p.city or 'غير منشور'}، {country_ar}. "
+              "مدرج في صفحة مشاريع دار جلوبال؛ لم تُجمع صفحة التفاصيل. " + tp_ar + "السعر: غير منشور من دار جلوبال.")
+        return en, ar
+    area = x.get("area_published") or ""
+    if x.get("area_text_sqm"):
+        area = (area + "; " if area else "") + f"text: {x['area_text_sqm']}"
+    en = (f"Project: {name}. Developer: DarGlobal. "
+          + (f"Brand partner: {p.brand_partner}. " if p.brand_partner else "")
+          + f"Location: {loc_pub}. "
+          f"Property type: {', '.join(p.property_types) or 'Not published'}. "
+          f"Status: {p.status or 'Not published'}. "
+          f"Units: {', '.join(p.unit_types) or 'Not published'}. "
+          f"Area as published: {area or 'Not published'}"
+          + (f" (unit areas {p.area_min_m2:g}-{p.area_max_m2:g} m2)" if p.area_min_m2 else "") + ". "
+          + (f"Handover year: {p.handover_year} (as stated on the page). " if p.handover_year else "")
+          + (f"Featuring: {x['featuring']}. " if x.get("featuring") else "")
+          + "Price: not published by DarGlobal.")
+    ar = (f"المشروع: {name}. المطور: دار جلوبال. الموقع: {p.city or 'غير منشور'}، {country_ar}. "
+          f"نوع العقار: {', '.join(p.property_types) or 'غير منشور'}. الحالة: {p.status or 'غير منشور'}. "
+          + (f"المساحات: {p.area_min_m2:g}-{p.area_max_m2:g} م². " if p.area_min_m2 else "")
+          + (f"سنة التسليم: {p.handover_year}. " if p.handover_year else "")
+          + "السعر: غير منشور من دار جلوبال.")
+    return en, ar
+
+
 def listing_fact_text(l: Listing, rent_freq: str | None) -> str:
     price = fmt_money(l.price_amount, l.price_currency)
     if l.listing_type == "rent" and l.price_amount and rent_freq:
@@ -558,14 +646,81 @@ def build():
                                                               "landingpage", "new-home-page"))]
         keep = list(dict.fromkeys(keep))
         text = ("DarGlobal official website — list of public page URLs taken from darglobal.co.uk/sitemap.xml. "
-                "Page contents were NOT collected (the site served an automated-client challenge), so no project facts "
-                "are available here; visit the official pages for details.\n" + "\n".join(keep))
+                "The automated scraper could not read these pages (the site served an automated-client challenge); "
+                "a small set of project pages was later collected manually by the owner in a normal browser and is "
+                "stored as DarGlobal project records. Visit the official pages for details.\n" + "\n".join(keep))
         pid = "darglobal-pg-sitemap"
         pages[pid] = Page(id=pid, site="DarGlobal", page_type="sitemap_index",
                           title="DarGlobal official pages (URL index only)", text=text, lang="en",
                           source_url="https://darglobal.co.uk/sitemap.xml", scraped_at=meta["fetched_at"])
 
-    return projects, listings, rent_freq, pages, gaps, srp_counts
+        if CONTACT_DG in keep:
+            pages["darglobal-pg-contact"] = Page(
+                id="darglobal-pg-contact", site="DarGlobal", page_type="contact", title="DarGlobal official contact page",
+                text="Official DarGlobal contact page", lang="en", source_url=CONTACT_DG, scraped_at=meta["fetched_at"])
+        else:
+            gaps.append("DarGlobal contact URL not in sitemap snapshot; no contact page row")
+
+    # Wasalt: the official corporate page is in the snapshots (no contact-us URL exists in the static sitemap).
+    corp = next((pg for pg in pages.values() if pg.site == "Wasalt" and pg.source_url == CONTACT_WASALT), None)
+    if corp:
+        pages["wasalt-pg-contact"] = Page(
+            id="wasalt-pg-contact", site="Wasalt", page_type="contact", title="Wasalt official corporate / contact page",
+            text="Official Wasalt corporate page (company information and official contact channels)", lang="en",
+            source_url=CONTACT_WASALT, scraped_at=corp.scraped_at)
+    else:
+        gaps.append(f"Wasalt corporate page not in snapshots ({CONTACT_WASALT}); no contact page row")
+
+    # DarGlobal projects from the owner's manual browser collection (offline parse).
+    dg = dgm.load()
+    tp_extra, tp_report = dgt.merge(dg["projects"])
+    dg["report"]["thirdparty"] = tp_report
+    dg_extra: dict[str, dict] = {}
+    for pid, r in sorted(dg["projects"].items()):
+        desc = strip_pii(r.get("description_en"))
+        proj = Project(
+            id=pid, slug=r["slug"], name_en=r["name_en"], name_ar=None, site="DarGlobal", developer="DarGlobal",
+            brand_partner=r.get("brand_partner"), city=r.get("city"), country=r.get("country"),
+            lat=r.get("lat"), lng=r.get("lng"), property_types=r.get("property_types") or [],
+            unit_types=r.get("unit_types") or [], price_from_amount=None, price_from_currency=None, price_to_amount=None,
+            area_min_m2=r.get("area_min_m2"), area_max_m2=r.get("area_max_m2"), amenities=r.get("amenities") or [],
+            status=r.get("status"), handover_year=r.get("handover_year"), description_en=desc or None,
+            description_ar=None, image_urls=(r.get("image_urls") or [])[:6], source_url=r["source_url"],
+            scraped_at=r["scraped_at"])
+        projects[pid] = proj
+        dg_extra[pid] = {"location_published": r.get("location_published"), "card_caption": r.get("card_caption"),
+                         "area_published": r.get("area_published"), "area_text_sqm": r.get("area_text_sqm"),
+                         "featuring": r.get("featuring"), "dg_source_url": r.get("dg_source_url", r["source_url"]),
+                         "sections": [(sec, strip_pii(t)) for sec, t in r.get("sections") or [] if strip_pii(t)]}
+        if pid in tp_extra:
+            tpx = tp_extra[pid]
+            dg_extra[pid]["thirdparty"] = tpx
+            corr = next((c for c in tp_report["corrections"] if c["id"] == pid and c["column"] == "country"), None)
+            if corr:
+                dg_extra[pid]["country_note"] = f"country not stated by DarGlobal; {corr['to']} per third-party sources"
+            if r.get("thirdparty_only"):
+                dg_extra[pid]["related"] = sorted({
+                    dg["projects"][c["to"]]["name_en"] for c in tp_report["cross_attached"]
+                    if c["from"] in tpx["files"] and c["to"] in dg["projects"]})
+            # per-project page listing every public source, so the bot can cite the list
+            own = r.get("dg_source_url")
+            own_txt = ("darglobal.co.uk/projects index (name and location only; detail page not collected)"
+                       if own == dgm.INDEX_URL else (own or "none collected under this name"))
+            lines = [f"# {r['name_en']} - public sources",
+                     f"Third-party public sources used for the DarGlobal project {r['name_en']}"
+                     + (f" ({', '.join(v for v in (r.get('city'), r.get('country')) if v)})" if r.get("city") else "")
+                     + ". darglobal.co.uk was not fetched for these facts. Wire-hosted Dar Global releases are "
+                       "company statements; the RNS is Dar Global PLC's regulatory announcement (FY2025 results, "
+                       "RNS 1301W), read from the ticker.app mirror.",
+                     f"DarGlobal's own listing: {own_txt}."]
+            lines += [f"- {s}" for s in tpx["source_list"]]
+            if corr:
+                lines.append(f"Correction: country set to {corr['to']} ({corr['why']}).")
+            gid = f"darglobal-pg-sources-{r['slug']}"
+            pages[gid] = Page(id=gid, site="DarGlobal", page_type="project_sources",
+                              title=f"{r['name_en']} - public sources", text="\n".join(lines), lang="en",
+                              source_url=tpx["primary_source"], scraped_at=tpx["collected_at"])
+    return projects, listings, rent_freq, pages, gaps, srp_counts, dg_extra, dg["report"]
 
 
 def completeness(rows: list[dict], fields: list[str]) -> dict:
@@ -581,7 +736,10 @@ def completeness(rows: list[dict], fields: list[str]) -> dict:
     return out
 
 
-def write_db(path: Path, projects, listings, rent_freq, pages, version_tag: str | None = None):
+def write_db(path: Path, projects, listings, rent_freq, pages, version_tag: str | None = None,
+             dg_extra: dict | None = None):
+    dg_extra = dg_extra or {}
+    final_path, path = path, path.with_name(path.name + ".building")
     if path.exists():
         path.unlink()
     con = sqlite3.connect(path)
@@ -593,18 +751,62 @@ def write_db(path: Path, projects, listings, rent_freq, pages, version_tag: str 
         for k in ("property_types", "unit_types", "amenities", "image_urls"):
             d[k] = json.dumps(d[k], ensure_ascii=False)
         con.execute(f"INSERT INTO projects({','.join(d)}) VALUES({','.join('?' * len(d))})", list(d.values()))
-        en, ar = project_fact_text(p)
+        x = dg_extra.get(p.id, {})
+        en, ar = dg_fact_text(p, x) if p.site == "DarGlobal" else project_fact_text(p)
+        fsrc = dg_fact_source(p, x) if p.site == "DarGlobal" else p.source_url
         chunks.append(dict(id=f"{p.id}#fact-en", entity_type="project", entity_id=p.id, site=p.site, lang="en", text=en,
-                           city=p.city, country=p.country, source_url=p.source_url, scraped_at=p.scraped_at))
+                           city=p.city, country=p.country, source_url=fsrc, scraped_at=p.scraped_at))
         chunks.append(dict(id=f"{p.id}#fact-ar", entity_type="project", entity_id=p.id, site=p.site, lang="ar", text=ar,
-                           city=p.city, country=p.country, source_url=p.source_url, scraped_at=p.scraped_at))
+                           city=p.city, country=p.country, source_url=fsrc, scraped_at=p.scraped_at))
+        tp = x.get("thirdparty")
+        if tp:  # third-party facts: one chunk group per source, each citing that source's own URL
+            for i, sc in enumerate(tp["source_chunks"]):
+                hdr = chunk_header(p.name_en, p.name_ar, p.city, p.country, p.site,
+                                   f"Third-party source - {sc['short']}, {dgt.human_date(sc['source_date'])}")
+                for j, c in enumerate(window_chunks(sc["text"], 300, 0.0)):
+                    chunks.append(dict(id=f"{p.id}#tp-en-{i}-{j}", entity_type="project", entity_id=p.id, site=p.site,
+                                       lang="en", text=hdr + c, city=p.city, country=p.country,
+                                       source_url=sc["source_url"], scraped_at=sc["scraped_at"]))
+            if tp["figures"]:
+                hdr = chunk_header(p.name_en, p.name_ar, p.city, p.country, p.site, "Figures by source and date")
+                for j, c in enumerate(window_chunks(tp["figures"]["text"], 300, 0.0)):
+                    chunks.append(dict(id=f"{p.id}#tp-figures-en-{j}", entity_type="project", entity_id=p.id,
+                                       site=p.site, lang="en", text=hdr + c, city=p.city, country=p.country,
+                                       source_url=tp["figures"]["source_url"], scraped_at=tp["collected_at"]))
+            hdr = chunk_header(p.name_en, p.name_ar, p.city, p.country, p.site, "Public sources")
+            body = (f"Public sources for {p.name_en} (third-party; darglobal.co.uk was not fetched for these): "
+                    + " ; ".join(tp["source_list"]) + ".")
+            for j, c in enumerate(window_chunks(body, 300, 0.0)):
+                chunks.append(dict(id=f"{p.id}#tp-sources-en-{j}", entity_type="project", entity_id=p.id, site=p.site,
+                                   lang="en", text=hdr + c, city=p.city, country=p.country,
+                                   source_url=tp["primary_source"], scraped_at=tp["collected_at"]))
         for lang, desc in (("en", p.description_en), ("ar", p.description_ar)):
             if desc:
-                name = p.name_en or p.name_ar
+                hdr = chunk_header(p.name_en, p.name_ar, p.city, p.country, p.site,
+                                   "Overview" if p.site == "DarGlobal" else "Description")
                 for i, c in enumerate(window_chunks(desc, 300, 0.0)):
                     chunks.append(dict(id=f"{p.id}#desc-{lang}-{i}", entity_type="project", entity_id=p.id, site=p.site,
-                                       lang=lang, text=f"{name}: {c}", city=p.city, country=p.country,
+                                       lang=lang, text=hdr + c, city=p.city, country=p.country,
                                        source_url=p.source_url, scraped_at=p.scraped_at))
+        # DarGlobal page sections (key features, amenities, location, FAQ), grouped per section into ~300-token chunks
+        groups: dict[str, list[str]] = {}
+        for sec, t in x.get("sections") or []:
+            groups.setdefault(sec, []).append(t)
+        n = 0
+        for sec, texts in groups.items():
+            hdr = chunk_header(p.name_en, p.name_ar, p.city, p.country, p.site, sec)
+            buf: list[str] = []
+            for t in texts + [None]:
+                if t is not None and len(" ".join(buf + [t]).split()) <= 200:
+                    buf.append(t)
+                    continue
+                if buf:
+                    for c in window_chunks(" ".join(buf), 300, 0.0):
+                        chunks.append(dict(id=f"{p.id}#sec-en-{n}", entity_type="project", entity_id=p.id, site=p.site,
+                                           lang="en", text=hdr + c, city=p.city, country=p.country,
+                                           source_url=p.source_url, scraped_at=p.scraped_at))
+                        n += 1
+                buf = [t] if t is not None else []
     for l in listings:
         d = l.model_dump()
         d["content_hash"] = chash(d)
@@ -616,10 +818,11 @@ def write_db(path: Path, projects, listings, rent_freq, pages, version_tag: str 
     for pg in pages:
         d = pg.model_dump()
         con.execute(f"INSERT INTO pages({','.join(d)}) VALUES({','.join('?' * len(d))})", list(d.values()))
+        pcountry = "Saudi Arabia" if pg.site == "Wasalt" else None
+        hdr = chunk_header(pg.title, None, None, pcountry, pg.site, pg.page_type)
         for i, c in enumerate(window_chunks(pg.text, 400, 0.15)):
             chunks.append(dict(id=f"{pg.id}#{i}", entity_type="page", entity_id=pg.id, site=pg.site, lang=pg.lang,
-                               text=f"{pg.title}: {c}" if i else c if c.startswith(pg.title) else f"{pg.title}: {c}",
-                               city=None, country="Saudi Arabia" if pg.site == "Wasalt" else None,
+                               text=hdr + c, city=None, country=pcountry,
                                source_url=pg.source_url, scraped_at=pg.scraped_at))
     for c in chunks:
         con.execute(f"INSERT INTO chunks({','.join(c)}) VALUES({','.join('?' * len(c))})", list(c.values()))
@@ -635,10 +838,43 @@ def write_db(path: Path, projects, listings, rent_freq, pages, version_tag: str 
                                              "area_m2", "property_type", "image_urls", "project_ref"]),
     }
     comp["projects"]["name_any"] = completeness([{"n": r["name_en"] or r["name_ar"]} for r in proj_rows], ["n"])["n"]
+    pfields = ["name_en", "name_ar", "city", "country", "source_url", "price_from_amount", "status", "handover_year",
+               "lat", "description_en", "description_ar", "image_urls", "property_types", "unit_types", "developer",
+               "amenities", "area_min_m2"]
+    comp["by_site"] = {}
+    for site in ("DarGlobal", "Wasalt"):
+        rows = [r for r in proj_rows if r["site"] == site]
+        comp["by_site"][site] = {"projects_n": len(rows), "projects": completeness(rows, pfields)}
+        if site == "DarGlobal":
+            lvl = {p.id: dg_level(p, dg_extra) for p in projects if p.site == "DarGlobal"}
+            det = [r for r in rows if lvl[r["id"]] == "page"]
+            comp["by_site"][site]["projects_detail_page_n"] = len(det)
+            comp["by_site"][site]["projects_detail_page"] = completeness(det, pfields)
+            tpr = [r for r in rows if dg_extra.get(r["id"], {}).get("thirdparty")]
+            comp["by_site"][site]["projects_with_thirdparty_facts_n"] = len(tpr)
+            comp["by_site"][site]["projects_with_thirdparty_facts"] = completeness(tpr, pfields)
+            comp["by_site"][site]["projects_thirdparty_only_n"] = sum(1 for v in lvl.values() if v == "thirdparty_only")
+        else:
+            comp["by_site"][site]["listings_n"] = len(list_rows)
     all_ts = [r["scraped_at"] for r in proj_rows + list_rows] + [p.scraped_at for p in pages]
     counts = {"projects": len(projects), "listings": len(listings), "pages": len(pages), "chunks": len(chunks),
               "projects_by_site": {s: sum(1 for p in projects if p.site == s) for s in ("DarGlobal", "Wasalt")},
-              "listings_by_type": {t: sum(1 for l in listings if l.listing_type == t) for t in ("buy", "rent")}}
+              "listings_by_type": {t: sum(1 for l in listings if l.listing_type == t) for t in ("buy", "rent")},
+              "projects_detail_by_site": {"DarGlobal": {
+                  "page": sum(1 for p in projects if p.site == "DarGlobal" and dg_level(p, dg_extra) == "page"),
+                  "index": sum(1 for p in projects if p.site == "DarGlobal" and dg_level(p, dg_extra) == "index"),
+                  "thirdparty_only": sum(1 for p in projects if p.site == "DarGlobal"
+                                         and dg_level(p, dg_extra) == "thirdparty_only"),
+                  "with_thirdparty_facts": sum(1 for p in projects if p.site == "DarGlobal"
+                                               and dg_extra.get(p.id, {}).get("thirdparty")),
+                  "with_any_detail_facts": sum(1 for p in projects if p.site == "DarGlobal"
+                                               and (dg_level(p, dg_extra) == "page"
+                                                    or dg_extra.get(p.id, {}).get("thirdparty")))}},
+              "projects_by_site_country": {s: dict(sorted(
+                  {c: sum(1 for p in projects if p.site == s and (p.country or "unresolved") == c)
+                   for c in {p.country or "unresolved" for p in projects if p.site == s}}.items()))
+                  for s in ("DarGlobal", "Wasalt")},
+              "pages_by_type": {t: sum(1 for g in pages if g.page_type == t) for t in sorted({g.page_type for g in pages})}}
     h = hashlib.sha256(json.dumps([r.get("content_hash") for r in []] + sorted(c["id"] + c["text"] for c in chunks),
                                   ensure_ascii=False).encode()).hexdigest()[:8]
     version = version_tag or f"{max(all_ts)[:10].replace('-', '') if all_ts else 'empty'}-{h}"
@@ -647,7 +883,36 @@ def write_db(path: Path, projects, listings, rent_freq, pages, version_tag: str 
                  json.dumps(counts), json.dumps(comp)))
     con.commit()
     con.close()
+    publish_db(path, final_path)
     return version, counts, comp, chunks
+
+
+def dg_level(p: Project, dg_extra: dict) -> str:
+    """'page' = own DarGlobal page collected; 'index' = DarGlobal projects index only (possibly enriched with
+    third-party facts); 'thirdparty_only' = no DarGlobal entry by this name, third-party sources only."""
+    src = dg_extra.get(p.id, {}).get("dg_source_url", p.source_url)
+    if src is None:
+        return "thirdparty_only"
+    return "index" if src == dgm.INDEX_URL else "page"
+
+
+def publish_db(tmp: Path, final: Path) -> None:
+    """Move the freshly built DB into place. On Windows a running dev server may hold the target open, so fall back
+    to SQLite's online backup API, which replaces the target's content in place."""
+    try:
+        if final.exists():
+            final.unlink()
+        tmp.replace(final)
+        return
+    except PermissionError:
+        pass
+    src, dst = sqlite3.connect(tmp), sqlite3.connect(final, timeout=30)
+    try:
+        src.backup(dst)
+    finally:
+        src.close()
+        dst.close()
+    tmp.unlink()
 
 
 def pii_scan(db: Path) -> list[str]:
@@ -676,12 +941,17 @@ def pii_scan(db: Path) -> list[str]:
 
 
 def main():
-    projects, listings, rent_freq, pages, gaps, srp_counts = build()
+    projects, listings, rent_freq, pages, gaps, srp_counts, dg_extra, dg_report = build()
     P, L, G = list(projects.values()), list(listings.values()), list(pages.values())
-    version, counts, comp, chunks = write_db(DATA / "concierge.sqlite", P, L, rent_freq, G)
+    version, counts, comp, chunks = write_db(DATA / "concierge.sqlite", P, L, rent_freq, G, dg_extra=dg_extra)
     hits = pii_scan(DATA / "concierge.sqlite")
     # mini fixture: projects with most fields, their listings first, plus pages of different types
-    Ps = sorted(P, key=lambda p: (p.price_from_amount is None, p.description_en is None and p.description_ar is None, p.id))[:10]
+    Ps = sorted((p for p in P if p.site == "Wasalt"),
+                key=lambda p: (p.price_from_amount is None, p.description_en is None and p.description_ar is None, p.id))[:10]
+    # + 3 DarGlobal: 2 with a collected detail page, 1 index-only in Oman
+    dgp = sorted((p for p in P if p.site == "DarGlobal"), key=lambda p: p.id)
+    Ps += [p for p in dgp if dg_level(p, dg_extra) == "page"][:2]
+    Ps += [p for p in dgp if dg_level(p, dg_extra) == "index" and p.country == "Oman"][:1]
     pids = {p.id for p in Ps}
     Ls = [l for l in L if l.project_ref in pids][:4]
     rest = [l for l in L if l.project_ref is None]
@@ -689,15 +959,22 @@ def main():
         Ls += [l for l in rest if l.listing_type == t and l.price_amount][:3 if t == "buy" else 3]
     Ls = list({l.id: l for l in Ls}.values())[:10]
     Gs, seen_t = [], set()
-    for g in sorted(G, key=lambda g: g.page_type):
+    contacts = [g for g in G if g.page_type == "contact"]
+    for g in sorted((g for g in G if g.page_type not in ("contact", "project_sources")), key=lambda g: g.page_type):
         if g.page_type not in seen_t or len(Gs) < 10:
             if len(Gs) < 10:
                 Gs.append(g)
                 seen_t.add(g.page_type)
-    mversion, mcounts, _, _ = write_db(DATA / "fixtures" / "mini.sqlite", Ps, Ls, rent_freq, Gs, version_tag=f"mini-{version}")
+    Gs = sorted(contacts, key=lambda g: g.id) + Gs
+    # the public-sources page of each DarGlobal project in the fixture
+    Gs += sorted((g for g in G if g.page_type == "project_sources"
+                  and any(g.id == f"darglobal-pg-sources-{p.slug}" for p in Ps)), key=lambda g: g.id)
+    mversion, mcounts, _, _ = write_db(DATA / "fixtures" / "mini.sqlite", Ps, Ls, rent_freq, Gs,
+                                       version_tag=f"mini-{version}", dg_extra=dg_extra)
     mini_hits = pii_scan(DATA / "fixtures" / "mini.sqlite")
 
-    (DATA / "completeness.json").write_text(json.dumps({"dataset_version": version, "counts": counts, "completeness": comp},
+    (DATA / "completeness.json").write_text(json.dumps({"dataset_version": version, "counts": counts, "completeness": comp,
+                                                        "by_site": comp["by_site"]},
                                                        indent=1, ensure_ascii=False), encoding="utf-8")
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
     md = [f"# PII scan — {now}", "", f"Dataset: `data/concierge.sqlite` version `{version}`", "",
@@ -710,10 +987,44 @@ def main():
     if hits or mini_hits:
         md += ["## Hits", ""] + [f"- {h}" for h in (hits + mini_hits)[:200]]
     md += ["", "Fields never extracted at source (by design): leadContactInfo, propertyOwner, contactDetails, ownerName, "
-           "resEmployee, managedBy (person/agency names), REGA licence numbers."]
+           "resEmployee, managedBy (person/agency names), REGA licence numbers.", "",
+           "DarGlobal manual extracts: names were already replaced with '[name removed]' and phone numbers with '[phone]' "
+           "at collection time; both placeholders are dropped. From JSON-LD only GeoCoordinates and amenityFeature names "
+           "are read; Organization founder/person, contactPoint and address nodes are never ingested. Contact pages "
+           "(page_type='contact') hold one line of text and no phone, email or WhatsApp."]
     (DATA / "PII_SCAN.md").write_text("\n".join(md) + "\n", encoding="utf-8")
+    hdr_rx = re.compile(r"^[^:]+ \| (?:DarGlobal|Wasalt) \| [^:|]+: ")
+    need_hdr = [c for c in chunks if c["entity_type"] == "page" or "#desc-" in c["id"] or "#sec-" in c["id"]]
+    claim_rx = re.compile(r"yield|returns|doubled", re.I)
+    dg_rep = dict(dg_report)
     report = {"dataset_version": version, "counts": counts, "mini_counts": mcounts, "pii_hits": len(hits),
-              "mini_pii_hits": len(mini_hits), "srp_site_counts": srp_counts, "gaps": gaps}
+              "mini_pii_hits": len(mini_hits),
+              "darglobal": {
+                  "collection_method": dg_rep.pop("method", None),
+                  "index_h3_names": sum(r["h3_names"] for r in dg_rep.get("index", [])),
+                  "projects": counts["projects_by_site"]["DarGlobal"],
+                  "detail_slugs": dg_rep.pop("detail_slugs", []),
+                  "oman_rows": sum(1 for p in P if p.site == "DarGlobal" and p.country == "Oman"),
+                  "priced_rows": sum(1 for p in P if p.site == "DarGlobal" and p.price_from_amount is not None),
+                  "chunks": sum(1 for c in chunks if c["site"] == "DarGlobal"),
+                  "thirdparty_chunks": sum(1 for c in chunks if "#tp-" in c["id"]),
+                  "projects_by_level": {lv: sorted(p.id for p in P if p.site == "DarGlobal"
+                                                   and dg_level(p, dg_extra) == lv)
+                                        for lv in ("page", "index", "thirdparty_only")},
+                  "projects_without_chunk": sorted(p.id for p in P if p.site == "DarGlobal"
+                                                   and not any(c["entity_id"] == p.id for c in chunks)),
+                  "claim_word_chunks": sum(1 for c in chunks if c["site"] == "DarGlobal" and claim_rx.search(c["text"])),
+                  **dg_rep},
+              "darglobal_unresolved": [
+                  {**u, "resolved_by_thirdparty": next(
+                      (f"country -> {c['to']} ({c['source_url']})" for c in dg_report.get("thirdparty", {})
+                       .get("corrections", []) if c["id"] == u["id"]), None)}
+                  for u in dg_report.get("darglobal_unresolved", [])],
+              "chunk_headers": {"chunks_total": len(chunks), "chunks_needing_header": len(need_hdr),
+                                "with_header": sum(1 for c in need_hdr if hdr_rx.match(c["text"])),
+                                "format": "{name_en} | {name_ar} | {city}, {country} | {site} | {section}: "},
+              "contact_pages": [g.source_url for g in G if g.page_type == "contact"],
+              "srp_site_counts": srp_counts, "gaps": gaps}
     (DATA / "build_report.json").write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding="utf-8")
     print(json.dumps({k: v for k, v in report.items() if k not in ("srp_site_counts",)}, indent=1, ensure_ascii=False))
     return 0 if not hits and not mini_hits else 1

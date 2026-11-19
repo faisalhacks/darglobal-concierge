@@ -1,0 +1,156 @@
+{
+  "run_at": "2026-11-19T11:38:19+00:00",
+  "dataset_version": "20261119-e5604e7e",
+  "llm_calls": 5,
+  "max_llm_calls": 5,
+  "n": 5,
+  "passed": 5,
+  "failed": 0,
+  "models_answered": {
+    "nvidia/nemotron-3-ultra-550b-a55b:free": 4
+  },
+  "app_budget_used_before": 0,
+  "app_budget_used_after": 4,
+  "judge_used": false,
+  "cases": [
+    {
+      "id": "R2",
+      "category": "reviewer",
+      "lang": "en",
+      "split": "tune",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 5469.0,
+      "intent": "general",
+      "path": "code",
+      "turns": [
+        {
+          "say": "How do Wasalt auctions work?",
+          "intent": "general",
+          "path": "code",
+          "reply_excerpt": "Wasalt Auctions are timed online auctions where real estate assets (and movable assets) are listed by Sales Agents—private sellers or Infath (Entrustment and Liquidation Center). Wasalt acts solely as an intermediary platform; it does not o",
+          "answer": "Wasalt Auctions are timed online auctions where real estate assets (and movable assets) are listed by Sales Agents—private sellers or Infath (Entrustment and Liquidation Center). Wasalt acts solely as an intermediary platform; it does not own, sell, warrant, or not guaranteed any asset. Bidders compete to determine the final price. Each auction has its own additional terms. If a winning bidder fails to complete payment within the specified period, the sale may be cancelled, the bid deposit retained, and the asset re‐listed. The winning bidder and Sales Agent are jointly responsible for government fees, transfer, registration, and similar charges.",
+          "card_ids": [],
+          "sources": [
+            "https://wasalt.sa/en",
+            "https://wasalt.sa/en/s/terms-n-conditions-for-auction"
+          ],
+          "model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+        }
+      ]
+    },
+    {
+      "id": "F11",
+      "category": "factual",
+      "lang": "en",
+      "split": "tune",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 5172.0,
+      "intent": "project_info",
+      "path": "code",
+      "turns": [
+        {
+          "say": "Tell me about 7&8 Albert Hall Mansions",
+          "intent": "project_info",
+          "path": "code",
+          "reply_excerpt": "**7&8 Albert Hall Mansions** \n- **Developer:** DarGlobal \n- **Location:** Overlooking Hyde Park, London, United Kingdom \n- **Property type:** Single penthouse (1 unit) \n- **Status:** Under construction \n- **Launch:** Q2 2024 (per Dar Global",
+          "answer": "**7&8 Albert Hall Mansions** \n- **Developer:** DarGlobal \n- **Location:** Overlooking Hyde Park, London, United Kingdom \n- **Property type:** Single penthouse (1 unit) \n- **Status:** Under construction \n- **Launch:** Q2 2024 (per Dar Global PLC RNS 1301W, 11 Mar 2026) \n- **Expected completion/handover:** Q2 2027 \n- **Price:** Not published by DarGlobal \n\nThe project appears on DarGlobal’s projects page; a detailed page has not been collected. The above facts come from a third‐party regulatory announcement (RNS 1301W).",
+          "card_ids": [
+            "dg-7and8-albert-hall-mansions"
+          ],
+          "sources": [
+            "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+            "https://darglobal.co.uk/projects"
+          ],
+          "model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+        }
+      ]
+    },
+    {
+      "id": "A02",
+      "category": "arabic",
+      "lang": "ar",
+      "split": "tune",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 4469.0,
+      "intent": "general",
+      "path": "code",
+      "turns": [
+        {
+          "say": "كيف تعمل المزادات في وصلت؟",
+          "intent": "general",
+          "path": "code",
+          "reply_excerpt": "تعمل مزادات وصلت كمنصة مزادات إلكترونية محددة بوقت، يتنافس فيها المزايدون للوصول إلى السعر النهائي للبيع. تشمل المزادات أصولاً من ملاك أفراد وأخرى بالتعاون مع مركز الإسناد والتصفية (إنفاذ)، وتغطي العقارات والمركبات والأصول المنقولة في جميع ",
+          "answer": "تعمل مزادات وصلت كمنصة مزادات إلكترونية محددة بوقت، يتنافس فيها المزايدون للوصول إلى السعر النهائي للبيع. تشمل المزادات أصولاً من ملاك أفراد وأخرى بالتعاون مع مركز الإسناد والتصفية (إنفاذ)، وتغطي العقارات والمركبات والأصول المنقولة في جميع أنحاء المملكة. للمشاركة، يجب إنشاء حساب، الاطلاع على شروط كل مزاد (مثل سعر الاحتياط، زيادات المزايدة، وإيداع التأمين)، ثم تقديم العروض خلال فترة المزاد. الفائز يتحمل الرسوم الحكومية ونقل الملكية وفق الشروط المعلنة.",
+          "card_ids": [],
+          "sources": [
+            "https://wasalt.sa/ar",
+            "https://wasalt.sa/en/s/terms-n-conditions-for-auction"
+          ],
+          "model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+        }
+      ]
+    },
+    {
+      "id": "A15",
+      "category": "arabic",
+      "lang": "ar",
+      "split": "tune",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 6281.0,
+      "intent": "project_info",
+      "path": "code",
+      "turns": [
+        {
+          "say": "حدثني عن مشروع فلل إتوال",
+          "intent": "project_info",
+          "path": "code",
+          "reply_excerpt": "**مشروع فلل إتوال** \n- **الموقع**: الرياض، حي مطار الملك خالد (منصة Wasalt).  \n- **النوع**: فلل مستقلة.  \n- **غرف النوم**: 3 أو 4 غرف.  \n- **المساحات**: 300–422 م2.  \n- **السعر**: يبدأ من 4,200,000 ريال، ويصل إلى 10,178,420 ريال.  \n- **الحا",
+          "answer": "**مشروع فلل إتوال** \n- **الموقع**: الرياض، حي مطار الملك خالد (منصة Wasalt).  \n- **النوع**: فلل مستقلة.  \n- **غرف النوم**: 3 أو 4 غرف.  \n- **المساحات**: 300–422 م2.  \n- **السعر**: يبدأ من 4,200,000 ريال، ويصل إلى 10,178,420 ريال.  \n- **الحالة**: تحت الإنشاء.  \n- **سنة التسليم**: غير منشورة. للحصول على تفاصيل الوحدات المتاحة أو حجز زيارة، يُرجى التواصل مع فريق المبيعات عبر Wasalt.",
+          "card_ids": [
+            "wasalt-p-100159"
+          ],
+          "sources": [
+            "https://wasalt.sa/en/project/Riyadh/mshrwa-fll-itwal-100159"
+          ],
+          "model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+        }
+      ]
+    },
+    {
+      "id": "T01",
+      "category": "trap",
+      "lang": "en",
+      "split": "tune",
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 188.0,
+      "intent": "general",
+      "path": "template",
+      "turns": [
+        {
+          "say": "What is the starting price of Obsidian Palm Residences?",
+          "intent": "general",
+          "path": "template",
+          "reply_excerpt": "I could not find anything called “Obsidian Palm Residences” in the published data I hold, so I will not guess. Please check the spelling, or ask about a city or a budget instead.",
+          "answer": "I could not find anything called “Obsidian Palm Residences” in the published data I hold, so I will not guess. Please check the spelling, or ask about a city or a budget instead.",
+          "card_ids": [],
+          "sources": [],
+          "model": null
+        }
+      ]
+    }
+  ]
+}

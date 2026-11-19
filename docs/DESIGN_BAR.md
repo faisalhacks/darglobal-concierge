@@ -44,6 +44,20 @@ or justified. Workflow order before release: critique → audit → clarify → 
 - Popovers/menus never clipped by the chat container. No modal abuse.
 - Copy (EN + AR): no em-dash overuse, no "world-class / elevate / seamless / supercharge", no forced-contrast lines, no repeated labels in one card. Every error/empty state says what happened and what to do next. Never claim availability or prices not in the data.
 
+## AI-chat interaction rules (aiuxplayground.com patterns, agenticskills.io design skills)
+1. Auto-scroll follows the stream only while the reader is near the bottom; if they scroll up, stop and show a ≥ 44 px "Jump to latest".
+2. While streaming, Send becomes "Stop response"; stopping keeps the partial text. Copy/retry appear only after `done`. Focus returns to the composer.
+3. Reserve space for cards, compare tables and sources before they arrive; measured CLS < 0.1 during a test stream.
+4. Sources are tied to claims: each source shows who published it (DarGlobal / Wasalt, or an honest third-party label such as "LSE filing via ticker.app"), the page title as a link to the original, and a preview line with the host and the collection date. (Amended 20 Nov: the supporting excerpt is not shown per source; the "How I found this" trace names the passages used. An excerpt preview remains a possible later addition.) No footer list of URLs that maps to nothing ("trust theater").
+5. Prices and availability always show "Data as of {date}" in the viewer's locale. Stale data gets a text badge, not colour alone.
+6. "How I found this" is collapsed by default to one line with counts (e.g. "Searched 2,389 passages · used 3 sources · 0.4 s"). Expanded, it shows named steps. Never raw JSON, prompts or tool identifiers. It's a `<button aria-expanded>`.
+7. On a failed send: the text stays in the composer, the failed turn stays in the thread, one "Try again". Never auto-resend an LLM request.
+8. Interrupted answers are labelled "Incomplete" and say what finished. No success styling over half-finished work.
+9. Starter chips: 3–5, each a complete question in the active language, and only questions the dataset can answer well (verify each chip against the live data). Replaced by follow-up chips after the first answer. Desktop wraps; mobile may scroll horizontally (SPEC §15.3).
+10. Compare at most 4 projects; sticky label column at the inline-start edge; on narrow screens the table scrolls inside its own container with a visible edge cue that isn't colour alone.
+11. Refusals and out-of-scope: one sentence naming the kind of no (outside property data / needs a licensed advisor / not available) plus one next action. Contact = official DarGlobal/Wasalt links only. No transcript is sent anywhere (no data collection, SPEC §16).
+12. Screen readers hear the start and the end of a streamed answer, not every token.
+
 ## RTL specifics (not covered by Impeccable)
 - `lang`/`dir` on `<html>` from the locale toggle; `dir="auto"` on each message bubble for mixed text; `<bdi>` around prices, areas, project codes.
 - Logical CSS properties only (`margin-inline`, `inset-inline-start`, `text-align: start`). Mirror directional icons only (send, chevrons); never logos, photos, maps.

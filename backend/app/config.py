@@ -9,8 +9,9 @@ from dataclasses import dataclass, field
 
 FLAG_NAMES = ("FF_FIND_MY_HOME", "FF_MAP", "FF_VOICE", "FF_HANDOFF_BRIEF", "FF_WIDGET_DEMO")
 
-# Chosen from the public OpenRouter /models list on 2026-11-19; see backend/MODELS.md.
-DEFAULT_MODELS = "google/gemma-4-31b-it:free,google/gemma-4-26b-a4b-it:free,nvidia/nemotron-3-ultra-550b-a55b:free"
+# Chosen from the public OpenRouter /models list on 2026-11-19 and ordered by the live check of the same day
+# (NVIDIA first: the only model that answered in the 2026-11-19 live check and passed the Arabic gate; see MODELS.md).
+DEFAULT_MODELS = "nvidia/nemotron-3-ultra-550b-a55b:free,google/gemma-4-31b-it:free,google/gemma-4-26b-a4b-it:free"
 EMBED_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
 
@@ -59,9 +60,20 @@ class Settings:
     max_body_bytes: int = 16_384
     trusted_proxy_hops: int = 0  # proxies in front of us that append to X-Forwarded-For (1 on HF Spaces / Render)
     global_llm_per_min: int = 30  # process-wide chat cap while an LLM is configured (0 = off)
-    llm_tool_routing: bool = True
+    llm_tool_routing: bool = False  # off by default: one LLM call per message, the code planner routes
+    llm_daily_budget: int = 45  # outbound LLM requests per UTC day; at the cap: no calls, extractive answers
+    llm_quota_cooldown_s: float = 1800.0  # 402 / daily free cap -> quota state this long (or until X-RateLimit-Reset)
+    llm_boot_model_check: bool = True  # GET /models at boot (free, no completion) and drop unlisted / non-free models
+    answer_cache_path: str = "data/answer_cache.json"  # baked, read-only answer cache (backend/scripts/warm_cache.py)
     flags: dict[str, bool] = field(default_factory=dict)
     candidate: dict[str, str | None] = field(default_factory=dict)
+
+    @property
+    def llm_mode_label(self) -> str:
+        """live | mock | off, as reported by /api/meta."""
+        if self.llm_mode == "mock":
+            return "mock"
+        return "live" if self.llm_available else "off"
 
     @property
     def llm_available(self) -> bool:
@@ -113,7 +125,11 @@ def load_settings() -> Settings:
         max_body_bytes=_int("MAX_BODY_BYTES", 16_384),
         trusted_proxy_hops=max(0, _int("TRUSTED_PROXY_HOPS", 0)),
         global_llm_per_min=max(0, _int("GLOBAL_LLM_PER_MIN", 30)),
-        llm_tool_routing=_bool("LLM_TOOL_ROUTING", True),
+        llm_tool_routing=_bool("LLM_TOOL_ROUTING", False),
+        llm_daily_budget=max(0, _int("LLM_DAILY_BUDGET", 45)),
+        llm_quota_cooldown_s=max(1.0, _float("LLM_QUOTA_COOLDOWN_S", 1800.0)),
+        llm_boot_model_check=_bool("LLM_BOOT_MODEL_CHECK", True),
+        answer_cache_path=os.environ.get("ANSWER_CACHE_PATH", "data/answer_cache.json"),
         flags={f: _bool(f) for f in FLAG_NAMES},
         candidate={
             "name": os.environ.get("CANDIDATE_NAME") or None,

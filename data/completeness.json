@@ -1,38 +1,73 @@
 {
- "dataset_version": "20261119-a983bac1",
+ "dataset_version": "20261119-e5604e7e",
  "counts": {
-  "projects": 30,
+  "projects": 71,
   "listings": 1661,
-  "pages": 67,
-  "chunks": 2389,
+  "pages": 92,
+  "chunks": 2641,
   "projects_by_site": {
-   "DarGlobal": 0,
+   "DarGlobal": 41,
    "Wasalt": 30
   },
   "listings_by_type": {
    "buy": 1255,
    "rent": 406
+  },
+  "projects_detail_by_site": {
+   "DarGlobal": {
+    "page": 6,
+    "index": 32,
+    "thirdparty_only": 3,
+    "with_thirdparty_facts": 23,
+    "with_any_detail_facts": 29
+   }
+  },
+  "projects_by_site_country": {
+   "DarGlobal": {
+    "Oman": 15,
+    "Qatar": 2,
+    "Saudi Arabia": 10,
+    "Spain": 3,
+    "United Arab Emirates": 9,
+    "United Kingdom": 2
+   },
+   "Wasalt": {
+    "Saudi Arabia": 30
+   }
+  },
+  "pages_by_type": {
+   "about": 2,
+   "auctions": 1,
+   "city_guide": 47,
+   "contact": 2,
+   "guide": 8,
+   "guides_index": 1,
+   "home": 2,
+   "project_sources": 23,
+   "services": 1,
+   "sitemap_index": 1,
+   "terms": 4
   }
  },
  "completeness": {
   "projects": {
-   "name_en": 0.4,
-   "name_ar": 0.6,
-   "city": 1.0,
+   "name_en": 0.746,
+   "name_ar": 0.254,
+   "city": 0.915,
    "country": 1.0,
    "source_url": 1.0,
-   "price_from_amount": 1.0,
-   "status": 1.0,
-   "handover_year": 0.133,
-   "lat": 1.0,
-   "description_en": 0.0,
-   "description_ar": 0.867,
-   "image_urls": 1.0,
-   "property_types": 1.0,
-   "unit_types": 0.967,
-   "developer": 0.0,
-   "amenities": 0.333,
-   "area_min_m2": 0.9,
+   "price_from_amount": 0.423,
+   "status": 0.662,
+   "handover_year": 0.211,
+   "lat": 0.493,
+   "description_en": 0.085,
+   "description_ar": 0.366,
+   "image_urls": 0.507,
+   "property_types": 0.521,
+   "unit_types": 0.493,
+   "developer": 0.577,
+   "amenities": 0.225,
+   "area_min_m2": 0.465,
    "name_any": 1.0
   },
   "listings": {
@@ -47,6 +82,182 @@
    "property_type": 1.0,
    "image_urls": 0.744,
    "project_ref": 0.273
+  },
+  "by_site": {
+   "DarGlobal": {
+    "projects_n": 41,
+    "projects": {
+     "name_en": 1.0,
+     "name_ar": 0.0,
+     "city": 0.854,
+     "country": 1.0,
+     "source_url": 1.0,
+     "price_from_amount": 0.0,
+     "status": 0.415,
+     "handover_year": 0.268,
+     "lat": 0.122,
+     "description_en": 0.146,
+     "description_ar": 0.0,
+     "image_urls": 0.146,
+     "property_types": 0.171,
+     "unit_types": 0.146,
+     "developer": 1.0,
+     "amenities": 0.146,
+     "area_min_m2": 0.146
+    },
+    "projects_detail_page_n": 6,
+    "projects_detail_page": {
+     "name_en": 1.0,
+     "name_ar": 0.0,
+     "city": 1.0,
+     "country": 1.0,
+     "source_url": 1.0,
+     "price_from_amount": 0.0,
+     "status": 1.0,
+     "handover_year": 0.5,
+     "lat": 0.833,
+     "description_en": 1.0,
+     "description_ar": 0.0,
+     "image_urls": 1.0,
+     "property_types": 1.0,
+     "unit_types": 1.0,
+     "developer": 1.0,
+     "amenities": 1.0,
+     "area_min_m2": 1.0
+    },
+    "projects_with_thirdparty_facts_n": 23,
+    "projects_with_thirdparty_facts": {
+     "name_en": 1.0,
+     "name_ar": 0.0,
+     "city": 0.826,
+     "country": 1.0,
+     "source_url": 1.0,
+     "price_from_amount": 0.0,
+     "status": 0.478,
+     "handover_year": 0.348,
+     "lat": 0.0,
+     "description_en": 0.0,
+     "description_ar": 0.0,
+     "image_urls": 0.0,
+     "property_types": 0.043,
+     "unit_types": 0.0,
+     "developer": 1.0,
+     "amenities": 0.0,
+     "area_min_m2": 0.0
+    },
+    "projects_thirdparty_only_n": 3
+   },
+   "Wasalt": {
+    "projects_n": 30,
+    "projects": {
+     "name_en": 0.4,
+     "name_ar": 0.6,
+     "city": 1.0,
+     "country": 1.0,
+     "source_url": 1.0,
+     "price_from_amount": 1.0,
+     "status": 1.0,
+     "handover_year": 0.133,
+     "lat": 1.0,
+     "description_en": 0.0,
+     "description_ar": 0.867,
+     "image_urls": 1.0,
+     "property_types": 1.0,
+     "unit_types": 0.967,
+     "developer": 0.0,
+     "amenities": 0.333,
+     "area_min_m2": 0.9
+    },
+    "listings_n": 1661
+   }
+  }
+ },
+ "by_site": {
+  "DarGlobal": {
+   "projects_n": 41,
+   "projects": {
+    "name_en": 1.0,
+    "name_ar": 0.0,
+    "city": 0.854,
+    "country": 1.0,
+    "source_url": 1.0,
+    "price_from_amount": 0.0,
+    "status": 0.415,
+    "handover_year": 0.268,
+    "lat": 0.122,
+    "description_en": 0.146,
+    "description_ar": 0.0,
+    "image_urls": 0.146,
+    "property_types": 0.171,
+    "unit_types": 0.146,
+    "developer": 1.0,
+    "amenities": 0.146,
+    "area_min_m2": 0.146
+   },
+   "projects_detail_page_n": 6,
+   "projects_detail_page": {
+    "name_en": 1.0,
+    "name_ar": 0.0,
+    "city": 1.0,
+    "country": 1.0,
+    "source_url": 1.0,
+    "price_from_amount": 0.0,
+    "status": 1.0,
+    "handover_year": 0.5,
+    "lat": 0.833,
+    "description_en": 1.0,
+    "description_ar": 0.0,
+    "image_urls": 1.0,
+    "property_types": 1.0,
+    "unit_types": 1.0,
+    "developer": 1.0,
+    "amenities": 1.0,
+    "area_min_m2": 1.0
+   },
+   "projects_with_thirdparty_facts_n": 23,
+   "projects_with_thirdparty_facts": {
+    "name_en": 1.0,
+    "name_ar": 0.0,
+    "city": 0.826,
+    "country": 1.0,
+    "source_url": 1.0,
+    "price_from_amount": 0.0,
+    "status": 0.478,
+    "handover_year": 0.348,
+    "lat": 0.0,
+    "description_en": 0.0,
+    "description_ar": 0.0,
+    "image_urls": 0.0,
+    "property_types": 0.043,
+    "unit_types": 0.0,
+    "developer": 1.0,
+    "amenities": 0.0,
+    "area_min_m2": 0.0
+   },
+   "projects_thirdparty_only_n": 3
+  },
+  "Wasalt": {
+   "projects_n": 30,
+   "projects": {
+    "name_en": 0.4,
+    "name_ar": 0.6,
+    "city": 1.0,
+    "country": 1.0,
+    "source_url": 1.0,
+    "price_from_amount": 1.0,
+    "status": 1.0,
+    "handover_year": 0.133,
+    "lat": 1.0,
+    "description_en": 0.0,
+    "description_ar": 0.867,
+    "image_urls": 1.0,
+    "property_types": 1.0,
+    "unit_types": 0.967,
+    "developer": 0.0,
+    "amenities": 0.333,
+    "area_min_m2": 0.9
+   },
+   "listings_n": 1661
   }
  }
 }

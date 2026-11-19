@@ -19,12 +19,14 @@ scraper/snapshots
 **/playwright-report
 evals/results/*
 !evals/results/latest.json
+evals/screens
+frontend/screenshots
+scraper
 loadtest
 _pipeline
 deploy
 *.md
 !backend/**/*.md
-data/index
 **/.pytest_cache
 **/.mypy_cache
 **/.ruff_cache

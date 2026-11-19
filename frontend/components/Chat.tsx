@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { API_BASE } from "@/lib/api";
-import { hasArabic } from "@/lib/format";
+import { fmtDate, fmtNumber, hasArabic } from "@/lib/format";
 import { DEFAULT_CHIPS, STRINGS, TRAP_CHIP } from "@/lib/i18n";
 import { readSSE } from "@/lib/sse";
 import type {
@@ -25,17 +25,6 @@ type Turn = UserTurn | AssistantTurn;
 
 const uid = () => (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`);
 
-function noticeKey(intent?: string): string | null {
-  if (!intent) return null;
-  const i = intent.toLowerCase();
-  if (i.includes("inject")) return "injection";
-  if (i.includes("off_topic") || i.includes("offtopic") || i === "out_of_scope") return "off_topic";
-  if (i.includes("advice")) return "advice";
-  if (i.includes("no_data") || i.includes("nodata")) return "no_data";
-  if (i.includes("contact")) return "contact";
-  return null;
-}
-
 /** Plain-text renderer: paragraphs and simple dash lists. Model prose never carries links (SPEC §18). */
 function Prose({ text }: { text: string }) {
   const blocks = text.replace(/\r/g, "").split(/\n{2,}/);
@@ -52,12 +41,35 @@ function Prose({ text }: { text: string }) {
   );
 }
 
-export function Chat({ embedded = false }: { embedded?: boolean }) {
+/** The first message: what is in the corpus, from /api/meta numbers only. */
+function Greeting() {
   const { t, lang, meta } = useApp();
+  if (!meta) return <p>{t.greetingNoMeta}</p>;
+  const n = (v: number | undefined) => fmtNumber(v ?? 0, lang);
+  const dg = meta.coverage?.DarGlobal;
+  const dgProjects = dg?.projects ?? meta.counts_by_site?.DarGlobal?.projects ?? 0;
+  const ws = meta.coverage?.Wasalt;
+  const wsProjects = ws?.projects ?? meta.counts_by_site?.Wasalt?.projects ?? 0;
+  const wsListings = ws?.listings ?? meta.counts_by_site?.Wasalt?.listings ?? meta.counts?.listings ?? 0;
+  const date = fmtDate(meta.data_as_of, lang);
+  return (
+    <>
+      <p>{t.greetingLead}</p>
+      <p>
+        {dgProjects > 0
+          ? t.corpusBoth(n(dgProjects), n(dg?.detail_pages ?? 0), n(wsProjects), n(wsListings), date)
+          : t.corpusGap(n(wsProjects), n(wsListings), date)}
+      </p>
+      {dgProjects > 0 && dg?.prices_published !== true && <p>{t.greetingNoPrice}</p>}
+    </>
+  );
+}
+
+export function Chat({ embedded = false }: { embedded?: boolean }) {
+  const { t, lang, meta, setResetChat } = useApp();
   const [turns, setTurns] = useState<Turn[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
-  const [online, setOnline] = useState(true);
   const [rateUntil, setRateUntil] = useState(0);
   const [now, setNow] = useState(() => Date.now());
   const [announce, setAnnounce] = useState("");
@@ -66,18 +78,17 @@ export function Chat({ embedded = false }: { embedded?: boolean }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const stickRef = useRef(true);
   const taRef = useRef<HTMLTextAreaElement>(null);
-  const trapCount = useRef(0);
+  const [showJump, setShowJump] = useState(false);
 
   useEffect(() => { sessionId.current = uid(); }, []);
 
+  // "New conversation" lives in the header once a conversation exists.
+  const hasTurns = turns.length > 0;
   useEffect(() => {
-    const up = () => setOnline(true);
-    const down = () => setOnline(false);
-    setOnline(navigator.onLine);
-    window.addEventListener("online", up);
-    window.addEventListener("offline", down);
-    return () => { window.removeEventListener("online", up); window.removeEventListener("offline", down); };
-  }, []);
+    if (embedded) return;
+    setResetChat(hasTurns && !busy ? () => { setTurns([]); setInput(""); sessionId.current = uid(); taRef.current?.focus(); } : null);
+  }, [hasTurns, busy, embedded, setResetChat]);
+  useEffect(() => () => setResetChat(null), [setResetChat]);
 
   // Rate-limit countdown
   useEffect(() => {
@@ -103,9 +114,22 @@ export function Chat({ embedded = false }: { embedded?: boolean }) {
     const bottom = el.scrollHeight - el.clientHeight;
     el.scrollTo({ top: Math.max(0, Math.min(top, bottom)), behavior: "instant" as ScrollBehavior });
   }, [turns]);
+  // "Jump to latest" appears whenever the end of the conversation is below the fold (DESIGN_BAR chat rules).
+  const updateJump = useCallback(() => {
+    const el = scrollRef.current;
+    setShowJump(Boolean(el && el.scrollHeight - el.scrollTop - el.clientHeight > 120));
+  }, []);
+  useEffect(() => { updateJump(); }, [turns, updateJump]);
+  const jumpLatest = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    stickRef.current = false;
+    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+  };
   const onScroll = () => {
     const el = scrollRef.current;
     if (!el) return;
+    updateJump();
     const users = el.querySelectorAll<HTMLElement>(".turn--user");
     const q = users[users.length - 1];
     // the reader scrolled away from the latest question: stop moving the view for them
@@ -158,8 +182,14 @@ export function Chat({ embedded = false }: { embedded?: boolean }) {
         try { const j = await res.json(); body = j?.error ?? j ?? {}; } catch { /* not JSON */ }
         const code: ErrorEvent["code"] = res.status === 429 ? "RATE_LIMITED" : res.status === 400 || res.status === 422 ? "BAD_INPUT" : (body.code as ErrorEvent["code"]) ?? "INTERNAL";
         const retry = Number(body.retry_after_s ?? res.headers.get("Retry-After") ?? 0);
-        if (code === "RATE_LIMITED") { setRateUntil(Date.now() + Math.max(retry || 30, 1) * 1000); setInput((v) => v || message); }
-        patch(aId, (a) => ({ ...a, status: "error", error: { code, message: body.message } }));
+        setInput((v) => v || message);
+        if (code === "RATE_LIMITED") {
+          // One message only: the countdown sits at the composer and the question is back in the box.
+          setRateUntil(Date.now() + Math.max(retry || 30, 1) * 1000);
+          setTurns(prior);
+        } else {
+          patch(aId, (a) => ({ ...a, status: "error", error: { code, message: body.message } }));
+        }
         finished = true;
         return;
       }
@@ -186,16 +216,17 @@ export function Chat({ embedded = false }: { embedded?: boolean }) {
           case "error": {
             const e = d as ErrorEvent;
             finished = true;
-            if (e.code === "RATE_LIMITED") { setRateUntil(Date.now() + Math.max(e.retry_after_s ?? 30, 1) * 1000); setInput((v) => v || message); }
+            setInput((v) => v || message);
+            if (e.code === "RATE_LIMITED") setRateUntil(Date.now() + Math.max(e.retry_after_s ?? 30, 1) * 1000);
             patch(aId, (a) => ({ ...a, status: "error", error: { code: e.code, message: e.message } }));
             break;
           }
         }
       });
-      if (!finished) patch(aId, (a) => ({ ...a, status: "error", error: { code: "NETWORK" } }));
+      if (!finished) { setInput((v) => v || message); patch(aId, (a) => ({ ...a, status: "error", error: { code: "NETWORK" } })); }
     } catch (err) {
       if (ac.signal.aborted) patch(aId, (a) => ({ ...a, status: "stopped" }));
-      else patch(aId, (a) => ({ ...a, status: "error", error: { code: "NETWORK" } }));
+      else { setInput((v) => v || message); patch(aId, (a) => ({ ...a, status: "error", error: { code: "NETWORK" } })); }
       console.warn(err);
     } finally {
       abortRef.current = null;
@@ -215,6 +246,7 @@ export function Chat({ embedded = false }: { embedded?: boolean }) {
 
   const retry = (a: AssistantTurn) => {
     if (!canSend) return;
+    setInput((v) => (v === a.forText ? "" : v));
     const idx = turns.findIndex((x) => x.id === a.id);
     // drop the failed pair (user + assistant) and resend the same message
     const prior = turns.slice(0, Math.max(0, idx - 1));
@@ -223,14 +255,14 @@ export function Chat({ embedded = false }: { embedded?: boolean }) {
 
   const pickChip = (c: Chip) => send(c.message);
   const trap = TRAP_CHIP[lang];
-  const defaultChips: Chip[] = [
-    ...DEFAULT_CHIPS[lang],
-    { label: trap.label, message: trap.messages[trapCount.current % trap.messages.length] },
-  ];
-  const pickDefault = (c: Chip) => {
-    if (c.label === trap.label) trapCount.current += 1;
-    send(c.message);
-  };
+  // Starter chips come from rows that exist (C2 meta.starter_chips, last one is the guardrail test); the local list
+  // is a fallback only. A chip always sends exactly the text it shows.
+  const served = meta?.starter_chips?.[lang]?.filter((x) => typeof x === "string" && x.trim()) ?? [];
+  const defaultChips: Chip[] = served.length
+    ? served.map((q) => ({ label: q, message: q }))
+    : [...DEFAULT_CHIPS[lang].map((q) => ({ label: q, message: q })), { label: trap.label, message: trap.label }];
+  const trapLabel = served.length ? served[served.length - 1] : trap.label;
+  const pickDefault = (c: Chip) => send(c.message);
 
   const lastAssistant = [...turns].reverse().find((x): x is AssistantTurn => x.role === "assistant");
   const tooLong = input.length > MAX_CHARS;
@@ -248,24 +280,22 @@ export function Chat({ embedded = false }: { embedded?: boolean }) {
 
   return (
     <main className={`chat${embedded ? " chat--embedded" : ""}${turns.length > 0 ? " chat--active" : ""}`} aria-label={t.concierge}>
-      {(!online || meta?.llm_available === false) && (
-        <div className="chat__banners">
-          {!online && <p className="banner banner--offline" role="status">{t.offline}</p>}
-          {meta?.llm_available === false && <p className="banner banner--degraded" role="note">{t.degradedBanner}</p>}
-        </div>
-      )}
-
       <div className="chat__scroll" ref={scrollRef} onScroll={onScroll} id="main" tabIndex={-1}>
         <div className="chat__inner">
           {turns.length === 0 ? (
             <div className="greeting">
-              <Mark size={28} />
-              <h2 className="greeting__title">{t.greetingTitle}</h2>
-              <p className="greeting__body">{t.greetingBody}</p>
-              <p className="greeting__try">{t.greetingTry}</p>
-              <Chips chips={defaultChips} onPick={pickDefault} disabled={!canSend} trapLabel={trap.label} />
+              <div className="greeting__msg">
+                <span className="turn__mark" aria-hidden="true"><Mark size={14} /></span>
+                <div className="prose greeting__body">
+                  <h2 className="sr-only">{t.concierge}</h2>
+                  <Greeting />
+                </div>
+              </div>
+              <Chips chips={defaultChips} onPick={pickDefault} disabled={!canSend} trapLabel={trapLabel} label={t.greetingTry} />
             </div>
           ) : (
+            <>
+            <h2 className="sr-only">{t.concierge}</h2>
             <ol className="log" aria-label={t.concierge}>
               {turns.map((x) =>
                 x.role === "user" ? (
@@ -286,10 +316,17 @@ export function Chat({ embedded = false }: { embedded?: boolean }) {
                 ),
               )}
             </ol>
+            </>
           )}
         </div>
       </div>
 
+      {showJump && (
+        <button type="button" className="jump-latest" onClick={jumpLatest}>
+          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          {t.jumpLatest}
+        </button>
+      )}
       <form
         className="composer"
         onSubmit={(e) => { e.preventDefault(); send(input); }}
@@ -313,7 +350,7 @@ export function Chat({ embedded = false }: { embedded?: boolean }) {
             aria-describedby={showCounter ? "composer-count" : undefined}
           />
           {busy ? (
-            <button type="button" className="composer__btn composer__btn--stop" onClick={() => abortRef.current?.abort()}>
+            <button type="button" className="composer__btn composer__btn--stop" onClick={() => { abortRef.current?.abort(); taRef.current?.focus(); }}>
               {t.stop}
             </button>
           ) : (
@@ -322,12 +359,14 @@ export function Chat({ embedded = false }: { embedded?: boolean }) {
             </button>
           )}
         </div>
-        <div className="composer__foot">
-          {showCounter ? <span id="composer-count" className={tooLong ? "warn" : ""}>{t.charsLeft(Math.max(0, MAX_CHARS - input.length))}</span> : <span />}
-          {turns.length > 0 && !busy && (
-            <button type="button" className="linkish" onClick={() => { setTurns([]); sessionId.current = uid(); }}>{t.newChat}</button>
-          )}
-        </div>
+        {(showCounter || embedded) && (
+          <div className="composer__foot">
+            {showCounter ? <span id="composer-count" className={tooLong ? "warn" : ""}>{t.charsLeft(Math.max(0, MAX_CHARS - input.length))}</span> : <span />}
+            {embedded && turns.length > 0 && !busy && (
+              <button type="button" className="linkish" onClick={() => { setTurns([]); sessionId.current = uid(); }}>{t.newChat}</button>
+            )}
+          </div>
+        )}
       </form>
       <p className="sr-only" role="status" aria-live="polite">{announce}</p>
     </main>
@@ -342,19 +381,25 @@ function AssistantView({
 }) {
   const { lang: uiLang } = useApp();
   const t = STRINGS[a.lang] ?? STRINGS[uiLang];
-  const nk = noticeKey(a.meta?.intent);
   const dir = a.lang === "ar" ? "rtl" : "ltr";
   // Sources already listed under a comparison table are not repeated below the answer.
   const inCompare = new Set((a.compare?.sources ?? []).map((x) => x.url));
   const msgSources = (a.sources ?? []).filter((x) => !inCompare.has(x.url));
   const showSources = msgSources.length > 0 || (a.status === "done" && a.meta?.data_as_of);
+  const [copied, setCopied] = useState(false);
+  const midStream = a.status === "error" && a.text.length > 0;
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(a.text);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch { /* clipboard blocked: nothing to do */ }
+  };
   return (
     <li className={`turn turn--assistant${a.status === "error" ? " turn--error" : ""}`} lang={a.lang} dir={dir}>
       <span className="turn__mark" aria-hidden="true"><Mark size={14} /></span>
       <div className="turn__body">
         <span className="sr-only">{t.concierge}: </span>
-        {nk && <p className={`notice notice--${nk}`}>{t.noticeLabels[nk]}</p>}
-        {a.trace?.degraded && <p className="notice notice--degraded">{t.degradedMsg}</p>}
 
         {a.status === "waiting" && (
           <div className="skeleton" aria-label={t.thinking}>
@@ -374,17 +419,27 @@ function AssistantView({
         {a.calc && <CalcResult c={a.calc} t={t} />}
         {showSources && <SourceList sources={msgSources} t={t} asOf={a.meta?.data_as_of} lang={a.lang} />}
 
-        {a.status === "stopped" && <p className="muted small">{t.stopped}</p>}
+        {a.status === "stopped" && (
+          <div className="alert alert--rate" role="status">
+            <p>{a.text ? t.incomplete : t.stopped}</p>
+            <button type="button" className="btn-quiet" onClick={onRetry} disabled={!canSend}>{t.retry}</button>
+          </div>
+        )}
         {a.status === "error" && a.error && (
           <div className={`alert alert--${a.error.code === "RATE_LIMITED" ? "rate" : "error"}`} role="alert">
-            <p>{errorText(a.error.code, a.error.message)}</p>
+            <p>{midStream ? `${t.incomplete} ${errorText(a.error.code, a.error.message)}` : errorText(a.error.code, a.error.message)}</p>
             {a.error.code !== "RATE_LIMITED" && a.error.code !== "BAD_INPUT" && (
               <button type="button" className="btn-quiet" onClick={onRetry} disabled={!canSend}>{t.retry}</button>
             )}
           </div>
         )}
 
-        {a.trace && <Trace tr={a.trace} t={t} />}
+        {a.status === "done" && a.text && (
+          <div className="turn__actions">
+            <button type="button" className="btn-text" onClick={copy} aria-live="polite">{copied ? t.copied : t.copy}</button>
+          </div>
+        )}
+        {a.trace && <Trace tr={a.trace} t={t} nSources={a.sources?.length ?? 0} />}
         {isLast && a.status === "done" && a.chips && a.chips.length > 0 && <Chips chips={a.chips} onPick={onChip} disabled={!canSend} />}
       </div>
     </li>

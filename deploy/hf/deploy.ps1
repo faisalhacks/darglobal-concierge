@@ -29,6 +29,18 @@ try {
   if (-not (Test-Path $db)) { throw 'data/concierge.sqlite not found' }
   New-Item -ItemType Directory -Path (Join-Path $bundle 'data') | Out-Null
   Copy-Item $db (Join-Path $bundle 'data\concierge.sqlite')
+  # The embedding index is built OUTSIDE Docker (the in-image build ran out of memory) and COPYed by the Dockerfile.
+  $idx = Join-Path $root 'data\index'
+  foreach ($f in 'embeddings.npy','ids.json','meta.json') {
+    if (-not (Test-Path (Join-Path $idx $f))) { throw "data/index/$f missing: run python -m backend.app.build_index first" }
+  }
+  Copy-Item -Recurse $idx (Join-Path $bundle 'data\index')
+  $cache = Join-Path $root 'data\answer_cache.json'
+  if (Test-Path $cache) { Copy-Item $cache (Join-Path $bundle 'data\answer_cache.json') }
+  $evals = Join-Path $root 'evals\results\latest.json'
+  if (-not (Test-Path $evals)) { throw 'evals/results/latest.json not found (the Dockerfile COPYs it)' }
+  New-Item -ItemType Directory -Path (Join-Path $bundle 'evals\results') -Force | Out-Null
+  Copy-Item $evals (Join-Path $bundle 'evals\results\latest.json')
   Copy-Item (Join-Path $root 'Dockerfile') $bundle
   Copy-Item (Join-Path $root '.dockerignore') $bundle
   Copy-Item (Join-Path $PSScriptRoot 'README_SPACE.md') (Join-Path $bundle 'README.md')

@@ -151,6 +151,14 @@ class Store:
         return {"projects": len(self.projects), "listings": len(self.listings),
                 "pages": len(self.pages), "chunks": len(self.chunks)}
 
+    def coverage(self) -> dict:
+        """Contract C2 /api/meta.coverage, computed from the rows actually loaded."""
+        dg = [p for p in self.projects if p["site"] == "DarGlobal"]
+        return {"DarGlobal": {"projects": len(dg), "detail_pages": sum(1 for p in dg if detail_level(p) == "page"),
+                              "prices_published": any(p.get("price_from_amount") is not None for p in dg)},
+                "Wasalt": {"projects": sum(1 for p in self.projects if p["site"] == "Wasalt"),
+                           "listings": len(self.listings)}}
+
     # ---------- lookups ----------
     def project_by_id(self, pid: str) -> dict | None:
         return next((p for p in self.projects if p["id"] == pid or p.get("slug") == pid), None)
@@ -240,21 +248,76 @@ def project_name(p: dict, lang: str = "en") -> str:
     return p.get("name_en") or p.get("name_ar") or p.get("slug") or p["id"]
 
 
+# Contract C1: a DarGlobal row whose source is the projects index holds name + location only.
+DARGLOBAL_INDEX_URL = "https://darglobal.co.uk/projects"
+PRICE_ON_REQUEST = {"en": "Price on request", "ar": "السعر عند الطلب"}
+
+
+OFFICIAL_HOSTS = ("darglobal.co.uk", "darglobal.com", "wasalt.sa", "wasalt.com")
+# Third-party hosts that carry sourced DarGlobal facts, with an honest label (never "DarGlobal").
+THIRDPARTY_LABELS = {"ticker.app": "LSE filing via ticker.app", "thenationalnews.com": "The National (news)"}
+
+
+def _host(url: str | None) -> str:
+    try:
+        h = (urlparse(url or "").hostname or "").lower()
+    except ValueError:
+        return ""
+    return h[4:] if h.startswith("www.") else h
+
+
+_TEST_SUFFIXES = (".invalid", ".test", ".example", "example.com", "example.org")  # RFC 2606 names in test fixtures
+
+
+def is_official(url: str | None) -> bool:
+    h = _host(url)
+    return any(h == d or h.endswith("." + d) for d in OFFICIAL_HOSTS) or h.endswith(_TEST_SUFFIXES)
+
+
+def source_site(url: str | None, site: str | None) -> str:
+    """Who published the page at `url`: the brand for its own domains, otherwise an honest third-party label."""
+    h = _host(url)
+    if not h or is_official(url):
+        return "Wasalt" if "wasalt" in h else "DarGlobal" if "darglobal" in h else site_label(site)
+    return next((v for k, v in THIRDPARTY_LABELS.items() if h == k or h.endswith("." + k)), h)
+
+
+def detail_level(p: dict) -> str:
+    """'index' = collected from the DarGlobal projects index only (name + location); 'thirdparty' = the structured
+    record comes from a third-party public source (LSE filing, press); 'page' = its own official page was collected."""
+    u = (p.get("source_url") or "").rstrip("/")
+    if u == DARGLOBAL_INDEX_URL:
+        return "index"
+    return "page" if (not u or is_official(u)) else "thirdparty"
+
+
+def price_label(p: dict, lang: str = "en") -> str:
+    return fmt_money(p.get("price_from_amount"), p.get("price_from_currency")) or \
+        PRICE_ON_REQUEST["ar" if lang == "ar" else "en"]
+
+
 def project_card(p: dict, lang: str = "en") -> dict:
+    from .planner import place_display
     return {
         "id": p["id"], "slug": p.get("slug") or p["id"], "name": project_name(p, lang), "site": p["site"],
         "city": p.get("city"), "country": p.get("country"),
+        "city_display": place_display(p.get("city"), lang) or None,
+        "country_display": place_display(p.get("country"), lang) or None,
+        "source_site": source_site(p.get("source_url"), p.get("site")),
         "price_from": money(p.get("price_from_amount"), p.get("price_from_currency")),
+        "price_label": price_label(p, lang), "detail": detail_level(p),
         "status": p.get("status"), "image_url": _first_image(p), "source_url": p.get("source_url"),
     }
 
 
-def listing_card(x: dict) -> dict:
+def listing_card(x: dict, lang: str = "en") -> dict:
+    from .planner import place_display
     return {
         "id": x["id"], "title": x.get("title") or "", "site": "Wasalt", "listing_type": x.get("listing_type"),
         "price": money(x.get("price_amount"), x.get("price_currency")),
         "beds": x.get("beds"), "baths": x.get("baths"), "area_m2": x.get("area_m2"),
-        "district": x.get("district"), "city": x.get("city"), "image_url": _first_image(x),
+        "district": x.get("district"), "city": x.get("city"),
+        "city_display": place_display(x.get("city"), lang) or None, "image_url": _first_image(x),
         "source_url": x.get("source_url"),
     }
 
@@ -270,6 +333,8 @@ def project_fact_text(p: dict) -> str:
         parts.append(f"Brand partner: {p['brand_partner']}")
     if p.get("price_from_amount") is not None:
         parts.append(f"Price from: {fmt_money(p['price_from_amount'], p.get('price_from_currency'))}")
+    else:
+        parts.append("Price: not published")
     if p.get("property_types"):
         parts.append("Property types: " + ", ".join(map(str, p["property_types"])))
     if p.get("unit_types"):
@@ -278,6 +343,28 @@ def project_fact_text(p: dict) -> str:
         parts.append(f"Status: {p['status']}")
     if p.get("handover_year"):
         parts.append(f"Handover: {p['handover_year']}")
+    return ". ".join(parts)
+
+
+def project_fact_text_ar(p: dict) -> str:
+    """Arabic labels for the LLM context of an Arabic question (values stay as published)."""
+    from .planner import place_display
+    parts = [f"المشروع: {project_name(p, 'ar')}"]
+    loc = "، ".join(place_display(x, "ar") for x in (p.get("city"), p.get("country")) if x)
+    if loc:
+        parts.append(f"الموقع: {loc}")
+    if p.get("developer"):
+        parts.append("المطور: " + ("دار جلوبال" if p["developer"] == "DarGlobal" else p["developer"]))
+    if p.get("brand_partner"):
+        parts.append(f"العلامة الشريكة: {p['brand_partner']}")
+    price = fmt_money(p.get("price_from_amount"), p.get("price_from_currency"))
+    parts.append(f"السعر يبدأ من: {price}" if price else "السعر: غير منشور")
+    if p.get("unit_types"):
+        parts.append("أنواع الوحدات: " + "، ".join(map(str, p["unit_types"])))
+    if p.get("status"):
+        parts.append(f"الحالة: {p['status']}")
+    if p.get("handover_year"):
+        parts.append(f"التسليم: {p['handover_year']}")
     return ". ".join(parts)
 
 
@@ -293,7 +380,9 @@ def listing_fact_text(x: dict) -> str:
 
 
 def source_of(row: dict, title: str | None = None) -> dict:
-    return {"site": site_label(row.get("site")), "title": title or row.get("title") or row.get("name_en") or "",
+    # site = who published the page (honest label); brand = which brand's project/listing it is about.
+    return {"site": source_site(row.get("source_url"), row.get("site")), "brand": site_label(row.get("site")),
+            "title": title or row.get("title") or row.get("name_en") or "",
             "url": row.get("source_url"), "scraped_at": row.get("scraped_at")}
 
 

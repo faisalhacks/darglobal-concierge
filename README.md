@@ -1,6 +1,6 @@
 # DarGlobal x Wasalt AI Property Concierge
 
-**Try it now: {APP_URL}** (works on a phone; English and Arabic). How it works: {APP_URL}/how-it-works. Evaluation: {APP_URL}/evals.
+**Try it now: https://concierge-production-e52d6c12.up.railway.app** (works on a phone; English and Arabic). How it works: https://concierge-production-e52d6c12.up.railway.app/how-it-works. Evaluation: https://concierge-production-e52d6c12.up.railway.app/evals.
 
 > Candidate prototype, not an official channel. Not affiliated with DarGlobal or Wasalt. Not an advertisement, offer or investment advice.
 

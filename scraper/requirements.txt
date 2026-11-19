@@ -1,0 +1,4 @@
+httpx
+selectolax>=0.3.21
+pydantic>=2
+pytest

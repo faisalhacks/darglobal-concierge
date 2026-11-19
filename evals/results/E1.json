@@ -1,0 +1,76 @@
+{
+  "experiment": "E1",
+  "functions": {
+    "bm25": "bm25_search",
+    "embeddings": "vector_search",
+    "hybrid": "hybrid_search"
+  },
+  "results": {
+    "bm25": {
+      "en_name": {
+        "n": 12,
+        "hit@1": 1.0,
+        "hit@6": 1.0,
+        "mrr": 1.0,
+        "ms_per_query": 196.7
+      },
+      "ar_name": {
+        "n": 18,
+        "hit@1": 0.944,
+        "hit@6": 1.0,
+        "mrr": 0.956,
+        "ms_per_query": 2.6
+      },
+      "en_city": {
+        "n": 5,
+        "precision@6": 0.0,
+        "ms_per_query": 0.0
+      }
+    },
+    "embeddings": {
+      "en_name": {
+        "n": 12,
+        "hit@1": 0.75,
+        "hit@6": 1.0,
+        "mrr": 0.819,
+        "ms_per_query": 26.1
+      },
+      "ar_name": {
+        "n": 18,
+        "hit@1": 0.333,
+        "hit@6": 0.556,
+        "mrr": 0.428,
+        "ms_per_query": 21.7
+      },
+      "en_city": {
+        "n": 5,
+        "precision@6": 0.067,
+        "ms_per_query": 18.6
+      }
+    },
+    "hybrid": {
+      "en_name": {
+        "n": 12,
+        "hit@1": 0.917,
+        "hit@6": 1.0,
+        "mrr": 0.958,
+        "ms_per_query": 26.1
+      },
+      "ar_name": {
+        "n": 18,
+        "hit@1": 0.667,
+        "hit@6": 0.889,
+        "mrr": 0.735,
+        "ms_per_query": 27.8
+      },
+      "en_city": {
+        "n": 5,
+        "precision@6": 0.067,
+        "ms_per_query": 25.0
+      }
+    }
+  },
+  "notes": [],
+  "caveat": "Proxy benchmark built from the DB itself (known-item + city precision); small n; not end-to-end quality.",
+  "run_at": "2026-11-19T09:09:26+00:00"
+}

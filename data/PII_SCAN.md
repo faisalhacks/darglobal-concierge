@@ -1,0 +1,13 @@
+# PII scan — 2026-11-19T08:45:25+00:00
+
+Dataset: `data/concierge.sqlite` version `20261119-a983bac1`
+
+Patterns: Saudi mobile (05xxxxxxxx / +9665xxxxxxxx), any +international 9-14 digits, 10-digit 0-prefixed numbers, email addresses, wa.me / 'whatsapp <digits>'. Arabic-Indic digits normalised before matching. Also checks that no agent/owner/phone/email/whatsapp column exists in projects/listings.
+
+Columns scanned: projects(name_en,name_ar,developer,description_en,description_ar,status), listings(title,district), pages(title,text), chunks(text).
+
+**Hits in concierge.sqlite: 0**
+**Hits in fixtures/mini.sqlite: 0**
+
+
+Fields never extracted at source (by design): leadContactInfo, propertyOwner, contactDetails, ownerName, resEmployee, managedBy (person/agency names), REGA licence numbers.

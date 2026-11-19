@@ -1,0 +1,35 @@
+﻿# Secrets: never committed
+.env
+.env.*
+!.env.example
+
+# Python
+**/.venv/
+**/venv/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+**/.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node / Next.js
+**/node_modules/
+frontend/.next/
+frontend/out/
+*.tsbuildinfo
+
+# Raw scrape snapshots (~69 MB, contain third-party page bodies); ledger + block record are kept
+scraper/snapshots/*
+!scraper/snapshots/_ledger.jsonl
+!scraper/snapshots/_blocked.json
+
+# Build artefacts regenerated from data/concierge.sqlite (python -m backend.app.build_index)
+data/index/
+
+# Tool/test output
+*.log
+**/test-results/
+**/playwright-report/
+.playwright-mcp/
+loadtest/results/*.json

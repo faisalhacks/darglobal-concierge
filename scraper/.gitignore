@@ -1,0 +1,8 @@
+.venv/
+*.log
+__pycache__/
+.pytest_cache/
+# raw snapshots are ~69 MB (incl. a 10 MB product sitemap); keep locally, do not commit
+snapshots/
+!snapshots/_ledger.jsonl
+!snapshots/_blocked.json

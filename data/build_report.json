@@ -1,0 +1,352 @@
+{
+ "dataset_version": "20261119-a983bac1",
+ "counts": {
+  "projects": 30,
+  "listings": 1661,
+  "pages": 67,
+  "chunks": 2389,
+  "projects_by_site": {
+   "DarGlobal": 0,
+   "Wasalt": 30
+  },
+  "listings_by_type": {
+   "buy": 1255,
+   "rent": 406
+  }
+ },
+ "mini_counts": {
+  "projects": 10,
+  "listings": 10,
+  "pages": 10,
+  "chunks": 100,
+  "projects_by_site": {
+   "DarGlobal": 0,
+   "Wasalt": 10
+  },
+  "listings_by_type": {
+   "buy": 7,
+   "rent": 3
+  }
+ },
+ "pii_hits": 0,
+ "mini_pii_hits": 0,
+ "srp_site_counts": {
+  "https://wasalt.sa/en/apartments-for-rent-in-dammam": {
+   "site_count": 658,
+   "on_page": 30,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/apartments-for-rent-in-jeddah": {
+   "site_count": 4470,
+   "on_page": 30,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/apartments-for-rent-in-madinah": {
+   "site_count": 127,
+   "on_page": 30,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/apartments-for-rent-in-makkah": {
+   "site_count": 91,
+   "on_page": 29,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/apartments-for-rent-in-riyadh": {
+   "site_count": 15363,
+   "on_page": 30,
+   "projects": 110,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/apartments-for-sale-in-al-khobar": {
+   "site_count": 989,
+   "on_page": 30,
+   "projects": 16,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/apartments-for-sale-in-dammam": {
+   "site_count": 1517,
+   "on_page": 30,
+   "projects": 50,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/apartments-for-sale-in-jeddah": {
+   "site_count": 24385,
+   "on_page": 30,
+   "projects": 515,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/apartments-for-sale-in-madinah": {
+   "site_count": 475,
+   "on_page": 30,
+   "projects": 60,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/apartments-for-sale-in-makkah": {
+   "site_count": 956,
+   "on_page": 30,
+   "projects": 22,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/apartments-for-sale-in-riyadh": {
+   "site_count": 8398,
+   "on_page": 32,
+   "projects": 75,
+   "auctions": 2
+  },
+  "https://wasalt.sa/en/commercial-properties-for-rent-in-riyadh": {
+   "site_count": 1391,
+   "on_page": 30,
+   "projects": 10,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/duplexes-for-sale-in-riyadh": {
+   "site_count": 125,
+   "on_page": 0,
+   "projects": 125,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/floors-for-sale-in-jeddah": {
+   "site_count": 39,
+   "on_page": 30,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/floors-for-sale-in-riyadh": {
+   "site_count": 6415,
+   "on_page": 32,
+   "projects": 21,
+   "auctions": 2
+  },
+  "https://wasalt.sa/en/lands-for-sale-in-dammam": {
+   "site_count": 338,
+   "on_page": 30,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/lands-for-sale-in-jeddah": {
+   "site_count": 1583,
+   "on_page": 30,
+   "projects": 153,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/lands-for-sale-in-makkah": {
+   "site_count": 478,
+   "on_page": 30,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/lands-for-sale-in-riyadh": {
+   "site_count": 3139,
+   "on_page": 32,
+   "projects": 47,
+   "auctions": 2
+  },
+  "https://wasalt.sa/en/properties-for-rent-in-al-khobar": {
+   "site_count": 1563,
+   "on_page": 30,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-rent-in-dammam": {
+   "site_count": 891,
+   "on_page": 30,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-rent-in-jeddah": {
+   "site_count": 5099,
+   "on_page": 30,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-rent-in-khamis-mushayt": {
+   "site_count": 22,
+   "on_page": 22,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-rent-in-madinah": {
+   "site_count": 202,
+   "on_page": 30,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-rent-in-makkah": {
+   "site_count": 175,
+   "on_page": 27,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-rent-in-riyadh": {
+   "site_count": 20759,
+   "on_page": 30,
+   "projects": 111,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-rent-in-taif": {
+   "site_count": 76,
+   "on_page": 27,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-sale-in-abha": {
+   "site_count": 601,
+   "on_page": 30,
+   "projects": 9,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-sale-in-al-ahsa": {
+   "site_count": 282,
+   "on_page": 30,
+   "projects": 84,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-sale-in-al-khobar": {
+   "site_count": 2780,
+   "on_page": 30,
+   "projects": 15,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-sale-in-dammam": {
+   "site_count": 3099,
+   "on_page": 30,
+   "projects": 82,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-sale-in-hail": {
+   "site_count": 225,
+   "on_page": 30,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-sale-in-jazan": {
+   "site_count": 996,
+   "on_page": 30,
+   "projects": 48,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-sale-in-jeddah": {
+   "site_count": 28735,
+   "on_page": 30,
+   "projects": 1146,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-sale-in-jeddah?page=2": {
+   "site_count": 27546,
+   "on_page": 30,
+   "projects": 8,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-sale-in-khamis-mushayt": {
+   "site_count": 541,
+   "on_page": 30,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-sale-in-madinah": {
+   "site_count": 1598,
+   "on_page": 30,
+   "projects": 214,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-sale-in-makkah": {
+   "site_count": 2097,
+   "on_page": 30,
+   "projects": 22,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-sale-in-riyadh": {
+   "site_count": 29459,
+   "on_page": 32,
+   "projects": 169,
+   "auctions": 2
+  },
+  "https://wasalt.sa/en/properties-for-sale-in-tabuk": {
+   "site_count": 115,
+   "on_page": 27,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/properties-for-sale-in-taif": {
+   "site_count": 518,
+   "on_page": 30,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/showrooms-for-rent-in-riyadh": {
+   "site_count": 349,
+   "on_page": 30,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/villas-for-rent-in-jeddah": {
+   "site_count": 350,
+   "on_page": 27,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/villas-for-rent-in-riyadh": {
+   "site_count": 2181,
+   "on_page": 30,
+   "projects": 0,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/villas-for-sale-in-al-khobar": {
+   "site_count": 1533,
+   "on_page": 30,
+   "projects": 4,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/villas-for-sale-in-dammam": {
+   "site_count": 1081,
+   "on_page": 30,
+   "projects": 28,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/villas-for-sale-in-jeddah": {
+   "site_count": 1770,
+   "on_page": 30,
+   "projects": 8,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/villas-for-sale-in-madinah": {
+   "site_count": 170,
+   "on_page": 27,
+   "projects": 20,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/villas-for-sale-in-makkah": {
+   "site_count": 513,
+   "on_page": 30,
+   "projects": 164,
+   "auctions": 0
+  },
+  "https://wasalt.sa/en/villas-for-sale-in-riyadh": {
+   "site_count": 10809,
+   "on_page": 32,
+   "projects": 46,
+   "auctions": 2
+  }
+ },
+ "gaps": [
+  "DarGlobal bot challenge (not parsed) https://darglobal.co.uk/projects",
+  "redirected to internal search (inactive project?), not parsed: https://wasalt.sa/en/project/%D8%A7%D9%84%D8%AF%D9%85%D8%A7%D9%85/%D9%85%D8%B4%D8%B1%D9%88%D8%B9-%D8%B4%D9%82%D9%82-%D8%B1%D9%8A%D9%81%D8%A7%D9%86-100175",
+  "redirected to internal search (inactive project?), not parsed: https://wasalt.sa/en/project/%D8%A7%D9%84%D8%B1%D9%8A%D8%A7%D8%B6/%D9%85%D8%B4%D8%B1%D9%88%D8%B9-%D8%A7%D9%84%D9%86%D8%B1%D8%AC%D8%B3-52-%D8%B4%D9%82%D9%82-%D9%84%D9%84%D8%A8%D9%8A%D8%B9-100573",
+  "redirected to internal search (inactive project?), not parsed: https://wasalt.sa/en/project/%D8%A7%D9%84%D8%B1%D9%8A%D8%A7%D8%B6/%D9%85%D8%B4%D8%B1%D9%88%D8%B9-%D8%B3%D9%85%D8%A7-%D8%A7%D9%84%D9%81%D8%B1%D8%B3%D8%A7%D9%86-1-%D9%81%D9%84%D9%84-%D9%84%D9%84%D8%A8%D9%8A%D8%B9-100576",
+  "redirected to internal search (inactive project?), not parsed: https://wasalt.sa/en/project/%D8%A7%D9%84%D8%B1%D9%8A%D8%A7%D8%B6/%D9%85%D8%B4%D8%B1%D9%88%D8%B9-%D8%B3%D9%85%D8%A7-%D8%A7%D9%84%D9%81%D8%B1%D8%B3%D8%A7%D9%86-2-%D9%81%D9%84%D9%84-%D9%84%D9%84%D8%A8%D9%8A%D8%B9-100577",
+  "redirected to internal search (inactive project?), not parsed: https://wasalt.sa/en/project/%D8%AC%D8%AF%D8%A9/%D9%85%D8%B4%D8%B1%D9%88%D8%B9-%D8%B3%D9%85%D8%A7-%D8%A7%D9%84%D9%88%D8%B1%D9%8A%D9%81-%D9%81%D9%84%D9%84-%D9%84%D9%84%D8%A8%D9%8A%D8%B9-100574",
+  "redirected to internal search (inactive project?), not parsed: https://wasalt.sa/en/project/%D8%AC%D8%AF%D8%A9/%D9%85%D8%B4%D8%B1%D9%88%D8%B9-%D9%85%D8%B3%D9%83%D8%A7%D9%86-%D8%A7%D9%84%D8%B3%D8%AF%D9%86-%D9%81%D9%84%D9%84-%D9%84%D9%84%D8%A8%D9%8A%D8%B9-100263",
+  "redirected to internal search (inactive project?), not parsed: https://wasalt.sa/en/project/%D9%85%D9%83%D8%A9%20%D8%A7%D9%84%D9%85%D9%83%D8%B1%D9%85%D8%A9/%D9%85%D8%B4%D8%B1%D9%88%D8%B9-%D8%AC%D9%8A%D8%B1%D8%A9-%D9%81%D9%84%D9%84-%D9%84%D9%84%D8%A8%D9%8A%D8%B9-100575",
+  "redirected to internal search (inactive project?), not parsed: https://wasalt.sa/en/project/Dammam/mshrwa-ryfan-shqq-wdblks-llbya-100177",
+  "redirected to internal search (inactive project?), not parsed: https://wasalt.sa/en/project/Madinah/siwan-al-group-project-villas-for-sale-100295",
+  "redirected to internal search (inactive project?), not parsed: https://wasalt.sa/en/project/Riyadh/loft-villas-100516",
+  "HTTP 404 https://wasalt.sa/en/projects",
+  "HTTP 404 https://wasalt.sa/en/properties-for-sale-in-buraydah",
+  "duplicate content (redirect/alias) https://wasalt.sa/en/s/masterplan -> https://wasalt.sa/en",
+  "duplicate content (redirect/alias) https://wasalt.sa/en/s/wasalt-business -> https://wasalt.sa/en"
+ ]
+}

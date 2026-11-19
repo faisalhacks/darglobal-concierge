@@ -1,0 +1,29 @@
+# Fallback host: same Docker image. Secrets (sync: false) are entered in the Render dashboard.
+services:
+  - type: web
+    name: darglobal-concierge
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    healthCheckPath: /healthz
+    envVars:
+      - key: PORT
+        value: "7860"
+      - key: LLM_MODE
+        value: live
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: OPENROUTER_MODELS
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: CANDIDATE_NAME
+        sync: false
+      - key: CANDIDATE_GITHUB
+        sync: false
+      - key: CANDIDATE_LINKEDIN
+        sync: false
+      - key: CANDIDATE_EMAIL
+        sync: false

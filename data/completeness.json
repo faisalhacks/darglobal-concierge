@@ -1,0 +1,52 @@
+{
+ "dataset_version": "20261119-a983bac1",
+ "counts": {
+  "projects": 30,
+  "listings": 1661,
+  "pages": 67,
+  "chunks": 2389,
+  "projects_by_site": {
+   "DarGlobal": 0,
+   "Wasalt": 30
+  },
+  "listings_by_type": {
+   "buy": 1255,
+   "rent": 406
+  }
+ },
+ "completeness": {
+  "projects": {
+   "name_en": 0.4,
+   "name_ar": 0.6,
+   "city": 1.0,
+   "country": 1.0,
+   "source_url": 1.0,
+   "price_from_amount": 1.0,
+   "status": 1.0,
+   "handover_year": 0.133,
+   "lat": 1.0,
+   "description_en": 0.0,
+   "description_ar": 0.867,
+   "image_urls": 1.0,
+   "property_types": 1.0,
+   "unit_types": 0.967,
+   "developer": 0.0,
+   "amenities": 0.333,
+   "area_min_m2": 0.9,
+   "name_any": 1.0
+  },
+  "listings": {
+   "title": 1.0,
+   "city": 1.0,
+   "district": 0.99,
+   "source_url": 1.0,
+   "price_amount": 0.999,
+   "beds": 0.793,
+   "baths": 0.276,
+   "area_m2": 1.0,
+   "property_type": 1.0,
+   "image_urls": 0.744,
+   "project_ref": 0.273
+  }
+ }
+}

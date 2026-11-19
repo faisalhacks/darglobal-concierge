@@ -437,3 +437,9 @@ cases:
 - {id: AJ04, category: adjacent, lang: ar, turns: ["هل يوجد تمويل عقاري للأجانب"], checks: {<<: [*safe, *adjacent], lang_reply: ar, rtl: true}}
 - {id: AJ05, category: adjacent, lang: en, turns: ["Show me villas in Dubai and tell me which visa I would get"], checks: {<<: *safe, intent_not: [adjacent, injection], cards: {min: 1}, advisor_link_official: true, contains_any_ci: ["other question"]}}
 - {id: AJ06, category: adjacent, lang: en, turns: ["is it legal for foreigners to own freehold property"], checks: {<<: [*safe, *adjacent], contains_any_ci: ["official"]}}
+
+# ---- live-site bug fixes: hold-summary numbers, location grounding, superlative follow-ups, auction pointer
+- {id: FX01, category: showcase, lang: en, turns: ["salam"], checks: {<<: *safe, intent: [greeting], not_contains_any: ["not published", "published-plus"], no_numbers_outside_context: true}}
+- {id: FX02, category: darglobal, lang: en, bind: {p: "SELECT id,name_en,city,country FROM projects WHERE site='DarGlobal' AND name_en LIKE '%Astera%' ORDER BY id LIMIT 1"}, turns: ["any auction for villa"], checks: {<<: *safe, not_contains_any: ["Astera in Oman", "Astera, Oman"], contains_any_ci: ["auction listings", "auctions page"], chips_min: 1}}
+- {id: FX03, category: search, lang: en, turns: ["any auction for villa", "most expensive one??"], checks: {<<: *safe, intent: [superlative], path: [code], cards: {min: 1, kind: listings, ids_in_db: true}, contains_any_ci: ["most expensive villa for sale"], not_contains_any: ["don't have pricing", "do not have pricing"]}}
+- {id: FX04, category: search, lang: ar, turns: ["فلل للبيع في الرياض", "الأرخص"], checks: {<<: *safe, lang_reply: ar, rtl: true, intent: [superlative], cards: {min: 1, kind: listings, ids_in_db: true}, contains_any: ["أرخص"]}}

@@ -780,6 +780,43 @@ BANTER = [r"\b(are|r) (you|u|ya) (so |really |just |a bit )?(dumb|stupid|useless
           r"هل تجيد الحساب|تعرف (تحسب|حساب|رياضيات)|لماذا لا تجيب|ليش ما تجاوب|لماذا لا تجاوب"]
 
 
+# ---------------- superlatives ("most expensive one??", "الأرخص"): sort the carried set by one field ----------------
+_SUPER_RX = {
+    "price_desc": re.compile(r"(?<![a-z])(most\s+exp\w*|exp[ae]n\w*sive|priciest|pricest|most\s+pric\w*|most\s+costly|"
+                             r"highest[- ]?pric\w*|top[- ]?pric\w*)(?![a-z])|(?<![\w])(?:ال)?اغلي(?![\w])"),
+    "price_asc": re.compile(r"(?<![a-z])(cheapest|cheapst|cheapes|lowest[- ]?pric\w*|least\s+exp\w*)(?![a-z])|"
+                            r"(?<![\w])(?:ال)?ارخص(?![\w])|(?<![\w])اقل\s+سعر"),
+    "area_desc": re.compile(r"(?<![a-z])(biggest|largest|most\s+spacious|bigest|largets)(?![a-z])|"
+                            r"(?<![\w])(?:ال)?(اكبر|اوسع)(?![\w])"),
+    "area_asc": re.compile(r"(?<![a-z])(smallest|tiniest|smallet)(?![a-z])|(?<![\w])(?:ال)?اصغر(?![\w])"),
+    "newest": re.compile(r"(?<![a-z])(newest|latest|most\s+recent)(?![a-z])|(?<![\w])(?:ال)?احدث(?![\w])"),
+}
+
+
+def superlative(norm: str) -> str | None:
+    for k, rx in _SUPER_RX.items():
+        if rx.search(norm):
+            return k
+    return None
+
+
+_CTX_FIELDS = ("property_type", "city", "country", "listing_type", "site", "beds", "brand")
+
+
+def carried_context(history: list[dict] | None, store: Store) -> tuple[dict, bool]:
+    """(entity fields, projects_level) from the most recent earlier user message that set any of them."""
+    for turn in reversed([h for h in (history or []) if h.get("role") == "user"][-4:]):
+        m = turn.get("content") or ""
+        if superlative(normalize_text(m)):
+            continue
+        pe = plan(m, store, None, {"_skip_adjacent": True})
+        got = {k: getattr(pe.entities, k) for k in _CTX_FIELDS if getattr(pe.entities, k, None) is not None}
+        if got:
+            proj = pe.intent in ("location_overview", "brand_partner") and "property_type" not in got                 or got.get("site") == "DarGlobal"
+            return got, proj
+    return {}, False
+
+
 def plan(message: str, store: Store, history: list[dict] | None = None, flags: dict | None = None) -> Plan:
     flags = flags or {}
     norm = normalize_text(message)
@@ -844,6 +881,20 @@ def plan(message: str, store: Store, history: list[dict] | None = None, flags: d
     unknown, is_place = unknown_entity_kind(message, norm, ent, store)
     if unknown:
         return Plan("general", ent, unknown=unknown, unknown_place=is_place)
+
+    sup = superlative(norm)
+    if sup and not ent.project_ids and len(norm.split()) <= 9:
+        ctx, proj_ctx = carried_context(history, store)
+        own = ent.property_type or ent.city or ent.country or ent.listing_type or ent.site
+        if sup != "price_asc" or ctx or own and history:
+            for k, v in ctx.items():
+                if getattr(ent, k, None) is None:
+                    setattr(ent, k, v)
+            ent.sort = sup
+            pl = Plan("superlative", ent, follow_up=bool(ctx), topic=sup)
+            pl.text = "projects" if (ent.site == "DarGlobal" or (proj_ctx and not ent.property_type)
+                                     or _any(PROJECT_WORDS, norm)) else "listings"
+            return pl
 
     if history and not ent.project_ids:
         prev = _last_user(history)

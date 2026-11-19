@@ -118,3 +118,12 @@
 @media (max-height: 500px) {
   .block .hero { display: none; }
 }
+
+/* Rail visible (desktop, not collapsed): the rail's h1 already carries the headline, so the welcome keeps only the
+   scope sentence and the chips. The h2 stays in the DOM, visually hidden, as the section's accessible name.
+   Rail hidden (collapsed strip) or below 900px: the headline shows. */
+@media (min-width: 900px) {
+  :global(html:not([data-rail="collapsed"])) .block .headline {
+    position: absolute; inline-size: 1px; block-size: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+}

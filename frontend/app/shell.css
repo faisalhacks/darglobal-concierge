@@ -261,7 +261,7 @@ html { font-size: calc(100% * var(--text-scale, 1)); }
 @media (min-width: 900px) and (max-height: 820px) {
   .rail .rail-photo__frame { block-size: 22vh; }
   .rail .rail__lede {
-    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; line-clamp: 4; overflow: hidden;
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 6; line-clamp: 6; overflow: hidden;
   }
 }
 @media (min-width: 900px) and (max-height: 720px) {

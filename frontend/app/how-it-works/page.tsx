@@ -98,6 +98,7 @@ function Completeness({ comp }: { comp: [string, number][] }) {
   const groups = new Map<string, { field: string; r: number }[]>();
   for (const [k, r] of comp) {
     const [g, f] = k.includes(".") ? k.split(".", 2) : ["", k];
+    if (g === "by_site") continue; // counts, not percentages
     const name = FIELD[f] ?? f.replace(/_/g, " ");
     const list = groups.get(g) ?? [];
     if (!list.some((x) => x.field === name)) list.push({ field: name, r });
@@ -144,8 +145,10 @@ export default function HowItWorks() {
           <ul>
             {hasDg ? (
               <li>
-                <strong>DarGlobal pages were collected by hand.</strong> darglobal.co.uk answers automated clients with a challenge page,
-                so the pages were opened in an ordinary browser at a human pace and saved one at a time. The dataset holds
+                <strong>DarGlobal pages were read through the owner&apos;s own browser.</strong> darglobal.co.uk blocks automated clients with a
+                challenge page, so the scraper stopped there and no challenge was bypassed. Thirteen DarGlobal pages (12 project pages and the projects index) were opened in the
+                owner&apos;s own browser at a human pace; the other DarGlobal facts come from public third-party sources (an LSE filing mirror
+                and press reports), each labelled by origin. The dataset holds
                 {" "}{fmtNumber(dg?.projects ?? 0, "en")} DarGlobal projects: {fmtNumber(dg?.detail_pages ?? 0, "en")} with a full project page, and the
                 rest known only by name and location from the projects page. DarGlobal publishes no prices, so every DarGlobal
                 card says &ldquo;Price on request&rdquo;.

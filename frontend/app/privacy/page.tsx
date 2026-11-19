@@ -24,7 +24,7 @@ export default function Privacy() {
         <section>
           <h2>البيانات</h2>
           {hasDg ? (
-            <p>البيانات مأخوذة من صفحات عامة فقط على <bdi lang="en">wasalt.sa</bdi> و <bdi lang="en">darglobal.co.uk</bdi>، مع حذف أي بيانات شخصية. يحجب موقع دار جلوبال العملاء الآليين، لذا حُفظت صفحاته يدوياً في متصفح عادي صفحةً صفحة. صور المشاريع تُحمَّل في متصفحك مباشرة من شبكتي صور وصلت (<bdi lang="en">imagedelivery.net</bdi>) ودار جلوبال (<bdi lang="en">cdn.darglobal.co.uk</bdi>) دون إرسال المُحيل، ولا يُعاد استضافتها.</p>
+            <p>البيانات مأخوذة من صفحات عامة فقط على <bdi lang="en">wasalt.sa</bdi> و <bdi lang="en">darglobal.co.uk</bdi>، مع حذف أي بيانات شخصية. يحجب موقع دار جلوبال العملاء الآليين، فتوقّف الكاشط ولم يُتجاوز أي تحدٍّ: قُرئت 13 صفحة منه عبر متصفح المالك نفسه بوتيرة بشرية، وجاءت بقية معلومات دار جلوبال من مصادر عامة لجهات أخرى (نسخة مرآة لإفصاح في بورصة لندن وتقارير صحفية)، مع بيان أصل كل منها. صور المشاريع تُحمَّل في متصفحك مباشرة من شبكتي صور وصلت (<bdi lang="en">imagedelivery.net</bdi>) ودار جلوبال (<bdi lang="en">cdn.darglobal.co.uk</bdi>) دون إرسال المُحيل، ولا يُعاد استضافتها.</p>
           ) : (
             <p>البيانات مأخوذة من صفحات عامة فقط على <bdi lang="en">wasalt.sa</bdi>، مع حذف أي بيانات شخصية. يحجب موقع <bdi lang="en">darglobal.co.uk</bdi> العملاء الآليين، ولا تتضمن البيانات حالياً أي مشروع لدار جلوبال. صور المشاريع تُحمَّل في متصفحك مباشرة من شبكة صور وصلت (<bdi lang="en">imagedelivery.net</bdi>) دون إرسال المُحيل، ولا يُعاد استضافتها.</p>
           )}
@@ -51,7 +51,7 @@ export default function Privacy() {
       <section>
         <h2>Where the data comes from</h2>
         {hasDg ? (
-          <p>Only publicly available pages: wasalt.sa, collected at a polite rate, and darglobal.co.uk, which blocks automated clients, so its pages were saved by hand in an ordinary browser, one at a time. Personal details such as agent names and phone numbers are removed. Project images load in your browser directly from Wasalt&apos;s image CDN (imagedelivery.net) and DarGlobal&apos;s (cdn.darglobal.co.uk), with no referrer sent; they are not re-hosted.</p>
+          <p>Only publicly available pages: wasalt.sa, collected at a polite rate, and darglobal.co.uk, which blocks automated clients, so the scraper stopped there and no challenge was bypassed. Thirteen of its pages were read through the owner&apos;s own browser at a human pace; the other DarGlobal facts come from public third-party sources (an LSE filing mirror and press reports), labelled by origin. Personal details such as agent names and phone numbers are removed. Project images load in your browser directly from Wasalt&apos;s image CDN (imagedelivery.net) and DarGlobal&apos;s (cdn.darglobal.co.uk), with no referrer sent; they are not re-hosted.</p>
         ) : (
           <p>Only publicly available pages on wasalt.sa, collected at a polite rate. darglobal.co.uk blocks automated clients, and no DarGlobal project page is in the dataset yet. Personal details such as agent names and phone numbers are removed. Project images load in your browser directly from Wasalt&apos;s image CDN (imagedelivery.net), with no referrer sent; they are not re-hosted.</p>
         )}

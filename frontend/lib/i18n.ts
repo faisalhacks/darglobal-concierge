@@ -171,7 +171,7 @@ const en = {
   statusMaintenance: "Facts, prices and links come from the collected pages.",
   railHeadlineBoth: "Ask about DarGlobal projects and Wasalt homes.",
   railLedeBoth:
-    "Answers come from public pages on darglobal.co.uk and wasalt.sa, plus a public LSE filing and press reports for some DarGlobal projects, labelled as such. Every answer shows its source and collection date. DarGlobal publishes no prices.",
+    "Sourced from public pages, a public LSE filing and press reports, each labelled by origin and dated. DarGlobal publishes no prices.",
   photoCaption: (name: string) => `${name}, from its DarGlobal project page`,
   corpusBoth: (dg: string, dgd: string, ws: string, wl: string, date: string) =>
     `${dg} DarGlobal projects (${dgd} with a full project page), ${ws} Wasalt projects and ${wl} Wasalt listings, collected ${date}.`,
@@ -441,7 +441,7 @@ const ar: Dict = {
   statusMaintenance: "الحقائق والأسعار والروابط مأخوذة من الصفحات المجمّعة.",
   railHeadlineBoth: `اسأل عن مشاريع ${DG} ومنازل ${WS}.`,
   railLedeBoth:
-    `نجيب من الصفحات العامة على ${iso("darglobal.co.uk")} و ${iso("wasalt.sa")}، ومن إفصاح عام في بورصة لندن وتقارير صحفية عن بعض مشاريع ${DG}، مع الإشارة إلى ذلك في موضعه. ومع كل إجابة مصدرها وتاريخ جمع بياناتها. لا تنشر ${DG} أسعار مشاريعها.`,
+    `المصدر صفحات عامة وإفصاح عام في بورصة لندن وتقارير صحفية، مع بيان الأصل والتاريخ في كل إجابة. لا تنشر ${DG} أسعار مشاريعها.`,
   photoCaption: (name: string) => `${iso(name)}، من صفحة المشروع على موقع ${DG}`,
   corpusBoth: (dg: string, dgd: string, ws: string, wl: string, date: string) =>
     `مشاريع ${DG}: ${dg} (منها ${dgd} بصفحة مشروع كاملة). مشاريع ${WS}: ${ws}، وعروضها: ${wl}. جُمعت البيانات في ${date}.`,

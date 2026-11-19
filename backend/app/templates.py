@@ -296,6 +296,18 @@ TEMPLATES: dict[str, dict[str, str]] = {
               "المنشورة، وهي تختلف من دولة إلى أخرى، لذا يُرجى الرجوع إلى الجهات الرسمية؛ ويمكن لمستشار دار جلوبال شرح "
               "البرامج المرتبطة بمشاريعهم (صفحة التواصل الرسمية أدناه).",
     },
+    "banter": {
+        "en": "Fair challenge, and no offence taken. I'm an AI property concierge, and property is where I'm "
+              "genuinely useful: ask me about projects, listings or a comparison.",
+        "ar": "تحدٍّ مقبول ولا مشكلة. أنا مساعد عقاري بالذكاء الاصطناعي، والعقارات هي ما أجيده حقاً: اسألني عن "
+              "المشاريع أو العروض أو المقارنة.",
+    },
+    "banter_pivot": {
+        "en": "{answer}Fair challenge, no offence taken. I'm an AI property concierge, and property is where I'm "
+              "genuinely useful. Since you're here, may I show you {name}? {fact}",
+        "ar": "{answer}تحدٍّ مقبول ولا مشكلة. أنا مساعد عقاري بالذكاء الاصطناعي، والعقارات هي ما أجيده حقاً. وبما أنك "
+              "هنا، هل تودّ التعرّف على {name}؟ {fact}",
+    },
     "fmh_q1": {"en": "Which city or country interests you?", "ar": "ما المدينة أو الدولة التي تهتم بها؟"},
     "fmh_q2": {"en": "What budget range do you have in mind?", "ar": "ما نطاق الميزانية الذي تفكر فيه؟"},
     "fmh_q3": {"en": "Is this for living, a holiday home, or investment?",

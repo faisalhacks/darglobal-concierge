@@ -11,7 +11,7 @@ import re
 from dataclasses import dataclass, field
 
 from .arabic import normalize_text
-from .conversation import _VAGUE_WORDS, _INVEST, _LUXURY, _dist, conversational_intent, is_vague, vague_topic
+from .conversation import _VAGUE_WORDS, _INVEST, _LUXURY, _dist, conversational_intent, is_vague, simple_arithmetic, vague_topic
 from .guardrails import is_injection
 from .store import Store
 
@@ -764,6 +764,22 @@ def _property_request(norm: str, ent: "Entities") -> bool:
     return bool((ent.city or ent.country) and (_any(SEARCH, norm) or _any(LOCATION, norm) or _any(PLACE_BROWSE, norm)))
 
 
+BANTER = [r"\b(are|r) (you|u|ya) (so |really |just |a bit )?(dumb|stupid|useless|slow|silly|an? idiot|bad|broken|"
+          r"a bot|a robot|an? ai|human|real|a person|a machine)\b",
+          r"\b(you|u|ya|ur)(?:'?re| are| r)? (so |really |such an? )?(dumb|stupid|useless|an idiot|idiot|rubbish|"
+          r"terrible|worthless|silly|trash)\b",
+          r"\b(you|u|ya) (do ?n'?t|dont|cant|can'?t|do not|cannot) (even )?(know|understand|get|count|do|add|calculate|"
+          r"answer)\b",
+          r"\bcan (you|u) (even )?(do|count|add|calculate|solve)\b.{0,12}\b(math|maths|sums?|arithmetic|counting)\b",
+          r"\b(basic|simple|easy) (math|maths|sums?|arithmetic)\b",
+          r"\bwhy (can'?t|cant|won'?t|wont|do ?n'?t|dont|are ?n'?t) (you|u)\b.{0,15}\b(answer|reply|help|know|respond)\b",
+          r"\b(worst|bad|stupid|useless|dumb) (bot|chatbot|assistant|ai)\b", r"\byou suck\b",
+          r"^(are|r) (you|u) (a )?(human|real|bot|robot|ai)\??$", r"\bdo you (even )?(know|get) (math|maths)\b",
+          r"انت غبي|انت غبيه|يا غبي|غبي|انت فاشل|فاشل|عديم الفايده|انت بوت|هل انت (بوت|روبوت|انسان|بشر|ذكاء)|"
+          r"انت (انسان|بشر|روبوت)|ما تعرف (تحسب|حساب)|لا تعرف (تحسب|الحساب)|لا تعرف|ما تعرف|ما تفهم|لا تفهم|"
+          r"هل تجيد الحساب|تعرف (تحسب|حساب|رياضيات)|لماذا لا تجيب|ليش ما تجاوب|لماذا لا تجاوب"]
+
+
 def plan(message: str, store: Store, history: list[dict] | None = None, flags: dict | None = None) -> Plan:
     flags = flags or {}
     norm = normalize_text(message)
@@ -775,9 +791,13 @@ def plan(message: str, store: Store, history: list[dict] | None = None, flags: d
         step = _fmh_step(history)
         if step:
             return Plan("find_my_home", ent, step=step)
+    if _any(BANTER, norm) and not ent.project_ids and not _property_request(norm, ent):
+        return Plan("banter", ent)
     conv = conversational_intent(message)  # "hye", "salam", "thanks!", "who r u", "ok" (whole message only)
     if conv:
         return Plan(conv, ent)
+    if simple_arithmetic(message):  # "34 plus sevn is ?": a harmless sum, answered in code, then the presenter pivot
+        return Plan("off_topic", ent)
     if _any(STEERING, norm):
         return Plan("steering", ent)
     if _any(GREETING, norm):

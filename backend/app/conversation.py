@@ -171,12 +171,81 @@ def is_vague(norm: str) -> bool:
 _OPS = {ast.Add: operator.add, ast.Sub: operator.sub, ast.Mult: operator.mul, ast.Div: operator.truediv}
 
 
+_UNITS = {"zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8,
+          "nine": 9, "ten": 10, "eleven": 11, "twelve": 12, "thirteen": 13, "fourteen": 14, "fifteen": 15,
+          "sixteen": 16, "seventeen": 17, "eighteen": 18, "nineteen": 19, "twenty": 20, "thirty": 30, "forty": 40,
+          "fifty": 50, "sixty": 60, "seventy": 70, "eighty": 80, "ninety": 90, "hundred": 100}
+_OPWORDS = {"plus": "+", "add": "+", "and": "+", "minus": "-", "less": "-", "times": "*", "multiplied": "*",
+            "divided": "/", "over": "/", "x": "*"}
+_AR_OPS = {"زائد": "+", "زايد": "+", "جمع": "+", "ناقص": "-", "طرح": "-", "ضرب": "*", "في": "*", "قسمه": "/",
+           "تقسيم": "/"}
+_MATH_FILLER = {"what", "whats", "what's", "is", "the", "answer", "to", "calculate", "calc", "how", "much", "equals",
+                "equal", "tell", "me", "a", "sum", "of", "by", "please", "pls", "result", "ما", "هو", "هي", "كم",
+                "ناتج", "حاصل", "يساوي", "على"}
+
+
+def _fuzzy(tok: str, vocab) -> str | None:
+    import difflib
+    if tok in vocab:
+        return tok
+    if len(tok) < 4:
+        return None
+    m = difflib.get_close_matches(tok, list(vocab), n=1, cutoff=0.7)
+    return m[0] if m else None
+
+
+def _words_expr(message: str) -> str | None:
+    """"34 plus sevn is ?" -> "34+7"; None unless every token is a number, number word, operator word or filler."""
+    t = normalize_text(message or "").replace("×", " * ").replace("÷", " / ")
+    toks = re.findall(r"\d+(?:\.\d+)?|[a-z']+|[+\-*/]|[؀-ۿ]+", t)
+    out: list[str] = []
+    pend: int | None = None  # number-word accumulator ("twenty" "five")
+
+    def flush():
+        nonlocal pend
+        if pend is not None:
+            out.append(str(pend))
+            pend = None
+    for tok in toks:
+        if re.fullmatch(r"\d+(?:\.\d+)?", tok):
+            flush()
+            out.append(tok)
+        elif tok in "+-*/" and len(tok) == 1:
+            flush()
+            out.append(tok)
+        elif tok in _AR_OPS:
+            flush()
+            out.append(_AR_OPS[tok])
+        elif tok in _MATH_FILLER:
+            continue
+        elif tok == "x" or _fuzzy(tok, _OPWORDS):
+            flush()
+            out.append(_OPWORDS["x" if tok == "x" else _fuzzy(tok, _OPWORDS)])
+        elif _fuzzy(tok, _UNITS):
+            v = _UNITS[_fuzzy(tok, _UNITS)]
+            if v == 100:
+                pend = (pend or 1) * 100
+            elif pend is not None and pend % 100 >= 20 and pend % 10 == 0 and v < 10 and pend % 100 != 0:
+                pend += v
+            else:
+                flush()
+                pend = v
+        else:
+            return None
+    flush()
+    expr = "".join(out)
+    return expr if re.search(r"\d[-+*/]\d", expr) and not re.search(r"[-+*/]{2}|[-+*/]$|^[+*/]", expr) else None
+
+
 def simple_arithmetic(message: str) -> tuple[str, str] | None:
     """("2 + 2", "4") for a harmless one-line sum; None for anything else (never evaluates names or calls)."""
     m = re.fullmatch(r"\s*(?:what(?:'?s| is)\s*)?([\d\s+\-*/().x×÷]+?)\s*=?\s*\??\s*", (message or "").lower())
-    if not m or not re.search(r"\d\s*[-+*/x×÷]\s*\d", m.group(1)):
-        return None
-    expr = m.group(1).replace("x", "*").replace("×", "*").replace("÷", "/").strip()
+    if m and re.search(r"\d\s*[-+*/x×÷]\s*\d", m.group(1)):
+        expr = m.group(1).replace("x", "*").replace("×", "*").replace("÷", "/").strip()
+    else:
+        expr = _words_expr(message)
+        if not expr:
+            return None
     if len(expr) > 40:
         return None
 

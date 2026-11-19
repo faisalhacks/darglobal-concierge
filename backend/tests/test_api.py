@@ -74,7 +74,7 @@ def test_r3_off_topic_fallback(make_client, ask, q):
     assert d["trace"][0]["llm_calls"] == 0 and len(d["chips"][0]) >= 2
     assert "property concierge" in d["_text"] and "may I show you" in d["_text"]
     assert d["cards"][0]["projects"] and d["sources"][0]
-    assert ("2 + 2 is 4" in d["_text"]) == (q == "What's 2+2?")
+    assert ("2 + 2 = 4" in d["_text"]) == (q == "What's 2+2?")
     assert "def " not in d["_text"]
 
 

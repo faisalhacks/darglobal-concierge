@@ -94,7 +94,8 @@ WORKDIR /app
 
 COPY --chown=1000:1000 backend/ /app/backend/
 # answer_cache.jso[n]: optional file; the glob lets the build pass when it is absent (the sqlite always matches).
-COPY --chown=1000:1000 data/concierge.sqlite data/answer_cache.jso[n] /app/data/
+# showcase.jso[n]: optional Stress-tested showcase (evals/make_showcase.py), served at /api/showcase.
+COPY --chown=1000:1000 data/concierge.sqlite data/answer_cache.jso[n] data/showcase.jso[n] /app/data/
 COPY --chown=1000:1000 data/index/ /app/data/index/
 COPY --chown=1000:1000 --from=frontend /build/frontend/out /app/static
 # Latest real eval run, served read-only at /api/evals (the /evals page).

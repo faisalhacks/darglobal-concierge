@@ -12,7 +12,9 @@ sys.path.insert(0, HERE)
 FIXTURE = os.path.join(HERE, "fixtures", "test.sqlite")
 STATIC = os.path.join(HERE, "fixtures", "static")
 
-os.environ.update({"LLM_MODE": "mock", "EMBEDDINGS": "off", "DATA_PATH": FIXTURE, "STATIC_DIR": STATIC,
+# PROJECT_ANSWER=llm keeps the writer-path tests (they ask about a project) on the model path; the council-17
+# code-built project answer (production default) is tested with PROJECT_ANSWER=code explicitly.
+os.environ.update({"PROJECT_ANSWER": "llm", "LLM_MODE": "mock", "EMBEDDINGS": "off", "FX_FETCH": "off", "DATA_PATH": FIXTURE, "STATIC_DIR": STATIC,
                    "INDEX_DIR": os.path.join(HERE, "fixtures", "no-index")})
 for k in ("OPENROUTER_API_KEY", "MAINTENANCE_MODE", "MOCK_LLM_FAIL", "CANDIDATE_NAME", "CANDIDATE_GITHUB",
           "CANDIDATE_LINKEDIN", "CANDIDATE_EMAIL"):
@@ -96,3 +98,9 @@ def ask():
 @pytest.fixture
 def anyio_backend():
     return "asyncio"
+
+
+@pytest.fixture
+def store():
+    from backend.app.store import Store
+    return Store.load(FIXTURE)

@@ -1,0 +1,120 @@
+/* Lane C: empty state. Fills the scroll area above the docked composer; the block sits a little below centre
+   (3fr above : 2fr below) so the gap between the last chip and the composer stays small on tall screens. */
+.welcome {
+  flex: 1 0 auto;
+  display: grid;
+  grid-template-rows: minmax(var(--sp-16, 16px), 3fr) auto minmax(var(--sp-16, 16px), 2fr);
+  min-block-size: 100%;
+}
+.welcome > .block {
+  grid-row: 2;
+  display: grid;
+  gap: var(--sp-16, 16px);
+  justify-items: start;
+  inline-size: 100%;
+  max-inline-size: 880px;
+  margin-inline: auto;
+}
+
+.block .hero {
+  margin: 0 0 var(--sp-8, 8px);
+  inline-size: 100%;
+  display: grid;
+  gap: var(--sp-8, 8px);
+}
+.hero .heroFrame {
+  aspect-ratio: 16 / 9;
+  max-block-size: 32vh;
+  inline-size: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+.heroFrame img { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; }
+.hero[data-state="loading"] img { opacity: 0; }
+.hero[data-state="ok"] img { opacity: 1; transition: opacity 200ms ease-out; }
+.hero .caption {
+  color: var(--text-muted); font-size: var(--fs-meta, 0.875rem); line-height: 1.5;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.block .headline {
+  margin: 0;
+  max-inline-size: 30ch;
+  font-family: var(--serif, "Cormorant Garamond", serif);
+  font-size: var(--fs-display, clamp(2.25rem, 1.2rem + 3.2vw, 4rem));
+  font-weight: 500;
+  line-height: 1.08;
+  color: var(--text);
+  text-wrap: balance;
+}
+.block .headline:lang(ar) {
+  max-inline-size: 24ch;
+  font-family: var(--arabic, "IBM Plex Sans Arabic", sans-serif);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.block .scope {
+  margin: 0;
+  max-inline-size: 60ch;
+  color: var(--text-muted);
+  font-size: var(--fs-body, 1.0625rem);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+.block .scope:lang(ar) { line-height: 1.8; }
+
+.block .chips {
+  list-style: none;
+  margin: var(--sp-8, 8px) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-8, 8px);
+}
+.chips .chip {
+  min-block-size: 44px;
+  padding-block: var(--sp-8, 8px);
+  padding-inline: var(--sp-16, 16px);
+  border-radius: 999px;
+  border: 1px solid var(--border-strong, #6f675c);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-control, 0.9375rem);
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: start;
+  white-space: normal;
+  cursor: pointer;
+  transition: border-color 120ms ease-out, background-color 120ms ease-out;
+}
+.chips .chip:hover { border-color: var(--accent, #c2a36b); }
+.chips .chip:active { background: var(--surface-2); }
+.chips .chip:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.chips .chip[aria-disabled="true"] { color: var(--text-muted); cursor: not-allowed; }
+
+/* Phone: one swipeable row of chips, so the first screen shows the headline, the scope and the chips together. */
+@media (max-width: 599.98px) {
+  .block .chips {
+    flex-wrap: nowrap;
+    inline-size: calc(100% + 2 * var(--gutter, 16px));
+    margin-inline: calc(-1 * var(--gutter, 16px));
+    padding: 4px var(--gutter, 16px);
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: var(--gutter, 16px);
+    scrollbar-width: none;
+  }
+  .block .chips::-webkit-scrollbar { display: none; }
+  .chips > li { flex: none; scroll-snap-align: start; }
+  .chips .chip { white-space: nowrap; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero[data-state="ok"] img, .chips .chip { transition: none; }
+}
+@media (max-height: 500px) {
+  .block .hero { display: none; }
+}

@@ -147,17 +147,19 @@ async function chat(req, res, body) {
   await sleep(/slow/.test(msg) ? 2500 : 450);
   send(res, "meta", { request_id: `mock-${t0}`, lang: p.lang, intent: p.intent, dataset_version: VERSION, data_as_of: AS_OF });
   const degraded = !LLM && p.path !== "template";
+  // Backend order: meta, cards?, compare?, calc?, sources, status? (a model is about to write), token*, chips, trace, done.
+  const lang = p.lang;
+  if (p.cards) send(res, "cards", { projects: p.cards.projects.map((x) => card(x, lang)), listings: p.cards.listings });
+  if (p.compare) send(res, "compare", p.compare);
+  if (p.calc) send(res, "calc", p.calc);
+  send(res, "sources", p.sources);
+  if (!degraded && p.path !== "template") { send(res, "status", { step: "writing" }); await sleep(/slow/.test(msg) ? 1500 : 300); }
   const words = p.text.split(/(?<=\s)/);
   for (let i = 0; i < words.length; i += 2) {
     send(res, "token", { t: words.slice(i, i + 2).join("") });
     await sleep(degraded ? 5 : 40);
     if (/drop/.test(msg) && i > 6) { res.destroy(); return; }
   }
-  const lang = p.lang;
-  if (p.cards) send(res, "cards", { projects: p.cards.projects.map((x) => card(x, lang)), listings: p.cards.listings });
-  if (p.compare) send(res, "compare", p.compare);
-  if (p.calc) send(res, "calc", p.calc);
-  send(res, "sources", p.sources);
   send(res, "chips", p.chips);
   const usedModel = !(p.path === "template" || degraded);
   send(res, "trace", {

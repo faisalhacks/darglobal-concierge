@@ -54,7 +54,7 @@ TARGETS = {
     "lighthouse_mobile": {"target": 90, "op": ">=", "note": "measured separately, not by this runner"},
 }
 
-EVENT_ORDER = ["meta", "token", "cards", "compare", "calc", "sources", "chips", "trace", "done"]
+EVENT_ORDER = ["meta", "cards", "compare", "calc", "sources", "status", "token", "chips", "trace", "done"]  # SPEC 2026-11-19 cards-first
 
 CURRENCY = r"(?:AED|SAR|OMR|USD|EGP|QAR|KWD|BHD|EUR|GBP|\$|€|£|درهم|ريال|دولار|جنيه|دينار)"
 HEDGE_RE = re.compile(
@@ -743,7 +743,9 @@ def main():
             failures += [f"turn{ti + 1}: {f}" for f in fails] if len(turns) > 1 else fails
             history += [{"role": "user", "content": msg}, {"role": "assistant", "content": rep.prose}]
             turn_log.append({"say": msg, "intent": rep.intent, "path": rep.path, "reply_excerpt": rep.prose[:240], "answer": rep.prose,
-                             "card_ids": rep.card_ids(), "sources": [x.get("url") for x in rep.sources], "model": rep.trace.get("model")})
+                             "card_ids": rep.card_ids(), "sources": [x.get("url") for x in rep.sources], "model": rep.trace.get("model"),
+                             # showcase (evals/make_showcase.py): per-turn trace fields, recorded as the server sent them
+                             "llm_calls": rep.trace.get("llm_calls"), "trace_latency_ms": rep.trace.get("latency_ms")})
             last_rep = rep
         jres = None
         if case.get("judge") and judge_on and last_rep and not last_rep.error:
@@ -899,7 +901,7 @@ def main():
     if live:  # a real-model run is its own artifact; the next full run attaches it unchanged
         ma = Counter(r["model"] for r in ran if r.get("model"))
         (out_dir / "live_subset.json").write_text(json.dumps({
-            "run_at": out["run_at"], "dataset_version": out["dataset_version"], "llm_calls": llm_calls,
+            "run_at": out["run_at"], "base_url": base, "dataset_version": out["dataset_version"], "llm_calls": llm_calls,
             "max_llm_calls": args.max_llm_calls, "n": len(ran), "passed": sum(bool(r["passed"]) for r in ran),
             "failed": sum(not r["passed"] for r in ran), "models_answered": dict(ma),
             "app_budget_used_before": budget_start, "app_budget_used_after": budget_end,

@@ -51,20 +51,13 @@ TEMPLATES: dict[str, dict[str, str]] = {
     # "Is Wasalt a subsidiary of DarGlobal?" No page in the dataset documents the ownership link, so the answer makes
     # no subsidiary claim and says the relationship is outside what it can cite (chat.py attaches a source only when
     # a collected page names both brands together with an ownership word).
+    # "Is Wasalt a subsidiary of DarGlobal?" No page in the dataset documents any ownership link, so the answer asserts
+    # none (M13): two separate companies, official sites linked (chat.py attaches their official pages).
     "brand_relationship": {
-        "en": "Public sources describe DarGlobal and Wasalt as sister companies under common ownership, not as parent "
-              "and subsidiary, so I will not call Wasalt a DarGlobal subsidiary. None of the pages in this dataset "
-              "documents that ownership link, so it is outside what I can cite here; the official websites can confirm it.",
-        "ar": "تصف المصادر العامة دار جلوبال ووصلت بأنهما شركتان شقيقتان تحت ملكية مشتركة، لا شركة أم وشركة تابعة، لذا لن "
-              "أصف وصلت بأنها تابعة لدار جلوبال. لا توثّق أي صفحة في هذه البيانات رابط الملكية هذا، فهو خارج ما يمكنني "
-              "الاستشهاد به هنا؛ ويمكن للموقعين الرسميين تأكيده.",
-    },
-    "brand_relationship_sourced": {
-        "en": "Public sources describe DarGlobal and Wasalt as sister companies under common ownership, not as parent "
-              "and subsidiary, so I will not call Wasalt a DarGlobal subsidiary. The collected pages that mention "
-              "both are linked below.",
-        "ar": "تصف المصادر العامة دار جلوبال ووصلت بأنهما شركتان شقيقتان تحت ملكية مشتركة، لا شركة أم وشركة تابعة، لذا لن "
-              "أصف وصلت بأنها تابعة لدار جلوبال. الصفحات المجمّعة التي تذكرهما مرفقة أدناه.",
+        "en": "DarGlobal and Wasalt are separate companies; this prototype brings their public information together. "
+              "For corporate details please see their official websites.",
+        "ar": "دار جلوبال ووصلت شركتان منفصلتان؛ يجمع هذا النموذج التجريبي معلوماتهما العامة في مكان واحد. "
+              "للاطلاع على التفاصيل المؤسسية يرجى زيارة موقعيهما الرسميين.",
     },
     # A place the user named that no row in the dataset is in ("projects in Tokyo"): name it as a place and list the
     # countries the dataset does hold (chips for them are added by chat.py).
@@ -185,10 +178,86 @@ TEMPLATES: dict[str, dict[str, str]] = {
         "ar": "يرجى ذكر مشروعين للمقارنة بينهما، مثلاً بأسمائهما كما هي منشورة.",
     },
     "calc_need_inputs": {
-        "en": "I can calculate price per m², a down payment, an instalment split or a pegged-currency "
-              "conversion. Please give me the numbers, for example: \"20% down on 2M SAR\".",
+        "en": "I can calculate price per m², a down payment, an instalment split, a monthly loan payment or a "
+              "pegged-currency conversion. Please give me the numbers, for example: \"20% down on 2M SAR\" or "
+              "\"monthly payment on 1.5M SAR over 25 years at 5%\".",
         "ar": "يمكنني حساب سعر المتر المربع أو الدفعة المقدمة أو تقسيم الأقساط أو تحويل العملات المرتبطة. "
               "يرجى تزويدي بالأرقام، مثلاً: \"دفعة مقدمة 20% على 2 مليون ريال\".",
+    },
+    # ---- conversation fallbacks (the LLM writes these replies when it is available; {holdings} and the other
+    # fields are counted from the loaded rows by chat.py, never typed in here)
+    "conv_greeting": {
+        "en": "Hello, and welcome! I'm the DarGlobal and Wasalt property concierge. I can tell you about {holdings}. "
+              "What would you like to explore?",
+        "ar": "أهلاً وسهلاً بك! أنا مساعدك العقاري لدار جلوبال ووصلت. يمكنني أن أحدّثك عن {holdings}. "
+              "بماذا تودّ أن نبدأ؟",
+    },
+    "conv_greeting_again": {
+        "en": "Hello again! Happy to keep going: ask me anything about the projects or listings.",
+        "ar": "أهلاً بك مجدداً! يسعدني أن نكمل: اسألني عن أي مشروع أو عرض عقاري.",
+    },
+    "conv_thanks": {
+        "en": "You're very welcome! Is there anything else I can look up for you?",
+        "ar": "على الرحب والسعة! هل هناك شيء آخر يمكنني البحث عنه لك؟",
+    },
+    "conv_goodbye": {
+        "en": "Thank you for stopping by, and goodbye for now. I'm here whenever you want to look at more properties.",
+        "ar": "شكراً لزيارتك، وإلى اللقاء. أنا هنا متى ما رغبت في استكشاف المزيد من العقارات.",
+    },
+    "conv_identity": {
+        "en": "I'm a property concierge prototype for DarGlobal and Wasalt, answering only from their published "
+              "pages. I hold {holdings}. I can show projects by city or country, search listings by budget and "
+              "bedrooms, compare two projects and run simple price calculations; I don't give investment advice.",
+        "ar": "أنا نموذج تجريبي لمساعد عقاري لدار جلوبال ووصلت، أجيب فقط من صفحاتهما المنشورة. لديّ {holdings}. "
+              "يمكنني عرض المشاريع حسب المدينة أو الدولة، والبحث في العروض حسب الميزانية وعدد الغرف، والمقارنة بين "
+              "مشروعين، وإجراء حسابات سعرية بسيطة؛ ولا أقدّم نصائح استثمارية.",
+    },
+    "conv_ack": {
+        "en": "Great. What would you like to look at next?",
+        "ar": "ممتاز. ما الذي تودّ الاطلاع عليه بعد ذلك؟",
+    },
+    "vague_generic": {
+        "en": "Happy to help. Could you tell me a little more? I hold projects in {countries}, plus {listings} "
+              "Wasalt listings in {cities}. Pick a place below or tell me a budget.",
+        "ar": "يسعدني ذلك. هل يمكنك توضيح طلبك قليلاً؟ لديّ مشاريع في {countries}، إضافة إلى {listings} من وصلت في "
+              "{cities}. اختر مكاناً أدناه أو أخبرني بميزانيتك.",
+    },
+    "vague_ptype": {
+        "en": "Happy to help with {ptype}. I hold {n} {ptype} among the Wasalt listings, most in {cities}{projects}. "
+              "Which city should I look in?",
+        "ar": "يسعدني ذلك. لديّ {n} من {ptype} على وصلت، أغلبها في {cities}{projects}. في أي مدينة تودّ أن أبحث؟",
+    },
+    "vague_luxury": {
+        "en": "For high-end homes, the clearest signal in the data is branded residences: {n} published projects "
+              "with brand partners such as {brands}. Which would you like to see?",
+        "ar": "للمساكن الراقية، أوضح ما في البيانات هو المساكن ذات العلامات التجارية: {n} من المشاريع المنشورة مع شركاء "
+              "مثل {brands}. أيّها تودّ أن تراه؟",
+    },
+    "vague_invest": {
+        "en": "I can't give investment advice or promise any return, but I can show you the published facts. "
+              "I hold {holdings}. Where would you like to start?",
+        "ar": "لا يمكنني تقديم نصائح استثمارية أو ضمان أي عائد، لكن يمكنني عرض المعلومات المنشورة. لديّ {holdings}. "
+              "من أين تودّ أن نبدأ؟",
+    },
+    "not_found_named": {
+        "en": "I have no verified information on a project called “{name}” in the DarGlobal or Wasalt data, so I "
+              "won't guess.",
+        "ar": "لا تتوفر لديّ معلومات موثّقة عن مشروع باسم «{name}» في بيانات دار جلوبال أو وصلت، ولن أقدّم تخمينات.",
+    },
+    "spotlight_pivot": {
+        "en": "Since you're here, may I show you {name}? {fact}",
+        "ar": "وبما أنك هنا، هل تودّ التعرّف على {name}؟ {fact}",
+    },
+    "advisor_close": {
+        "en": "If you'd like details or availability, a DarGlobal advisor can help through the official contact page "
+              "linked below.",
+        "ar": "إذا رغبت في التفاصيل أو التوفر، يمكن لمستشاري دار جلوبال مساعدتك عبر صفحة التواصل الرسمية المرفقة أدناه.",
+    },
+    "off_topic_pivot": {
+        "en": "{answer}That's a little outside my world: I'm a property concierge for DarGlobal and Wasalt. Since "
+              "you're here, may I show you {name}? {fact}",
+        "ar": "{answer}هذا خارج نطاقي قليلاً، فأنا مساعد عقاري لدار جلوبال ووصلت. وبما أنك هنا، هل تودّ التعرّف على "
+              "{name}؟ {fact}",
     },
     "fmh_q1": {"en": "Which city or country interests you?", "ar": "ما المدينة أو الدولة التي تهتم بها؟"},
     "fmh_q2": {"en": "What budget range do you have in mind?", "ar": "ما نطاق الميزانية الذي تفكر فيه؟"},
@@ -231,7 +300,7 @@ def drop_repeats(chips_: list[dict], last_message: str, lang: str, asked: list[s
     out = [c for c in chips_ if k(c["message"]) not in done and k(c["label"]) not in done]
     if len(out) < len(chips_):
         lang = lang if lang in ("en", "ar") else "en"
-        for label, msg in DEFAULT_CHIPS[lang]:
+        for label, msg in DEFAULT_CHIPS[lang][:4]:  # never top up with the guardrail-test chip
             if len(out) >= 3:
                 break
             if k(msg) not in done and k(label) not in done and all(c["label"] != label for c in out):
@@ -251,7 +320,7 @@ def chips(lang: str, intent: str, names: list[str] | None = None) -> list[dict]:
             out += [(f"Prices at {n}", f"What are the prices at {n}?"), (f"Handover for {n}", f"When is handover for {n}?")]
         out.append(CONTACT_CHIP[lang])
     elif intent in ("advice", "contact_sales"):
-        out += [DEFAULT_CHIPS[lang][0], CONTACT_CHIP[lang], DEFAULT_CHIPS[lang][4]]
+        out += [DEFAULT_CHIPS[lang][0], CONTACT_CHIP[lang], DEFAULT_CHIPS[lang][2]]
     elif intent == "calculation":
         if lang == "ar":
             out += [("دفعة مقدمة 20% على 2,000,000 ريال", "دفعة مقدمة 20% على 2,000,000 ريال"),
@@ -260,8 +329,10 @@ def chips(lang: str, intent: str, names: list[str] | None = None) -> list[dict]:
             out += [("20% down on 2,000,000 SAR", "20% down on 2,000,000 SAR"),
                     ("Convert 1,000,000 AED to USD", "Convert 1,000,000 AED to USD")]
         out.append(CONTACT_CHIP[lang])
-    else:
-        out += DEFAULT_CHIPS[lang][:2] + [DEFAULT_CHIPS[lang][4]]
+    elif intent == "injection":
+        out += DEFAULT_CHIPS[lang][:3]
+    else:  # follow-ups never carry the guardrail-test chip (UI council item 18)
+        out += DEFAULT_CHIPS[lang][:3]
     seen, res = set(), []
     for label, msg in out:
         if label not in seen:

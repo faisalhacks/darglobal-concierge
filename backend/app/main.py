@@ -5,6 +5,8 @@ Serves /api/* and the static Next.js export (STATIC_DIR) at /. Built for a Huggi
 """
 from __future__ import annotations
 
+import asyncio
+
 import hashlib
 import hmac
 import json
@@ -20,7 +22,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from . import templates
+from . import calculator, templates
 from .arabic import detect_lang
 from .planner import place_display
 from .chat import ChatRequest, Engine
@@ -227,6 +229,17 @@ def _make_llm(s: Settings):
     return None
 
 
+async def _refresh_models(llm_obj, every_s: float):
+    """Model health without spending quota: re-read the public GET /models list (not a completion) every
+    `every_s` seconds and drop pool members that disappeared. No warm-up completions are ever sent."""
+    while True:
+        await asyncio.sleep(every_s)
+        try:
+            await llm_obj.check_models()
+        except Exception as e:  # noqa: BLE001 - a background refresh must never take the app down
+            log.warning("model list refresh failed: %s", type(e).__name__)
+
+
 def create_app(settings: Settings | None = None, llm=None, embedder=None) -> FastAPI:
     s = settings or load_settings()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
@@ -249,7 +262,17 @@ def create_app(settings: Settings | None = None, llm=None, embedder=None) -> Fas
                 await llm_obj.check_models()
             except Exception as e:  # noqa: BLE001 - boot must never fail on this
                 log.warning("model list check failed: %s", type(e).__name__)
+        refresher = None
+        if s.llm_mode not in ("mock", "off") and s.llm_model_refresh_s > 0 and hasattr(llm_obj, "check_models"):
+            refresher = asyncio.create_task(_refresh_models(llm_obj, s.llm_model_refresh_s))
+        # ECB reference rates (EUR, GBP, INR): fetched in the background, never awaited by a request.
+        fx_task = asyncio.create_task(calculator.fx_refresh_loop()) if os.environ.get("FX_FETCH", "on").lower() not in (
+            "off", "0", "false", "no") else None
         yield
+        if refresher:
+            refresher.cancel()
+        if fx_task:
+            fx_task.cancel()
 
     app = FastAPI(title="Property Concierge (candidate prototype)", docs_url=None, redoc_url=None,
                   openapi_url=None, lifespan=lifespan)
@@ -391,6 +414,20 @@ def create_app(settings: Settings | None = None, llm=None, embedder=None) -> Fas
                 except (OSError, ValueError):
                     break
         return {}
+
+    # --- showcase (Stress-tested block): data/showcase.json, written by evals/make_showcase.py from recorded runs ---
+    @app.get("/api/showcase")
+    async def showcase():
+        for path in (os.environ.get("SHOWCASE_PATH", ""), "data/showcase.json", "/app/data/showcase.json"):
+            if path and os.path.exists(path):
+                try:
+                    with open(path, encoding="utf-8") as f:
+                        d = json.load(f)
+                    return d if isinstance(d, dict) else {}
+                except (OSError, ValueError):
+                    break
+        return {}
+    # --- end showcase ---
 
     @app.get("/healthz")
     async def healthz():

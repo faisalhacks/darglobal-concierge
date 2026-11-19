@@ -47,6 +47,25 @@ class LLMResult:
         self.error: str | None = None
         # finish_reason of the last streamed answer ("stop" = complete; "length" etc. = cut off; None = not reported)
         self.finish_reason: str | None = None
+        # per-call metadata (never content): visible characters vs hidden-reasoning characters of the last call
+        self.content_chars = 0
+        self.reasoning_chars = 0
+        self.understanding: dict | None = None  # validated query-understanding result (trace only)
+
+
+# Provider spellings of "the answer is complete" (OpenRouter normalises most to "stop"; some pass native values).
+_COMPLETE = {"stop", "end_turn", "eos", "stop_sequence", "complete", "completed", "finished"}
+# A stream that only produces hidden reasoning for this long, with no visible content, is abandoned for the next
+# model (nemotron spent all max_tokens on reasoning: finish_reason=length, 0 content chars).
+REASONING_ABORT_S = 8.0
+PROSE_MAX_TOKENS = 1200
+
+
+def normalize_finish(v) -> str | None:
+    if v is None:
+        return None
+    s = str(v).strip().lower()
+    return "stop" if s in _COMPLETE else s
 
 
 def _num(v) -> float | None:
@@ -94,7 +113,9 @@ class OpenRouterClient:
     Per message: at most 2 HTTP requests (the second only if the first failed before any token was sent),
     zero when the account is in quota / cooling state or the daily budget is spent."""
 
-    MAX_MODELS_PER_CALL = 3
+    # One model per request: OpenRouter's server-side `models` failover waited out a silent model for 30 s (live
+    # check), so the hop is done here, under the first-token limit. Two requests per message at most.
+    MAX_MODELS_PER_CALL = 1
 
     def __init__(self, settings: Settings, transport: httpx.AsyncBaseTransport | None = None,
                  router: Router | None = None):
@@ -140,10 +161,12 @@ class OpenRouterClient:
                 "max_tokens": max_tokens, "reasoning": {"effort": "low", "exclude": True}}
         rec.calls += 1
         rec.finish_reason = None
+        rec.content_chars = rec.reasoning_chars = 0
         self.router.note_call()
         t0 = time.monotonic()
         deadline = t0 + self.s.llm_total_timeout_s
         first = True
+        reasoning_t0: float | None = None
         try:
             async with self._client() as client:
                 async with client.stream("POST", f"{self.s.openrouter_base_url}/chat/completions",
@@ -154,10 +177,19 @@ class OpenRouterClient:
                         self._on_failure(models, kind, scope, retry, reset)
                         raise LLMError(kind, resp.status_code, retry)
                     async for line in resp.aiter_lines():
-                        if time.monotonic() > deadline:
+                        now = time.monotonic()
+                        if now > deadline:
                             if first:
                                 self.router.fail(models[0], "timeout")
                             raise LLMError("timeout")
+                        if first and now - t0 > self.s.llm_first_token_timeout_s:
+                            # keep-alive comments (": OPENROUTER PROCESSING") reset httpx's read timeout, so the
+                            # first-token limit is enforced here on every line, content or not
+                            self.router.fail(models[0], "timeout")
+                            raise LLMError("timeout")
+                        if first and reasoning_t0 is not None and now - reasoning_t0 > REASONING_ABORT_S:
+                            self.router.fail(models[0], "bad_response")  # reasoning-only stream: hop now
+                            raise LLMError("bad_response")
                         if not line.startswith("data:"):
                             continue  # blank lines and ": OPENROUTER PROCESSING" keep-alive comments
                         data = line[5:].strip()
@@ -178,9 +210,16 @@ class OpenRouterClient:
                             rec.model = obj["model"]
                         for ch in choices:
                             if (ch or {}).get("finish_reason"):
-                                rec.finish_reason = ch["finish_reason"]
-                            piece = ((ch or {}).get("delta") or {}).get("content")
-                            if piece:
+                                rec.finish_reason = normalize_finish(ch["finish_reason"])
+                            delta = (ch or {}).get("delta") or {}
+                            hidden = delta.get("reasoning") or delta.get("reasoning_content") or ""
+                            if hidden and isinstance(hidden, str):  # counted, never shown
+                                rec.reasoning_chars += len(hidden)
+                                if reasoning_t0 is None:
+                                    reasoning_t0 = time.monotonic()
+                            piece = delta.get("content")  # only visible content is ever yielded
+                            if piece and isinstance(piece, str):
+                                rec.content_chars += len(piece)
                                 if first:
                                     first = False
                                     self._on_success(models, rec.model, rec, (time.monotonic() - t0) * 1000,
@@ -194,11 +233,15 @@ class OpenRouterClient:
             if first:
                 self.router.fail(models[0], "unavailable")
             raise LLMError("unavailable") from e
+        finally:
+            log.info("llm call model=%s finish_reason=%s content_chars=%d reasoning_chars=%d ms=%d",
+                     rec.model or (models[0] if models else None), rec.finish_reason, rec.content_chars,
+                     rec.reasoning_chars, int((time.monotonic() - t0) * 1000))
         if first:
             self.router.fail(models[0], "bad_response")
             raise LLMError("bad_response")
 
-    async def stream(self, messages: list[dict], rec: LLMResult, max_tokens: int = 600,
+    async def stream(self, messages: list[dict], rec: LLMResult, max_tokens: int = PROSE_MAX_TOKENS,
                      allow_retry: bool = True) -> AsyncIterator[str]:
         """Stream tokens. A failure before the first token opens that model's breaker and, unless the account is
         now blocked, retries once on the remaining healthy models. A failure after the first token is raised."""
@@ -227,6 +270,41 @@ class OpenRouterClient:
                     raise
                 tried.append(models[0])
         raise last or LLMError("unavailable")
+
+    async def complete_json(self, messages: list[dict], rec: LLMResult, max_tokens: int = 400) -> str | None:
+        """One non-streaming call for query understanding (JSON). One model, first-token limit as the timeout.
+        None on any failure (the code planner's result is used instead); never retried."""
+        if self.router.block_reason() or self.router.near_cap():
+            return None
+        models = self.router.ordered()[:1]
+        if not models:
+            return None
+        rec.calls += 1
+        self.router.note_call()
+        body = {"models": models, "messages": messages, "temperature": 0, "max_tokens": max_tokens,
+                "reasoning": {"effort": "low", "exclude": True}, "response_format": {"type": "json_object"}}
+        try:
+            async with self._client() as client:
+                resp = await asyncio.wait_for(
+                    client.post(f"{self.s.openrouter_base_url}/chat/completions", headers=self._headers(), json=body),
+                    timeout=self.s.llm_first_token_timeout_s + 4)
+        except (httpx.HTTPError, asyncio.TimeoutError):
+            self.router.fail(models[0], "timeout")
+            return None
+        if resp.status_code != 200:
+            kind, scope, retry, reset = classify_error(resp.status_code, resp.headers, resp.content)
+            self._on_failure(models, kind, scope, retry, reset)
+            return None
+        try:
+            obj = resp.json()
+            rec.model = obj.get("model") or rec.model
+            content = obj["choices"][0]["message"].get("content")
+        except (ValueError, KeyError, IndexError, TypeError):
+            return None
+        log.info("llm understanding model=%s content_chars=%d", rec.model, len(content or ""))
+        if content:
+            self._on_success(models, rec.model, rec, None, 0)
+        return content or None
 
     async def tool_call(self, messages: list[dict], tools: list[dict], rec: LLMResult) -> dict | None:
         """Single non-streaming call that may return one tool call. Returns {"name", "arguments"} or None.
@@ -290,7 +368,9 @@ class MockLLM:
     model_name = "mock/echo"
 
     def __init__(self, fail_with: str | None = None, leak: bool = False, extra: str = "",
-                 truncate: str | None = None):
+                 truncate: str | None = None, understanding=None):
+        # understanding: None -> the mock declines (no call counted); a dict/str -> returned as the JSON reply
+        self.understanding = understanding
         self.fail_with = fail_with
         self.leak = leak
         self.extra = extra
@@ -340,6 +420,18 @@ class MockLLM:
         fact = " ".join(re.split(r"(?<=[.!?؟])\s", m.group(2).strip())[:2])[:300]
         lead = "وفقاً للمعلومات المنشورة: " if ar else "According to the published information: "
         return lead + fact + (" " + self.extra if self.extra else "")
+
+    async def complete_json(self, messages: list[dict], rec: LLMResult, max_tokens: int = 400) -> str | None:
+        if self.understanding is None:
+            return None
+        rec.calls += 1
+        try:
+            self._maybe_fail()
+        except LLMError:
+            return None
+        rec.model = self.model_name
+        u = self.understanding(messages) if callable(self.understanding) else self.understanding
+        return u if isinstance(u, str) else json.dumps(u)
 
     async def tool_call(self, messages: list[dict], tools: list[dict], rec: LLMResult) -> dict | None:
         rec.calls += 1

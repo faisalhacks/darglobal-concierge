@@ -63,9 +63,10 @@ async function stream(base, message) {
   return frames;
 }
 
-const ORDER = ["meta", "token", "cards", "compare", "calc", "sources", "chips", "trace", "done"];
+// Backend contract (cards and sources before prose): meta, cards?, compare?, calc?, sources, status?, token*, chips, trace, done.
+const ORDER = ["meta", "cards", "compare", "calc", "sources", "status", "token", "chips", "trace", "done"];
 
-test("C2 SSE: event order unchanged, project cards carry detail/site/price_label/country, trace adds keys", async () => {
+test("SSE: event order (cards and sources before tokens), project cards carry detail/site/price_label/country, trace adds keys", async () => {
   await withServer(async (base) => {
     const frames = await stream(base, "What DarGlobal projects are in Oman?");
     const seq = frames.map((f) => f.event).filter((e, i, a) => e !== "token" || a[i - 1] !== "token");

@@ -322,9 +322,17 @@ def project_card(p: dict, lang: str = "en") -> dict:
     }
 
 
+# A listing whose area per bedroom is above this is probably mis-entered (e.g. a 730 m² one-bedroom apartment).
+AREA_PER_BED_FLAG_M2 = 250
+
+
 def listing_card(x: dict, lang: str = "en") -> dict:
     from .planner import place_display
-    return {
+    beds, area = x.get("beds"), x.get("area_m2")
+    flag = bool(beds and area and area / beds > AREA_PER_BED_FLAG_M2
+                and "apartment" in str(x.get("property_type") or "").lower())
+    from .calculator import usd_approx  # lazy: calculator imports planner, which imports this module
+    card = {"area_flag": flag,
         "id": x["id"], "title": x.get("title") or "", "site": "Wasalt", "listing_type": x.get("listing_type"),
         "price": money(x.get("price_amount"), x.get("price_currency")),
         "beds": x.get("beds"), "baths": x.get("baths"), "area_m2": x.get("area_m2"),
@@ -332,6 +340,10 @@ def listing_card(x: dict, lang: str = "en") -> dict:
         "city_display": place_display(x.get("city"), lang) or None, "image_url": _first_image(x),
         "source_url": x.get("source_url"),
     }
+    usd = usd_approx(x.get("price_amount"), x.get("price_currency"))  # whole USD via the official peg, never a market rate
+    if usd is not None:
+        card["price_usd_approx"] = usd  # optional field: the UI shows "≈ $X" only when it is present
+    return card
 
 
 def project_fact_text(p: dict) -> str:
@@ -355,6 +367,14 @@ def project_fact_text(p: dict) -> str:
         parts.append(f"Status: {p['status']}")
     if p.get("handover_year"):
         parts.append(f"Handover: {p['handover_year']}")
+    if p.get("area_min_m2") or p.get("area_max_m2"):
+        lo, hi = p.get("area_min_m2"), p.get("area_max_m2")
+        parts.append("Unit sizes: " + (f"{fmt_num(lo)} to {fmt_num(hi)} m2" if lo and hi and lo != hi
+                                       else f"{fmt_num(lo or hi)} m2"))
+    if p.get("amenities"):
+        parts.append("Amenities: " + ", ".join(map(str, p["amenities"][:10])))
+    if p.get("description_en"):
+        parts.append("Description: " + str(p["description_en"]).strip())
     return ". ".join(parts)
 
 
@@ -451,5 +471,49 @@ def compare_payload(store: Store, ids: list[str], lang: str = "en") -> dict | No
         name = project_name(r, lang) if k == "p" else r.get("title") or r["id"]
         cols.append({"id": r["id"], "name": name, "site": r["site"]})
         srcs.append(source_of(r, name))
-    rows = [{"label": (ar if lang == "ar" else en), "values": [fn(r) for _, r in rows_src]} for en, ar, fn in spec]
-    return {"columns": cols, "rows": rows, "sources": srcs}
+    rows = []
+    for en, ar, fn in spec:
+        vals = [fn(r) for _, r in rows_src]
+        if lang == "ar":
+            vals = [_ar_value(en, v, r) for v, (_, r) in zip(vals, rows_src)]
+        present = [v for v in vals if v is not None]
+        rows.append({"label": (ar if lang == "ar" else en), "values": vals,
+                     "differs": len(set(present)) > 1 or (0 < len(present) < len(vals))})
+    return {"columns": cols, "rows": rows, "sources": srcs, "verdict": _verdict(cols, rows, lang)}
+
+
+_STATUS_AR = {"under development": "قيد التطوير", "completed": "مكتمل", "completed and sold out": "مكتمل ومباع بالكامل",
+              "sold out": "مباع بالكامل", "off-plan": "على الخريطة", "under construction": "قيد الإنشاء", "ready": "جاهز",
+              "buy": "للبيع", "rent": "للإيجار"}
+
+
+def _ar_value(row_en: str, v, r: dict):
+    """Arabic compare cells: places and statuses in Arabic; published names and figures unchanged."""
+    from .planner import place_display
+    if v is None:
+        return None
+    if row_en in ("Location",):
+        return "، ".join(place_display(x, "ar") for x in (r.get("district"), r.get("city"), r.get("country")) if x
+                        and (x != r.get("district") or "district" in r)) or v
+    if row_en in ("Status", "Type"):
+        return _STATUS_AR.get(str(v).strip().lower(), v)
+    if row_en == "Developer" and v == "DarGlobal":
+        return "دار جلوبال"
+    return v
+
+
+def _verdict(cols: list[dict], rows: list[dict], lang: str) -> str:
+    """One line computed only from the table: which rows differ, which are the same, how many are unpublished."""
+    diff = [r["label"] for r in rows if r["differs"]]
+    same = [r["label"] for r in rows if not r["differs"] and all(v is not None for v in r["values"])]
+    missing = sum(1 for r in rows for v in r["values"] if v is None)
+    a, b = cols[0]["name"], cols[1]["name"]
+    if lang == "ar":
+        out = f"يختلف {a} و{b} في: {'، '.join(diff) or 'لا شيء منشور'}"
+        if same:
+            out += f"؛ ويتشابهان في: {'، '.join(same)}"
+        return out + (f". {missing} من الخانات غير منشورة." if missing else ".")
+    out = f"{a} and {b} differ on: {', '.join(diff).lower() or 'nothing published'}"
+    if same:
+        out += f"; they share: {', '.join(same).lower()}"
+    return out + (f". {missing} cell{'s are' if missing != 1 else ' is'} not published." if missing else ".")

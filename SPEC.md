@@ -335,7 +335,7 @@ Sources · Data as of {date}
 
 **Chat request:** `{session_id, message (≤1000 chars), history (≤8 msgs), lang: auto|en|ar}`
 
-**SSE events, in order:** `meta → token* → cards? → compare? → calc? → sources → chips → trace → done` · or `error {code: RATE_LIMITED|MODEL_UNAVAILABLE|BAD_INPUT|INTERNAL}`
+**SSE events, in order (cards-first, revised 2026-11-19):** `meta → cards? → compare? → calc? → sources → status? → token* → chips → trace → done` · `status` is `{"step":"writing"}`, sent only when a model is about to write the prose · or `error {code: RATE_LIMITED|MODEL_UNAVAILABLE|BAD_INPUT|INTERNAL}`
 
 Sessions are stateless server-side. Nothing persisted.
 

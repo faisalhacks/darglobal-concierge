@@ -13,7 +13,9 @@ FLAGS_ON_BY_DEFAULT = ("FF_FIND_MY_HOME",)
 
 # Chosen from the public OpenRouter /models list on 2026-11-19 and ordered by the live check of the same day
 # (NVIDIA first: the only model that answered in the 2026-11-19 live check and passed the Arabic gate; see MODELS.md).
-DEFAULT_MODELS = "google/gemma-4-31b-it:free,nvidia/nemotron-3-ultra-550b-a55b:free,google/gemma-4-26b-a4b-it:free"  # docs/MODEL_ROUTER.md order; nemotron first spent max_tokens on hidden reasoning (finish=length, 0 chars)
+# Live check 2026-11-19: nemotron answered (finish=stop, 0 reasoning chars with exclude); gemma-4-31b sent nothing
+# for 30 s. Nemotron first, gemmas after; one model per request, hops are client-side under the first-token limit.
+DEFAULT_MODELS = "nvidia/nemotron-3-ultra-550b-a55b:free,google/gemma-4-31b-it:free,google/gemma-4-26b-a4b-it:free"  # docs/MODEL_ROUTER.md order; nemotron first spent max_tokens on hidden reasoning (finish=length, 0 chars)
 EMBED_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
 
@@ -52,7 +54,8 @@ class Settings:
     rate_limit_window_s: int = 300
     retrieval_threshold: float = 0.45
     llm_connect_timeout_s: float = 5.0
-    llm_first_token_timeout_s: float = 12.0
+    llm_first_token_timeout_s: float = 8.0  # no visible content token within this -> abandon and hop
+    llm_model_refresh_s: float = 600.0  # re-read GET /models (free, no completion) this often; 0 = boot check only
     llm_total_timeout_s: float = 30.0
     cache_ttl_s: int = 3600
     maintenance_mode: bool = False
@@ -63,6 +66,8 @@ class Settings:
     trusted_proxy_hops: int = 0  # proxies in front of us that append to X-Forwarded-For (1 on HF Spaces / Render)
     global_llm_per_min: int = 30  # process-wide chat cap while an LLM is configured (0 = off)
     llm_tool_routing: bool = False  # off by default: one LLM call per message, the code planner routes
+    llm_understanding: bool = True  # low-confidence inputs only: one JSON call maps the words onto held values
+    project_answer: str = "code"  # "code": single-project answers built in code, 0 model calls (UI council 17); "llm"
     llm_daily_budget: int = 45  # outbound LLM requests per UTC day; at the cap: no calls, extractive answers
     llm_quota_cooldown_s: float = 1800.0  # 402 / daily free cap -> quota state this long (or until X-RateLimit-Reset)
     llm_boot_model_check: bool = True  # GET /models at boot (free, no completion) and drop unlisted / non-free models
@@ -119,6 +124,8 @@ def load_settings() -> Settings:
         rate_limit_window_s=w,
         retrieval_threshold=_float("RETRIEVAL_THRESHOLD", 0.45),
         llm_total_timeout_s=total,
+        llm_first_token_timeout_s=_float("LLM_FIRST_TOKEN_TIMEOUT_S", 8.0),
+        llm_model_refresh_s=_float("LLM_MODEL_REFRESH_S", 600.0),
         cache_ttl_s=_int("CACHE_TTL_S", 3600),
         maintenance_mode=_bool("MAINTENANCE_MODE"),
         llm_mode=os.environ.get("LLM_MODE", "auto").strip().lower(),
@@ -128,6 +135,8 @@ def load_settings() -> Settings:
         trusted_proxy_hops=max(0, _int("TRUSTED_PROXY_HOPS", 0)),
         global_llm_per_min=max(0, _int("GLOBAL_LLM_PER_MIN", 30)),
         llm_tool_routing=_bool("LLM_TOOL_ROUTING", False),
+        llm_understanding=_bool("LLM_UNDERSTANDING", True),
+        project_answer=(os.environ.get("PROJECT_ANSWER") or "code").strip().lower(),
         llm_daily_budget=max(0, _int("LLM_DAILY_BUDGET", 45)),
         llm_quota_cooldown_s=max(1.0, _float("LLM_QUOTA_COOLDOWN_S", 1800.0)),
         llm_boot_model_check=_bool("LLM_BOOT_MODEL_CHECK", True),

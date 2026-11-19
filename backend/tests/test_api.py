@@ -9,7 +9,8 @@ from backend.app.llm import LLMResult, MockLLM, OpenRouterClient
 
 from conftest import parse_sse
 
-ORDER = re.compile(r"^meta( token)*( cards)?( compare)?( calc)? sources chips trace done$")
+# cards-first: code-built payloads before the prose; `status` only when a writer is about to stream
+ORDER = re.compile(r"^meta( cards)?( compare)?( calc)? sources( status)?( token)* chips trace done$")
 
 
 def assert_contract(d):
@@ -19,12 +20,13 @@ def assert_contract(d):
     assert set(m) == {"request_id", "lang", "intent", "dataset_version", "data_as_of"}
     assert m["lang"] in ("en", "ar") and m["dataset_version"] == "fixture-v1" and m["data_as_of"] == "2026-11-18"
     t = d["trace"][0]
-    assert set(t) == {"intent", "path", "tool", "retrieved", "llm_calls", "model", "fallback_hops", "latency_ms",
-                      "cache_hit", "degraded", "degraded_reason"}
+    assert set(t) - {"steps"} == {"intent", "path", "tool", "retrieved", "llm_calls", "model", "fallback_hops",
+                                  "latency_ms", "cache_hit", "degraded", "degraded_reason"}
+    assert all(isinstance(x, str) and "/" not in x for x in t.get("steps", []))  # plain language, no model ids
     assert t["degraded_reason"] in (None, "rate_limited", "quota", "timeout", "all_models_down", "maintenance", "no_model")
     assert isinstance(t["fallback_hops"], int) and (t["degraded_reason"] is None) == (not t["degraded"])
     assert "unavailable" not in d["_text"]  # no per-message apology sentence (contract C2)
-    assert t["path"] in ("code", "llm_tool", "template") and t["llm_calls"] <= 2
+    assert t["path"] in ("code", "llm_tool", "template", "llm_understanding") and t["llm_calls"] <= 2
     for i, s in enumerate(d["sources"][0], 1):
         assert set(s) - {"brand"} == {"site", "title", "url", "scraped_at", "n"} and s["site"] in ("DarGlobal", "Wasalt")
         assert s["n"] == i  # stable 1-based index: a prose marker [n] names sources[n-1]
@@ -58,9 +60,22 @@ def test_r2_wasalt_auctions(client, ask):
 def test_r3_off_topic(client, ask, q):
     d = ask(client, q)
     assert_contract(d)
+    # Gracious pivot: the writer words it, grounded in a spotlight project chosen by code (card + source attached).
+    assert d["meta"][0]["intent"] == "off_topic" and d["trace"][0]["llm_calls"] == 1
+    assert len(d["chips"][0]) >= 2 and d["cards"][0]["projects"] and d["sources"][0]
+    assert "def " not in d["_text"] and "import " not in d["_text"]
+
+
+@pytest.mark.parametrize("q", ["Write me Python code", "What's 2+2?"])
+def test_r3_off_topic_fallback(make_client, ask, q):
+    d = ask(make_client(env={"LLM_MODE": "off"}), q)
+    assert_contract(d)
     assert d["meta"][0]["intent"] == "off_topic" and d["trace"][0]["path"] == "template"
     assert d["trace"][0]["llm_calls"] == 0 and len(d["chips"][0]) >= 2
-    assert "property concierge" in d["_text"]
+    assert "property concierge" in d["_text"] and "may I show you" in d["_text"]
+    assert d["cards"][0]["projects"] and d["sources"][0]
+    assert ("2 + 2 is 4" in d["_text"]) == (q == "What's 2+2?")
+    assert "def " not in d["_text"]
 
 
 def test_r4_injection(client, ask):
@@ -93,13 +108,31 @@ def test_r6_arabic(client, ask):
     assert "وفقاً للمعلومات المنشورة" in d["_text"]
 
 
-@pytest.mark.parametrize("q", ["Tell me about Atlantis Sky Palace", "What is the price of the Zephyr Lagoon project?",
-                               "2-bed in Riyadh under 10,000 SAR"])
+@pytest.mark.parametrize("q", ["Tell me about Atlantis Sky Palace", "What is the price of the Zephyr Lagoon project?"])
 def test_r7_nonexistent(client, ask, q):
+    # (1) honest not-found sentence first (code-built), (2) pivot to a REAL spotlight project (card + source),
+    # (3) advisor close with the official contact link. Nothing about the invented name: no price, no number.
     d = ask(client, q)
     assert_contract(d)
-    assert "no verified information" in d["_text"] or "could not find anything called" in d["_text"]
-    assert "cards" not in d
+    t = d["_text"]
+    assert t.startswith("I have no verified information on a project called")
+    first = t.split("won't guess.")[0]
+    assert not re.search(r"\d", first.split("“")[-1].split("”")[1] if "”" in first else "")
+    assert "SAR" not in t and "AED" not in t
+    projs = d["cards"][0]["projects"]
+    assert len(projs) == 1 and projs[0]["site"] == "DarGlobal"
+    urls = [s["url"] for s in d["sources"][0]]
+    assert projs[0]["source_url"] in urls and any("contact" in s["title"].lower() for s in d["sources"][0])
+    assert any("advisor" in c["label"] for c in d["chips"][0])
+
+
+def test_r7_unsatisfiable_budget_says_so_and_offers_nearest(client, ask):
+    # No listing is that cheap: say exactly that, then show the nearest real ones (cheapest first), never as matches.
+    d = ask(client, "2-bed in Riyadh under 10,000 SAR")
+    assert_contract(d)
+    t = d["_text"]
+    assert "matches all of that" in t and "raise the budget" in t
+    assert all(x["price"]["amount"] > 10_000 for x in d["cards"][0]["listings"])
 
 
 # ---------------- other paths ----------------
@@ -260,7 +293,7 @@ async def test_openrouter_429_then_fallback():
     rec = LLMResult()
     out = "".join([t async for t in cli.stream([{"role": "user", "content": "hi"}], rec)])
     assert out == "Hello there." and rec.calls == 2 and rec.model == "b/two:free"
-    assert seen == [["a/one:free", "b/two:free"], ["b/two:free"]]
+    assert seen == [["a/one:free"], ["b/two:free"]]  # one model per request, client-side hop
 
 
 @pytest.mark.anyio
@@ -352,3 +385,49 @@ def test_meta_completeness_is_flat_field_ratio(make_client):
 def test_flat_completeness_helper():
     from backend.app.main import _flat_completeness
     assert _flat_completeness({"projects": {"city": 1, "x": "n/a"}, "top": 0.5}) == {"projects.city": 1.0, "top": 0.5}
+
+
+# ---------------- cards-first order + status event
+def test_cards_and_sources_come_before_prose(client, ask):
+    d = ask(client, "What projects do you have in Dubai?")
+    o = d["_order"]
+    assert o.index("cards") < o.index("sources") < o.index("token") < o.index("chips")
+    assert "status" not in o  # code-built prose: no writer to wait for
+
+
+def test_status_event_only_when_a_writer_streams(client, ask, make_client):
+    d = ask(client, "hello")
+    o = d["_order"]
+    assert d["status"] == [{"step": "writing"}] and o.index("sources") < o.index("status") < o.index("token")
+    d = ask(make_client(env={"LLM_MODE": "off"}), "hello")
+    assert "status" not in d["_order"] and d["_text"]
+
+
+def test_cache_replay_keeps_cards_first_and_has_no_status(client, ask):
+    ask(client, "Tell me about Fixture Marina Tower")
+    d = ask(client, "Tell me about Fixture Marina Tower")
+    assert d["trace"][0]["cache_hit"] and "status" not in d["_order"]
+    o = d["_order"]
+    assert o.index("cards") < o.index("token")
+
+
+def test_readyz_makes_no_model_call(make_client):
+    calls = []
+
+    class Spy:
+        model_name = "spy"
+
+        def __init__(self):
+            from backend.app.router import Router
+            self.router = Router(["spy"], daily_budget=10)
+
+        async def stream(self, *a, **k):
+            calls.append(1)
+            yield "x"
+
+        async def tool_call(self, *a, **k):
+            calls.append(1)
+
+    c = make_client(llm=Spy())
+    r = c.get("/readyz")
+    assert r.status_code == 200 and not calls

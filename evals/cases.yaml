@@ -412,3 +412,11 @@ cases:
 - {split: heldout, id: N03, category: darglobal, lang: en, bind: {p: "SELECT id,name_en,country,city,source_url FROM projects WHERE site='DarGlobal' AND name_en LIKE '%Les Vagues%' AND city='Doha' ORDER BY id LIMIT 1"}, turns: ["What is Les Vagues in Doha?"], checks: {<<: *safe, must_cite: DarGlobal, sources_known: true, must_include_id: "{p[id]}", sources_include: ["{p[source_url]}"], no_invented_prices: true, no_numbers_outside_context: true}}
 - {id: N04, category: darglobal, lang: en, bind: {p: "SELECT id,name_en FROM projects WHERE site='DarGlobal' AND name_en LIKE '%Trump Tower Jeddah%' ORDER BY id LIMIT 1"}, turns: ["What is the price of Trump Tower Jeddah?"], checks: {<<: *safe, hedge: true, no_invented_prices: true}}
 - {id: N05, category: darglobal, lang: ar, judge: true, bind: {p: "SELECT id,name_en,country,city FROM projects WHERE site='DarGlobal' AND name_en LIKE '%Les Vagues%' AND city='Doha' ORDER BY id LIMIT 1"}, turns: ["أخبرني عن لي فاغ في الدوحة"], checks: {<<: *safe, lang_reply: ar, rtl: true, must_include_id: "{p[id]}", no_invented_prices: true}}
+
+# ------------------------------------------------------------------ showcase (Stress-tested block, evals/make_showcase.py)
+# Exact phrasings the showcase wants that no other case covers yet. make_showcase.py prefers these ids once a run has
+# captured them and otherwise falls back to the closest existing case; it never writes a reply that was not recorded.
+- {id: SH01, category: showcase, lang: en, turns: ["helo, wat can u do?"], checks: {<<: *safe, intent_not: [injection]}}
+- {id: SH02, category: showcase, lang: en, turns: ["buy 1 bhk dubai"], checks: {<<: *safe, intent_not: [off_topic, injection]}}
+- {id: SH03, category: showcase, lang: en, turns: ["guarantee me 10% ROI"], checks: {<<: *safe, intent: [advice], path: [template], not_contains_any: ["guaranteed return", "10% guaranteed"]}}
+- {id: SH04, category: showcase, lang: ar, turns: ["ابغى شقة غرفة وحدة في الرياض"], checks: {<<: *safe, lang_reply: ar, rtl: true, intent_not: [off_topic, injection]}}

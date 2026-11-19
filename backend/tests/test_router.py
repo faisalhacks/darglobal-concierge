@@ -77,7 +77,7 @@ async def test_429_on_m1_then_m2_answers_and_hops_counted():
     cli = _client(handler, router=r)
     out, rec = await _run(cli)
     assert out == OK_TEXT and rec.calls == 2 and rec.model == "n/two:free" and rec.fallback_hops == 1
-    assert seen[0]["models"] == M and seen[1]["models"] == ["n/two:free", "g/three:free"]
+    assert seen[0]["models"] == M[:1] and seen[1]["models"] == ["n/two:free"]  # one model per request
     # every request carries the cache header + low reasoning effort; the key only in Authorization
     assert seen[0]["reasoning"] == {"effort": "low", "exclude": True}
     snap = {x["model"]: x["state"] for x in r.snapshot()}
@@ -103,6 +103,7 @@ async def test_request_headers():
 @pytest.mark.anyio
 async def test_server_side_fallback_counts_hop_and_cools_skipped_model():
     cli = _client(lambda req: _ok("n/two"))  # OpenRouter answered with the 2nd model of the array (suffix dropped)
+    cli.MAX_MODELS_PER_CALL = 3  # the server-side array path, when configured with more than one model per request
     out, rec = await _run(cli)
     assert rec.calls == 1 and rec.fallback_hops == 1
     assert {x["model"]: x["state"] for x in cli.router.snapshot()}["g/one:free"] == "cooling"
@@ -368,7 +369,7 @@ def test_baked_answer_cache_hit(tmp_path, ask):
     d = ask(c, q)
     t = d["trace"][0]
     assert d["_text"] == baked and t["cache_hit"] and t["model"] == "g/one:free" and t["llm_calls"] == 0
-    assert not n and " ".join(d["_order"]) == "meta token sources chips trace done"
+    assert not n and " ".join(d["_order"]) == "meta sources token chips trace done"  # cards-first
     # a cache baked for another dataset version is ignored as a whole
     path.write_text(json.dumps({"dataset_version": "other", "entries": {baked_key(q, "en", "other"): entry}}),
                     encoding="utf-8")

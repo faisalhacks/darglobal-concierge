@@ -44,16 +44,21 @@ def test_auctions_clean_prose_one_source_live_and_degraded(make_client, ask):
 # ---------------- M3: unknown place / project
 def test_unknown_city_names_place_and_offers_held_countries(client, ask):
     d = ask(client, "What projects do you have in Tokyo?")
-    assert "No DarGlobal or Wasalt entries in Tokyo in this dataset" in d["_text"]
+    assert d["_text"].startswith("No DarGlobal or Wasalt entries in Tokyo in this dataset")
     assert "could not find anything called" not in d["_text"]
-    assert d["trace"][0]["llm_calls"] == 0 and not d.get("cards")
-    chips = d["chips"][0]
-    assert chips and all(c["message"].startswith("What projects do you have in ") for c in chips)
+    # pivot: one real spotlight card (not in Tokyo), its source, the advisor link
+    assert [p["city"] for p in d["cards"][0]["projects"]] != ["Tokyo"] and len(d["cards"][0]["projects"]) == 1
+    labels = [c["label"] for c in d["chips"][0]]
+    assert labels[0].startswith("Tell me more about") and any(l.startswith("Projects in") for l in labels)
+    assert "Speak to a DarGlobal advisor" in labels
 
 
-def test_unknown_project_costs_zero_model_calls(client, ask):
+def test_unknown_project_costs_at_most_one_model_call(client, ask, make_client):
     d = ask(client, "Tell me about Atlantis Sky Palace")
-    assert d["trace"][0]["llm_calls"] == 0 and "Atlantis Sky Palace" in d["_text"]
+    assert d["trace"][0]["llm_calls"] <= 1 and "Atlantis Sky Palace" in d["_text"]
+    d = ask(make_client(env={"LLM_MODE": "off"}), "Tell me about Atlantis Sky Palace")
+    assert d["trace"][0]["llm_calls"] == 0 and d["trace"][0]["path"] == "template"
+    assert "Atlantis Sky Palace" in d["_text"] and "DarGlobal advisor" in d["_text"]
 
 
 # ---------------- M13: brand relationship
@@ -62,10 +67,13 @@ def test_brand_relationship_makes_no_subsidiary_claim(client, ask):
         d = ask(client, q)
         t = d["_text"]
         assert d["trace"][0]["path"] == "template" and d["trace"][0]["llm_calls"] == 0
+        # no page in the data documents any ownership link: assert none, point to the official sites
+        assert "sister" not in t and "subsidiary" not in t and "ownership" not in t and "تابعة" not in t
         if lang == "en":
-            assert "sister companies" in t and "not as parent and subsidiary" in t
-            # no dataset page documents the link in the fixture: say so, cite nothing
-            assert "outside what I can cite" in t and d["sources"][0] == []
+            assert "separate companies" in t and "official websites" in t
+        else:
+            assert "شركتان منفصلتان" in t
+        assert all(s["url"] for s in d["sources"][0])
 
 
 # ---------------- citation chips: stable n, markers map to sources

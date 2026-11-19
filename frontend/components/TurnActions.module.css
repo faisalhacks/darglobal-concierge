@@ -1,0 +1,86 @@
+/* Lane C: the one action row under a completed answer (44px buttons, row <= 48px) and its disclosure panel. */
+.wrap {
+  container-type: inline-size;
+  container-name: turnactions;
+  inline-size: 100%;
+}
+
+.wrap .row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--sp-4, 4px);
+  min-block-size: 44px;
+  max-block-size: 48px;
+  margin: 0;
+  margin-inline-start: calc(-1 * var(--sp-8, 8px));
+}
+
+.row .btn {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  inline-size: 44px;
+  block-size: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background-color 120ms ease-out, color 120ms ease-out;
+}
+.row .btn:hover { background: var(--surface-2); color: var(--text); }
+.row .btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.row .btn[aria-pressed="true"] { color: var(--accent-strong, #d7bb85); background: var(--surface-2); }
+.row .btn[aria-expanded="true"] { color: var(--text); background: var(--surface-2); }
+.row .btn[aria-disabled="true"] { opacity: 0.55; cursor: not-allowed; }
+.row .btn[aria-disabled="true"]:hover { background: transparent; color: var(--text-muted); }
+
+.row .asof {
+  margin-inline-start: auto;
+  padding-inline-start: var(--sp-8, 8px);
+  min-inline-size: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-meta, 0.875rem);
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.asof time { color: var(--text); }
+.asof .asofShort { display: none; }
+
+@container turnactions (max-width: 420px) {
+  .asof .asofShort { display: inline; }
+  .asof .asofLong {
+    position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+}
+
+.wrap .panel {
+  margin-block-start: var(--sp-8, 8px);
+  padding: var(--sp-12, 12px) var(--sp-16, 16px);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: var(--fs-meta, 0.875rem);
+  line-height: 1.5;
+}
+.wrap .panel[hidden] { display: none; }
+.panel .panelHead {
+  margin: 0 0 var(--sp-8, 8px);
+  color: var(--text-muted);
+  font-size: var(--fs-meta, 0.875rem);
+}
+.panel .steps {
+  margin: 0;
+  padding-inline-start: 1.25em;
+  display: grid;
+  gap: var(--sp-4, 4px);
+}
+.panel:lang(ar), .panel:lang(ar) .panelHead { line-height: 1.7; }
+
+@media (prefers-reduced-motion: reduce) {
+  .row .btn { transition: none; }
+}

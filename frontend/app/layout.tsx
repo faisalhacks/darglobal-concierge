@@ -8,7 +8,9 @@ import "@fontsource/ibm-plex-sans-arabic/400.css";
 import "@fontsource/ibm-plex-sans-arabic/500.css";
 import "@fontsource/ibm-plex-sans-arabic/600.css";
 import "./globals.css";
+import "./shell.css";
 import { AppProvider } from "@/components/AppContext";
+import { PREPAINT, THEME_COLOR } from "@/lib/prefs";
 
 const description =
   "A candidate prototype concierge that answers questions about DarGlobal projects and Wasalt homes from public pages, with sources. Not an official channel.";
@@ -28,6 +30,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [{ url: "/og.png", width: 1200, height: 630, alt: "Property Concierge, a candidate prototype" }],
   },
+  other: { google: "notranslate" },
   twitter: { card: "summary_large_image", title: "Property Concierge", description, images: ["/og.png"] },
 };
 
@@ -36,26 +39,23 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#0E0E0E" },
-    { media: "(prefers-color-scheme: light)", color: "#FAF8F4" },
+    { media: "(prefers-color-scheme: dark)", color: THEME_COLOR.dark },
+    { media: "(prefers-color-scheme: light)", color: THEME_COLOR.light },
   ],
 };
 
+// translate="no": the interface has its own language toggle (the one source of truth for lang/dir). Browser
+// auto-translate rewrote the Arabic shell into English inside an RTL layout and changed text lengths mid-stream.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" dir="ltr" suppressHydrationWarning>
+    <html lang="en" dir="ltr" translate="no" suppressHydrationWarning>
       <head>
-        {/* Resolve the interface language before first paint. The page itself stays hidden (AppProvider, at most 1.5 s)
-            until the language and /api/meta are known, so nothing visibly shifts on load (CLS). */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "(function(){var d=document.documentElement,l=null;try{var q=new URLSearchParams(location.search).get('lang');" +
-              "l=q==='ar'||q==='en'?q:localStorage.getItem('concierge.lang')}catch(e){}" +
-              "if(l!=='ar'&&l!=='en'){l=(navigator.language||'').toLowerCase().indexOf('ar')===0?'ar':'en'}" +
-              "d.lang=l;d.dir=l==='ar'?'rtl':'ltr'})();",
-          }}
-        />
+        {/* Before first paint: language (?lang= / toggle / storage / browser), theme (data-theme), text size
+            (--text-scale), rail split (--rail-w, data-rail) and theme-color, all from storage inside try/catch. So the
+            first frame already has the stored theme and split: no flash, no layout shift. Hydration ignores these
+            <html> attributes (suppressHydrationWarning). The page stays hidden (AppProvider, at most 1.5 s) until
+            /api/meta is known. */}
+        <script dangerouslySetInnerHTML={{ __html: PREPAINT }} />
       </head>
       <body>
         <noscript><style>{".app-root{visibility:visible!important}"}</style></noscript>

@@ -1,0 +1,131 @@
+/* Lane C: composer. Tokens come from globals.css (lane A); fallbacks only keep the box usable before they land.
+   Selectors are doubled/nested on purpose so they outrank the legacy `.composer …` rules until lane A deletes them. */
+
+.composer.composer {
+  flex: none;
+  position: relative;
+  z-index: 1;
+  padding-block: var(--sp-8, 8px) max(var(--sp-12, 12px), env(safe-area-inset-bottom));
+  padding-inline: var(--gutter, clamp(16px, 2.5vw, 40px));
+  background: var(--bg);
+}
+.composer > .inner {
+  max-inline-size: 880px;
+  margin-inline: auto;
+}
+
+.inner .row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-8, 8px);
+  padding: 5px;
+  padding-inline-start: var(--sp-16, 16px);
+  background: var(--surface);
+  border: 1px solid var(--border-strong, #6f675c);
+  border-radius: 16px;
+}
+.inner .row:focus-within {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.row .input {
+  flex: 1;
+  min-inline-size: 0;
+  min-block-size: 44px;
+  margin: 0;
+  padding-block: 8px;
+  padding-inline: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-body, 1.0625rem);
+  line-height: 1.65;
+  resize: none;
+  outline: none;
+  overflow-y: hidden;
+  max-block-size: none;
+}
+.row .input:lang(ar),
+.row .input:dir(rtl) { line-height: 1.8; }
+.row .input::placeholder { color: var(--text-muted); opacity: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* The wrapper carries the visible ring; the textarea itself never draws a second one. */
+.row .input:focus-visible { outline: none; }
+
+.row .btn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-8, 8px);
+  min-block-size: 44px;
+  min-inline-size: 6rem;
+  padding-inline: var(--sp-16, 16px);
+  border-radius: 12px;
+  border: 1px solid var(--accent, #c2a36b);
+  background: var(--accent, #c2a36b);
+  color: var(--on-accent, #15120e);
+  font: inherit;
+  font-size: var(--fs-control, 0.9375rem);
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background-color 120ms ease-out, border-color 120ms ease-out, color 120ms ease-out;
+}
+.row .btn:hover { background: var(--accent-strong, #d7bb85); border-color: var(--accent-strong, #d7bb85); }
+.row .btn:active { transform: translateY(1px); }
+.row .btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+/* Disabled Send: transparent with a control boundary and a muted label (spec §3), same box size. */
+.row .btnSend[aria-disabled="true"] {
+  background: transparent;
+  border-color: var(--border-strong, #6f675c);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+.row .btnSend[aria-disabled="true"]:active { transform: none; }
+
+.icon { inline-size: 18px; block-size: 18px; flex: none; }
+.iconDir:dir(rtl) { transform: scaleX(-1); }
+
+.inner .note {
+  margin: 0 0 var(--sp-8, 8px);
+  padding: var(--sp-8, 8px) var(--sp-12, 12px);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--fs-meta, 0.875rem);
+  line-height: 1.5;
+}
+.inner .noteWarn { border-color: var(--border-strong, #6f675c); }
+
+.inner .foot {
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0 var(--sp-16, 16px);
+  min-block-size: 24px;
+  padding-block-start: var(--sp-4, 4px);
+  padding-inline: var(--sp-4, 4px);
+  color: var(--text-muted);
+  font-size: var(--fs-meta, 0.875rem);
+  line-height: 1.5;
+}
+.foot .warn { color: var(--danger); }
+.foot .legal a { position: relative; color: inherit; text-underline-offset: 3px; }
+/* 44px hit area around a text-sized link without growing the line. */
+.foot .legal a::before { content: ""; position: absolute; inset: -10px -8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .row .btn { transition: none; }
+  .row .btn:active { transform: none; }
+}
+/* Landscape phone: every line of chrome counts (spec chrome budget). */
+@media (max-height: 500px) {
+  .inner .foot .legal { display: none; }
+  .composer.composer { padding-block: var(--sp-4, 4px) max(var(--sp-8, 8px), env(safe-area-inset-bottom)); }
+}

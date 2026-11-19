@@ -150,9 +150,11 @@ def test_output_keeps_prose():
 ])
 def test_unknown_entity_gets_not_found(client, ask, q):
     d = ask(client, q)
-    assert d["trace"][0]["path"] == "template"
-    assert not (d.get("cards") and (d["cards"][0]["projects"] or d["cards"][0]["listings"]))
-    assert d["sources"][0] == []
+    t = d["_text"]
+    # the not-found sentence comes first; what follows is a real spotlight project, never the asked-for name
+    assert t.startswith(("I have no verified information", "No DarGlobal or Wasalt entries", "لا تتوفر لديّ معلومات"))
+    assert not d["cards"][0]["listings"] and len(d["cards"][0]["projects"]) == 1
+    assert all("Solaris" not in s["title"] and "Paris" not in s["title"] for s in d["sources"][0])
 
 
 def test_known_entities_still_answer(client, ask):

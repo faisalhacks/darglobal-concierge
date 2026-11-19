@@ -8,6 +8,7 @@ _DIACRITICS = re.compile(r"[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]")
 _TATWEEL = "\u0640"
 _ARABIC_CHAR = re.compile(r"[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]")
 _LATIN_CHAR = re.compile(r"[A-Za-z]")
+_BIDI_MARKS = re.compile("[⁦-⁩]")
 _ARABIC_INDIC = str.maketrans("٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹", "01234567890123456789")
 
 
@@ -26,6 +27,7 @@ def normalize_arabic(text: str) -> str:
 def normalize_text(text: str) -> str:
     """Full normalisation used for search keys: NFKC, Arabic normalisation, lowercase, collapse spaces."""
     t = unicodedata.normalize("NFKC", text or "")
+    t = _BIDI_MARKS.sub(" ", t)  # isolates added around Latin runs in Arabic answers (history round trip)
     t = normalize_arabic(t).lower()
     return re.sub(r"\s+", " ", t).strip()
 

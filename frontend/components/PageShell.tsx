@@ -7,8 +7,8 @@ import { SiteHeader } from "./SiteHeader";
 export function PageShell({ children, englishOnly = false }: { children: React.ReactNode; englishOnly?: boolean }) {
   const { lang, t } = useApp();
   return (
-    <div className="page-shell" style={{ minHeight: "100dvh", display: "flex", flexDirection: "column" }}>
-      <SiteHeader showStatus={false} />
+    <div className="page-shell">
+      <SiteHeader />
       <main id="main" className="page" tabIndex={-1}>
         {englishOnly && lang === "ar" && t.englishOnly && <p className="en-only" lang="ar" dir="rtl">{t.englishOnly}</p>}
         {children}

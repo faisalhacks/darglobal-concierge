@@ -1,7 +1,8 @@
 """Code planner (SPEC §9): rules + entity extraction, no LLM.
 
 Intents: project_info, compare, search, calculation, location_overview, brand_partner, contact_sales,
-find_my_home, off_topic, injection, advice, general (+ greeting, routed as a template).
+find_my_home, off_topic, injection, advice, general, plus conversation intents decided in code before retrieval:
+greeting, thanks, goodbye, identity, ack (small talk) and vague (short query with nothing specific to look up).
 """
 from __future__ import annotations
 
@@ -10,24 +11,25 @@ import re
 from dataclasses import dataclass, field
 
 from .arabic import normalize_text
+from .conversation import _VAGUE_WORDS, _INVEST, _LUXURY, _dist, conversational_intent, is_vague, vague_topic
 from .guardrails import is_injection
 from .store import Store
 
 # Canonical place name -> aliases (EN + AR, matched on normalised text).
 PLACE_ALIASES: dict[str, list[str]] = {
-    "Dubai": ["dubai", "دبي"],
+    "Dubai": ["dubai", "dubay", "dubaii", "dubi", "دبي"],
     "Abu Dhabi": ["abu dhabi", "abudhabi", "ابوظبي", "ابو ظبي"],
     "Ras Al Khaimah": ["ras al khaimah", "rak", "راس الخيمه"],
     "United Arab Emirates": ["uae", "united arab emirates", "emirates", "الامارات", "الامارات العربيه المتحده",
                              "دوله الامارات"],
-    "Riyadh": ["riyadh", "الرياض", "رياض"],
-    "Jeddah": ["jeddah", "jedda", "jeddha", "jiddah", "جده"],
-    "Makkah": ["makkah", "mecca", "مكه"],
-    "Madinah": ["madinah", "medina", "المدينه المنوره"],
-    "Dammam": ["dammam", "الدمام"],
+    "Riyadh": ["riyadh", "riyad", "ryadh", "riyadh city", "riadh", "riyaad", "الرياض", "رياض"],
+    "Jeddah": ["jeddah", "jedda", "jeddha", "jiddah", "jidda", "jaddah", "jedah", "جده"],
+    "Makkah": ["makkah", "mecca", "makka", "makah", "مكه"],
+    "Madinah": ["madinah", "medina", "madina", "medinah", "المدينه المنوره", "المدينه"],
+    "Dammam": ["dammam", "damam", "dammam city", "الدمام"],
     "Khobar": ["khobar", "al khobar", "الخبر"],
     "Saudi Arabia": ["saudi arabia", "saudi", "ksa", "السعوديه", "المملكه العربيه السعوديه", "المملكه"],
-    "Muscat": ["muscat", "مسقط"],
+    "Muscat": ["muscat", "masqat", "muscut", "maskat", "مسقط"],
     "Oman": ["oman", "عمان", "سلطنه عمان"],
     "Doha": ["doha", "الدوحه"],
     "Qatar": ["qatar", "قطر", "دوله قطر"],
@@ -67,8 +69,9 @@ CURRENCIES = {
     "sar": "SAR", "riyal": "SAR", "riyals": "SAR", "ريال": "SAR", "sr": "SAR",
     "usd": "USD", "dollar": "USD", "dollars": "USD", "$": "USD", "دولار": "USD",
     "omr": "OMR", "qar": "QAR", "bhd": "BHD",
-    "gbp": "GBP", "£": "GBP", "pound": "GBP", "pounds": "GBP", "جنيه": "GBP",
+    "gbp": "GBP", "£": "GBP", "pound": "GBP", "pounds": "GBP", "sterling": "GBP", "استرليني": "GBP",
     "eur": "EUR", "€": "EUR", "euro": "EUR", "euros": "EUR", "يورو": "EUR",
+    "inr": "INR", "₹": "INR", "rupee": "INR", "rupees": "INR", "روبيه": "INR",
 }
 
 _AR_NUM_WORDS = {"غرفه": 1, "غرفتين": 2, "غرفتان": 2}
@@ -88,10 +91,21 @@ class Entities:
     property_type: str | None = None
     brand: str | None = None
     site: str | None = None
+    handover_year: int | None = None  # "handover 2027 projects"
+    baths: int | None = None
+    furnished: bool = False
+    area_m2: float | None = None  # "1500 sqft" -> 139.4 (converted), "120 sqm" -> 120
+    sort: str | None = None  # "price_asc" for cheap / affordable / lowest price
 
     def key(self) -> str:
         return "|".join(map(str, [sorted(self.project_ids), self.city, self.country, self.budget_min, self.budget_max,
-                                  self.beds, self.currency, self.listing_type, self.property_type, self.brand, self.site]))
+                                  self.beds, self.currency, self.listing_type, self.property_type, self.brand, self.site,
+                                  self.area_m2, self.sort]))
+
+    def listing_signal(self) -> bool:
+        """Anything that only a listing search answers: bedrooms, a budget, a size, a cheapest-first sort."""
+        return (self.beds is not None or self.budget_max is not None or self.budget_min is not None
+                or self.area_m2 is not None or self.sort is not None or self.baths is not None or self.furnished)
 
 
 @dataclass
@@ -104,6 +118,7 @@ class Plan:
     unknown_place: bool = False  # `unknown` was named as a place ("projects in Tokyo"), not as a project
     text: str | None = None  # rewritten message for a follow-up ("And if it was 150 m2?" -> full calculation)
     step: int = 0  # find-my-home step (1 = ask place, 2 = ask budget, 3 = ask purpose, 4 = shortlist)
+    topic: str | None = None  # vague: luxury | invest | ptype | generic
 
 
 # ---------------- existence gate (SPEC §0 never invent, R7 traps) ----------------
@@ -245,13 +260,23 @@ def parse_amount(num: str, suffix: str | None) -> float | None:
 _AMOUNT = r"(?<![a-z0-9.,])(\d[\d,]*(?:\.\d+)?)\s*(k|m|mn|million|millions|thousand|bn|billion|مليون|ملايين|الف|الاف|مليار)?(?![a-z])"
 
 
+def _ar_amount_words(norm: str) -> str:
+    """"أقل من مليون" -> "أقل من 1 مليون", "مليونين" -> "2 مليون", "نص مليون" -> "500000"; digits already ASCII."""
+    t = re.sub(r"(?:نص|نصف) مليون", "500000", norm)
+    t = re.sub(r"مليونين|مليونان", "2 مليون", t)
+    t = re.sub(r"(?<![\d.,]\s)(?<![\d.,])(?<!\d )(مليون|الف)(?![\w])", r"1 \1", t)
+    return re.sub(r"(\d)\s+(\d)", r"\1\2", t)
+
+
 def extract_budget(norm: str) -> tuple[float | None, float | None]:
+    norm = _ar_amount_words(norm)
     lo = hi = None
-    m = re.search(rf"(under|below|less than|up to|upto|max|maximum|within|اقل من|تحت|حتى|بحدود)\s*(?:[a-z$£€]{{0,4}}\s*)?{_AMOUNT}", norm)
+    m = re.search(rf"(under|below|less than|up to|upto|max|maximum|within|budget|اقل من|تحت|حتى|حتي|بحدود|في حدود|ميزانيتي|ميزانيه)\s*(?:[a-z$£€]{{0,4}}\s*)?{_AMOUNT}", norm)
     if m:
         hi = parse_amount(m.group(2), m.group(3))
-    m = re.search(rf"(over|above|more than|at least|min|minimum|from|اكثر من|فوق|من)\s*(?:[a-z$£€]{{0,4}}\s*)?{_AMOUNT}", norm)
-    if m and not re.search(r"\d\s*%", norm[m.start():m.end() + 2]):
+    lo_src = re.sub(r"(?:اقل|ادني|اقصي) من", " ", norm)  # "أقل من مليون" is a maximum, not "from a million"
+    m = re.search(rf"(over|above|more than|at least|min|minimum|from|اكثر من|فوق|(?<![\w])من)\s*(?:[a-z$£€]{{0,4}}\s*)?{_AMOUNT}", lo_src)
+    if m and not re.search(r"\d\s*%", lo_src[m.start():m.end() + 2]):
         lo = parse_amount(m.group(2), m.group(3))
     m = re.search(rf"between\s*{_AMOUNT}\s*(?:and|-|to)\s*{_AMOUNT}", norm)
     if m:
@@ -259,15 +284,38 @@ def extract_budget(norm: str) -> tuple[float | None, float | None]:
     return lo, hi
 
 
+_NUM_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "single": 1, "double": 2}
+_BED_WORD = r"(?:beds?|bedrooms?|bedroomed|bed rooms?|br|bd|bdr|bdrm|bhk|b/r|rooms?|غرف|غرفه نوم|غرف نوم)"
+
+
 def extract_beds(norm: str) -> int | None:
-    m = re.search(r"(\d+)\s*[- ]?\s*(bed|beds|bedroom|bedrooms|br|bhk|غرف|غرفه نوم|غرف نوم)\b", norm)
+    m = re.search(rf"(?<![\d.,])(\d{{1,2}})\s*[- ]?\s*{_BED_WORD}(?![a-z])", norm)
     if m:
         return int(m.group(1))
-    if re.search(r"\bstudio\b|استوديو", norm):
+    m = re.search(rf"(?<![a-z])(one|two|three|four|five|six|single|double)[- ]?{_BED_WORD}(?![a-z])", norm)
+    if m:
+        return _NUM_WORDS[m.group(1)]
+    if re.search(r"(?<![a-z])(studio|\d\s*rk)(?![a-z])|استوديو", norm):  # "1 RK" (room + kitchen) is a studio
         return 0
     for w, n in _AR_NUM_WORDS.items():
         if w in norm:
             return n
+    return None
+
+
+_SQFT = re.compile(r"(\d[\d,]*(?:\.\d+)?)\s*(sq\.?\s*ft|sqft|square f(?:ee|oo)t|ft2|ft²)(?![a-z])")
+_SQM = re.compile(r"(\d[\d,]*(?:\.\d+)?)\s*(sqm|sq\.?\s*m|m2|m²|square met(?:er|re)s?|متر مربع|م2)(?![a-z])")
+_CHEAP = re.compile(r"(?<![a-z])(cheap|cheapest|affordable|low[- ]?cost|lowest price|inexpensive|economical)"
+                    r"(?![a-z])|رخيص|ارخص|اقتصادي|بسعر مناسب")
+
+
+def extract_area(norm: str) -> float | None:
+    m = _SQFT.search(norm)
+    if m:
+        return round(float(m.group(1).replace(",", "")) * 0.092903, 1)
+    m = _SQM.search(norm)
+    if m:
+        return float(m.group(1).replace(",", ""))
     return None
 
 
@@ -325,10 +373,17 @@ def _is_generic(alias: str) -> bool:
 # shown as a project name (cards and prose use the published names).
 PROJECT_QUERY_ALIASES: dict[str, list[str]] = {
     "dg-da-vinci-tower-interiors-by-pagani": ["برج دافنشي", "برج دا فينشي", "دافنشي", "دا فينشي"],
-    "dg-les-vagues-by-elie-saab": ["لي فاغ", "ليه فاغ", "لي فاج", "لي فاغ ايلي صعب", "ايلي صعب"],
     "dg-the-astera-interiors-by-aston-martin": ["ذا استيرا", "استيرا", "ذي استيرا", "استون مارتن"],
-    "dg-urban-oasis-by-missoni": ["اوربان اواسيس", "اوربان اوايسس", "ميسوني"],
     "dg-w-residences": ["دبليو ريزيدنسز", "دبليو رزيدنس", "مساكن دبليو"],
+    "dg-trump-tower-jeddah": ["ترامب تاور جده", "برج ترامب جده", "ترمب تاور جده", "برج ترمب جده", "trump tower jedda"],
+    "dg-neptune-interiors-by-mouawad": ["نبتون", "نيبتون", "نبتون معوض"],
+    "dg-marriott-residences": ["ماريوت عايده", "ماريوت ريزيدنسز", "مساكن ماريوت", "ماريوت"],
+    "dg-aida": ["عايده", "ايدا", "عايدة"],
+    "dg-les-vagues-by-elie-saab": ["لي فاغ", "ليه فاغ", "لي فاج", "لي فاغ ايلي صعب", "ايلي صعب"],
+    "dg-tierra-viva-design-inspired-by-automobili-lamborghini": ["تييرا فيفا", "تيرا فيفا", "تيارا فيفا"],
+    "dg-urban-oasis-by-missoni": ["اوربان اواسيس", "اوربان اوايسس", "ميسوني"],
+    "dg-trump-plaza-jeddah": ["ترامب بلازا جده", "ترامب بلازا"],
+    "dg-the-mulliner": ["ذا مولينر", "مولينر"],
     "dg-trump-international-hotel-and-tower-dubai": ["برج ترامب دبي", "فندق وبرج ترامب الدولي دبي", "ترامب دبي"],
 }
 
@@ -350,6 +405,12 @@ def project_aliases(p: dict) -> list[str]:
     return list(dict.fromkeys(out))
 
 
+def _ar_prefixed(norm: str, idx: int, alias: str) -> bool:
+    """An Arabic name glued to a one-letter prefix ("ونبتون" = "and Neptune", "لنبتون", "بنبتون") still names it."""
+    return (idx >= 1 and norm[idx - 1] in "ولبف" and "؀" <= alias[0] <= "ۿ"
+            and (idx == 1 or not norm[idx - 2].isalnum()))
+
+
 def extract_projects(norm: str, store: Store) -> list[str]:
     hits: list[tuple[int, str]] = []
     words = norm.split()
@@ -357,7 +418,7 @@ def extract_projects(norm: str, store: Store) -> list[str]:
         best = None
         for alias in project_aliases(p):
             idx = norm.find(alias)
-            if idx >= 0 and (idx == 0 or not norm[idx - 1].isalnum()):
+            if idx >= 0 and (idx == 0 or not norm[idx - 1].isalnum() or _ar_prefixed(norm, idx, alias)):
                 best = idx if best is None else min(best, idx)
                 continue
             # fuzzy: compare alias against same-length word windows. A one-word alias needs >= 6 letters and a
@@ -382,26 +443,67 @@ def extract_projects(norm: str, store: Store) -> list[str]:
     return list(dict.fromkeys(kept))
 
 
+_BARE_MONEY = re.compile(
+    r"(?:[$£€]|usd|sar|aed|riyals?|ريال|درهم|دولار)\s*(\d[\d,]*(?:\.\d+)?)\s*(k|m|mn|million|مليون|الف)?(?![a-z])"
+    r"|(?<![a-z0-9.,])(\d[\d,]*(?:\.\d+)?)\s*(k|m|mn|million|مليون|الف)(?![a-z])")
+
+
 def extract_entities(text: str, store: Store) -> Entities:
     norm = normalize_text(text)
     e = Entities()
     e.project_ids = extract_projects(norm, store)
     e.city, e.country, e.place = extract_places(norm, store)
-    e.budget_min, e.budget_max = extract_budget(norm)
+    e.area_m2 = extract_area(norm)
+    # a size is not a budget: "1500 sqft" must not read as "from 1500"
+    e.budget_min, e.budget_max = extract_budget(_SQM.sub(" ", _SQFT.sub(" ", norm)))
     e.beds = extract_beds(norm)
+    if _CHEAP.search(norm):
+        e.sort = "price_asc"
+    m = re.search(r"(?<![\d.,])(\d{1,2})\s*[- ]?\s*(baths?|bathrooms?|bathroms?|bathrms?|ba|wc|حمام|حمامات|دوره مياه)(?![a-z])", norm)
+    if m:
+        e.baths = int(m.group(1))
+    if re.search(r"(?<![a-z])(furnished|furnish)(?![a-z])|مفروش", norm) and not re.search(r"unfurnished|غير مفروش", norm):
+        e.furnished = True
+    m = re.search(r"(?<![a-z])(handover|hand over|completion|completing|delivery|ready|ready by|تسليم|التسليم)\D{0,25}"
+                  r"(20[2-4]\d)|(20[2-4]\d)\D{0,15}(handover|completion|delivery|تسليم)", norm)
+    if m:
+        e.handover_year = int(m.group(2) or m.group(3))
+        if e.budget_min == e.handover_year or e.budget_max == e.handover_year:
+            e.budget_min = e.budget_max = None
     e.currency = extract_currency(norm)
-    if _has(norm, ["rent", "rental", "for rent", "lease", "ايجار", "للايجار"]):
+    if _has(norm, ["rent", "rental", "rentals", "renting", "for rent", "to rent", "lease", "leasing", "to let",
+                   "yearly rent", "monthly rent", "monthly", "per month", "yearly", "per year", "annual rent", "شهري", "ايجار", "للايجار", "استئجار", "استاجر", "اجار"]):
         e.listing_type = "rent"
-    elif _has(norm, ["buy", "for sale", "sale", "purchase", "للبيع", "شراء", "بيع"]):
+    elif _has(norm, ["buy", "buying", "for sale", "sale", "purchase", "purchasing", "own", "to own", "ownership",
+                     "للبيع", "شراء", "بيع", "اشتري", "تملك", "للشراء", "للتملك", "ابي اشتري", "ابغي اشتري"]):
         e.listing_type = "buy"
     for ptype, words in (("villa", ["villa", "villas", "فيلا", "فلل", "فيلات"]),
-                         ("apartment", ["apartment", "apartments", "flat", "flats", "شقه", "شقق"]),
+                         ("apartment", ["apartment", "apartments", "apt", "apts", "flat", "flats", "condo", "شقه", "شقق"]),
                          ("townhouse", ["townhouse", "townhouses", "تاون هاوس"]),
                          ("penthouse", ["penthouse", "penthouses", "بنتهاوس"]),
-                         ("land", ["land", "plot", "ارض", "اراضي"])):
+                         ("land", ["land", "plot", "plots", "lands", "ارض", "اراضي"]),
+                         ("duplex", ["duplex", "duplexes", "دوبلكس"]),
+                         ("office", ["office", "offices", "office space", "مكتب", "مكاتب"]),
+                         ("showroom", ["showroom", "showrooms", "shop", "shops", "retail", "معرض", "محل"]),
+                         ("warehouse", ["warehouse", "warehouses", "مستودع", "مستودعات"])):
         if _has(norm, words):
             e.property_type = ptype
             break
+    if e.property_type is None:  # typos: "appartment", "vila", "apartmnt", "penthous"
+        for tok in re.findall(r"[a-z]{4,}", norm):
+            for ptype, word in (("apartment", "apartment"), ("apartment", "apartments"), ("villa", "villa"),
+                                ("villa", "villas"), ("townhouse", "townhouse"), ("penthouse", "penthouse")):
+                if tok != word and abs(len(tok) - len(word)) <= 2 and _dist(tok, word) <= (1 if len(word) <= 6 else 2):
+                    e.property_type = ptype
+                    break
+            if e.property_type:
+                break
+    if e.budget_max is None and e.budget_min is None and e.property_type is not None:
+        # "$500k apartment", "villa 2m riyal", "1.5 million dollars apartment": a bare money amount next to a
+        # property word is a ceiling (sizes are removed first, so "120 m2" is never read as 120 million)
+        m = _BARE_MONEY.search(_SQM.sub(" ", _SQFT.sub(" ", norm)))
+        if m:
+            e.budget_max = parse_amount(m.group(1) or m.group(3), m.group(2) or m.group(4))
     if _has(norm, ["wasalt", "وصلت"]):
         e.site = "Wasalt"
     elif _has(norm, ["darglobal", "dar global", "دار جلوبال", "دار غلوبال"]):
@@ -415,7 +517,7 @@ def extract_entities(text: str, store: Store) -> Entities:
 
 
 # ---------------- intent rules ----------------
-ADVICE = [r"\bguarantee", r"\broi\b", r"return on investment", r"\bgood investment\b", r"\bbest investment\b",
+ADVICE = [r"\b(better|best|smarter)\b.{0,50}\b(for )?invest", r"\binvest\w*\b.{0,30}\b(better|best)\b", r"\bguarantee", r"\broi\b", r"return on investment", r"\bgood investment\b", r"\bbest investment\b",
           r"should i (buy|invest)", r"\bwill (the )?(prices?|values?|it) (rise|go up|increase|appreciate)",
           r"capital (appreciation|gain)", r"\bprofit\b", r"\bworth investing\b", r"\bis it a good time\b",
           r"\byields?\b", r"\bwhat will (the )?(price|value|prices|values)\b", r"\bwill .{0,60}\b(be worth|appreciate)\b",
@@ -424,9 +526,14 @@ ADVICE = [r"\bguarantee", r"\broi\b", r"return on investment", r"\bgood investme
 CONTACT = [r"\bcontact\b", r"\bcall me\b", r"\bbook (a )?(viewing|visit|tour|appointment)", r"\bsales (team|agent|office)",
            r"\bspeak (to|with) (a |an )?(human|agent|person|someone)", r"\bphone number\b", r"\bwhatsapp\b",
            r"\bget in touch\b", r"\b(talk|speak|chat) (to|with) (the |a |your )?sales\b", r"\bsales (contact|people)\b",
-           r"\breach (the )?sales\b", r"تواصل", r"اتصل", r"رقم الهاتف", r"حجز (موعد|معاينه|زياره)", r"فريق المبيعات",
+           r"\breach (the )?sales\b", r"\b(talk|speak|chat) (to|with) (a |an |the |your )?(human|agent|person|someone|"
+           r"advisor|adviser|representative|real person)\b", r"^(i'?m|i am) interested\b", r"\bregister (my )?interest\b",
+           r"\bcall ?back\b", r"^(human|agent|advisor|adviser)( please)?\??$",
+           r"\b(advisor|adviser|sales agent|real estate agent)\b", r"\bbook\b.{0,20}\b(viewing|visit|tour|call|meeting)\b",
+           r"(التحدث|اتحدث|اكلم|تكلم|كلم)\s+(مع|الي)?\s*(مستشار|موظف|شخص|احد|المبيعات)", r"مستشار", r"موظف مبيعات", r"تواصل", r"اتصل", r"رقم الهاتف", r"حجز (موعد|معاينه|زياره)", r"فريق المبيعات",
            r"التحدث (مع|الي) (فريق )?المبيعات"]
-CALC = [r"\d\s*%\s*(down|deposit|upfront|مقدم|دفعه)", r"(down ?payment|deposit|دفعه مقدمه|مقدم)",
+CALC = [r"\b(monthly payments?|mortgage|emi|loan)\b.{0,60}\d|\d.{0,60}\b(monthly payments?|mortgage|emi|loan)\b",
+        r"\d\s*%\s*(down|deposit|upfront|مقدم|دفعه)", r"(down ?payment|deposit|دفعه مقدمه|مقدم)",
         r"per (m2|sqm|square met)", r"price per", r"سعر المتر", r"\binstall?ments?\b", r"اقساط|قسط",
         r"\bconvert\b", r"(حول|تحويل)\s.*\s(الي|ب)", r"\bin (usd|aed|sar|dollars|dirhams|riyals)\b"]
 OFF_TOPIC = [r"\b(write|give|generate|create|show)\b.{0,25}\b(code|python|javascript|java|script|function|sql|html|program)\b",
@@ -493,6 +600,11 @@ def _last_user(history: list[dict] | None) -> str | None:
                 None)
 
 
+_ORDINALS = {"first": 0, "1st": 0, "second": 1, "2nd": 1, "third": 2, "3rd": 2, "fourth": 3, "4th": 3, "last": -1,
+             "الاول": 0, "الثاني": 1, "الثالث": 2, "الرابع": 3, "الاخير": -1}
+_ORDINAL = re.compile(r"(?<![\w])(first|1st|second|2nd|third|3rd|fourth|4th|last|الاول|الثاني|الثالث|الرابع|الاخير)"
+                      r"(?![\w])(?:\s+(?:one|project|ones?|المشروع|مشروع))?")
+_CHEAPER = re.compile(r"(?<![a-z])(cheaper|cheapest|less expensive|lower price|more affordable)(?![a-z])|ارخص|اقل سعر")
 _AREA = re.compile(r"(\d[\d,]*(?:\.\d+)?)\s*(m2|m²|sqm|sq\.? ?m|square met(?:er|re)s?|م2|متر(?: مربع)?)", re.I)
 _PCT = re.compile(r"(\d+(?:\.\d+)?)\s*%")
 _CONTINUE = re.compile(r"^(and|what about|how about|also|then|و|وماذا عن|ماذا عن|طيب)(?![\w])|^و(?=\S)")
@@ -515,6 +627,87 @@ def _calc_follow_up(message: str, history: list[dict] | None, store: Store) -> s
     return out if out != prev else None
 
 
+# ---------------- currency follow-ups: "how much is that in dollars", "in USD?", "بالدولار" ----------------
+_FX_TARGET_EN = re.compile(r"(?<![a-z])(?:in|into|to)\s+(usd|dollars?|eur|euros?|gbp|pounds?|sterling|inr|rupees?|aed|"
+                           r"dirhams?|sar|riyals?|qar|omr|bhd)(?![a-z])|(?<![a-z])in\s+([$\u20ac\u00a3\u20b9])")
+_FX_TARGET_AR = re.compile(r"(?<![\w])\u0648?(?:\u0628|\u0644)?(?:\u0627\u0644)?(\u062f\u0648\u0644\u0627\u0631|\u064a\u0648\u0631\u0648|"
+                           r"\u0627\u0633\u062a\u0631\u0644\u064a\u0646\u064a|\u0631\u0648\u0628\u064a\u0647|\u062f\u0631\u0647\u0645|\u0631\u064a\u0627\u0644)(?![\w])")
+_FX_ASK = re.compile(r"how much|what|that|\bit\b|this|price|cost|convert|equal|worth|\u0643\u0645|\u0630\u0644\u0643|\u0647\u0630\u0627|"
+                     r"\u0627\u0644\u0633\u0639\u0631|\u062d\u0648\u0644|\u062a\u062d\u0648\u064a\u0644|\u064a\u0633\u0627\u0648\u064a|\u0645\u0627")
+_MONEY_IN_TEXT = re.compile(
+    r"(\d[\d,]*(?:\.\d+)?)\s*(k|m|mn|million|\u0645\u0644\u064a\u0648\u0646|\u0627\u0644\u0641)?\s*"
+    r"(sar|aed|usd|qar|omr|bhd|eur|gbp|inr|\u0631\.\u0633|\u062f\.\u0627|\u0631\u064a\u0627\u0644|\u062f\u0631\u0647\u0645|\u062f\u0648\u0644\u0627\u0631)(?![a-z])"
+    r"|(sar|aed|usd|qar|omr|bhd|eur|gbp|inr|[$\u20ac\u00a3\u20b9])\s*(\d[\d,]*(?:\.\d+)?)\s*(k|m|mn|million|\u0645\u0644\u064a\u0648\u0646|\u0627\u0644\u0641)?(?![a-z])")
+_CUR_WORD_CODE = {"\u0631.\u0633": "SAR", "\u062f.\u0627": "AED", "\u0631\u064a\u0627\u0644": "SAR", "\u062f\u0631\u0647\u0645": "AED",
+                  "\u062f\u0648\u0644\u0627\u0631": "USD", "$": "USD", "\u20ac": "EUR", "\u00a3": "GBP", "\u20b9": "INR"}
+
+
+def fx_target(norm: str) -> str | None:
+    """The currency a follow-up asks to see the amount in, or None."""
+    m = _FX_TARGET_EN.search(norm)
+    if m:
+        return CURRENCIES.get(m.group(1) or m.group(2))
+    m = _FX_TARGET_AR.search(norm)
+    return CURRENCIES.get(m.group(1)) if m else None
+
+
+def last_price_in(history: list[dict] | None, store: Store) -> tuple[float, str] | None:
+    """The last price mentioned in the conversation (newest turn first, last figure within a turn), else the
+    published "price from" of the last project named. (amount, currency) or None."""
+    for turn in reversed(history or []):
+        norm = normalize_text(turn.get("content") or "")
+        last = None
+        for m in _MONEY_IN_TEXT.finditer(norm):
+            if m.group(1):
+                num, suf, cur = m.group(1), m.group(2), m.group(3)
+            else:
+                cur, num, suf = m.group(4), m.group(5), m.group(6)
+            v = parse_amount(num, suf)
+            cur = _CUR_WORD_CODE.get(cur) or cur.upper()
+            if v:
+                last = (v, cur)
+        if last:
+            return last
+    for turn in reversed(history or []):
+        ids = extract_projects(normalize_text(turn.get("content") or ""), store)
+        for pid in ids:
+            p = store.project_by_id(pid)
+            if p and p.get("price_from_amount") and p.get("price_from_currency"):
+                return float(p["price_from_amount"]), str(p["price_from_currency"]).upper()
+    return None
+
+
+def fx_follow_up(message: str, history: list[dict] | None, store: Store) -> str | None:
+    """"How much is that in dollars?" / "in USD?" / "\u0628\u0627\u0644\u062f\u0648\u0644\u0627\u0631": a conversion request without an
+    amount. Returns the full request ("convert 1180000 SAR to USD") built from the last price in the conversation."""
+    norm = normalize_text(message)
+    if not history or re.search(r"\d", norm) or len(norm.split()) > 10:
+        return None
+    target = fx_target(norm)
+    if not target or not (_FX_ASK.search(norm) or len(norm.split()) <= 4):
+        return None
+    price = last_price_in(history, store)
+    if not price:
+        return None
+    amount, src = price
+    return f"convert {amount:.0f} {src} to {target}"
+
+
+def _ambiguous_names(message: str, store: Store) -> list[list[str]]:
+    """For "aida vs trump tower": each side's candidate project ids when the name matches several projects."""
+    norm = normalize_text(message)
+    parts = re.split(r"\s+(?:vs\.?|versus|or|and|و|مقابل|مع)\s+|\s+و(?=[؀-ۿ])|\bcompare\b|قارن بين|قارن|بين", norm)
+    out = []
+    for part in (p.strip(" ?.,") for p in parts):
+        if len(part) < 3:
+            continue
+        ids = [p["id"] for p in store.projects
+               if any(part in a or (len(a) >= 4 and a in part) for a in project_aliases(p))]
+        if ids:
+            out.append(ids)
+    return out if len(out) >= 2 else []
+
+
 def plan(message: str, store: Store, history: list[dict] | None = None, flags: dict | None = None) -> Plan:
     flags = flags or {}
     norm = normalize_text(message)
@@ -526,6 +719,9 @@ def plan(message: str, store: Store, history: list[dict] | None = None, flags: d
         step = _fmh_step(history)
         if step:
             return Plan("find_my_home", ent, step=step)
+    conv = conversational_intent(message)  # "hye", "salam", "thanks!", "who r u", "ok" (whole message only)
+    if conv:
+        return Plan(conv, ent)
     if _any(STEERING, norm):
         return Plan("steering", ent)
     if _any(GREETING, norm):
@@ -534,14 +730,23 @@ def plan(message: str, store: Store, history: list[dict] | None = None, flags: d
         return Plan("advice", ent)
     if _any(CONTACT, norm):
         return Plan("contact_sales", ent)
-    has_money = bool(re.search(r"\d", norm)) and (ent.currency is not None or re.search(r"\d\s*%|\d\s*(m|k|million|مليون)\b", norm))
+    # "2 bed in AED under 2m" is a listing search with a currency, not a conversion
+    listing_like = ent.beds is not None and not re.search(
+        r"%|convert|حول|تحويل|down|deposit|instal|per m|mortgage|loan|monthly payment|مقدم|قسط|اقساط", norm)
+    has_money = not listing_like and bool(re.search(r"\d", norm)) and (ent.currency is not None or re.search(r"\d\s*%|\d\s*(m|k|million|مليون)\b", norm))
     if _any(CALC, norm) and has_money:
         return Plan("calculation", ent)
     if _any(OFF_TOPIC, norm) and not ent.project_ids:
         return Plan("off_topic", ent)
-    if _any(CALC, norm) and re.search(r"\d", norm):
+    if _any(CALC, norm) and re.search(r"\d", norm) and not listing_like:
         return Plan("calculation", ent)
+    if re.search(r"^(what('?s| is| would be)? ?(the |my )?)?(monthly payments?|mortgage (payment|calculator)|emi|"
+                 r"loan (payment|calculator)|instal?ments?|القسط الشهري|حاسبه التمويل)\??$", norm):
+        return Plan("calculation", ent)  # no figures yet: the calculator asks for them
 
+    fx = fx_follow_up(message, history, store)
+    if fx:
+        return Plan("calculation", extract_entities(fx, store), follow_up=True, text=fx)
     if history:
         merged = _calc_follow_up(message, history, store)
         if merged:
@@ -560,6 +765,26 @@ def plan(message: str, store: Store, history: list[dict] | None = None, flags: d
                         unknown_place=prev_plan.unknown_place)
         # "And in Dubai?" / "Only DarGlobal ones please": same question, new place or site filter.
         short = len(norm.split()) <= 6
+        # "the second one", "tell me about the first": the n-th project named in the last assistant turn
+        m_ord = _ORDINAL.search(norm)
+        if short and m_ord:
+            last_a = next((h.get("content") or "" for h in reversed(history) if h.get("role") == "assistant"), "")
+            ids = extract_projects(normalize_text(last_a), store)
+            k = _ORDINALS[m_ord.group(1)]
+            if ids and (k == -1 or k < len(ids)):
+                ent.project_ids = [ids[k]]
+                return Plan("project_info", ent, follow_up=True)
+        if prev_plan and short and prev_plan.intent == "search" and (
+                ent.sort or _CHEAPER.search(norm) or ent.beds is not None or ent.budget_max is not None):
+            # "cheaper ones?", "only 3 beds", "under 1M": the previous search with one filter changed
+            pe = prev_plan.entities
+            for k in ("city", "country", "place", "listing_type", "beds", "budget_min", "budget_max", "currency",
+                      "property_type", "baths", "area_m2"):
+                if getattr(ent, k) in (None, False):
+                    setattr(ent, k, getattr(pe, k))
+            if _CHEAPER.search(norm):
+                ent.sort = "price_asc"
+            return Plan("search", ent, follow_up=True)
         if prev_plan and short and prev_plan.intent in ("location_overview", "search", "brand_partner"):
             pe = prev_plan.entities
             if (ent.city or ent.country) and _CONTINUE.search(norm):
@@ -583,7 +808,8 @@ def plan(message: str, store: Store, history: list[dict] | None = None, flags: d
                 follow_up = True
                 break
 
-    if _any(COMPARE, norm):
+    versus_ar = bool(re.search(r"(?<![\w])مقابل(?![\w])", norm)) and len(ent.project_ids) >= 2  # "X مقابل Y"
+    if (_any(COMPARE, norm) or versus_ar) and (ent.project_ids or _any(PROJECT_WORDS, norm) or _ambiguous_names(message, store)):
         return Plan("compare", ent, follow_up=follow_up)
     if flags.get("FF_FIND_MY_HOME") and _any(FMH, norm):
         return Plan("find_my_home", ent)
@@ -600,7 +826,18 @@ def plan(message: str, store: Store, history: list[dict] | None = None, flags: d
     wants_listing = (ent.beds is not None or ent.budget_max is not None
                      or (ent.property_type is not None and (has_place or ent.listing_type is not None))
                      or (ent.listing_type is not None and has_place and not question))
+    project_level = (_any(PROJECT_WORDS, norm) or ent.site == "DarGlobal" or ent.handover_year is not None
+                     or bool(re.search(r"(?<![a-z])how many (projects|developments)(?![a-z])|كم مشروع", norm)))
+    if project_level and not (ent.beds is not None or ent.baths is not None):
+        # "handover 2027 projects", "cheapest darglobal project", "how many projects does darglobal have"
+        return Plan("location_overview", ent)
     if _any(SEARCH, norm) and wants_listing:
+        return Plan("search", ent)
+    # Messy listing requests ("buy 1 bhk", "cheap apartment jedda", "flat 1500 sqft riyadh"): a bedroom count, a
+    # budget, a size or a cheapest-first word, or a property type with a place / buy-rent word, is a listing search.
+    # Informational questions ("how does renting work in Jeddah") are not.
+    if not question_is_info(norm) and not _any(BRAND, norm) and not ent.brand and (
+            ent.listing_signal() or (ent.property_type and (has_place or ent.place or ent.listing_type))):
         return Plan("search", ent)
     if _any(BRAND, norm) or ent.brand:
         return Plan("brand_partner", ent)
@@ -612,4 +849,13 @@ def plan(message: str, store: Store, history: list[dict] | None = None, flags: d
             ent.listing_type = ent.listing_type or "rent"
             return Plan("search", ent)
         return Plan("location_overview", ent)
+    # Short, unspecific messages ("villas?", "luxury", "best project", "dubai", "something in dubai", "invest"):
+    # a known place gets its overview; anything else gets a clarifying answer built from what the data holds,
+    # never the no-data template. Short real questions ("What is Wasalt?") still go to retrieval.
+    vague_words = bool(_VAGUE_WORDS.search(norm) or _LUXURY.search(norm) or _INVEST.search(norm) or ent.property_type)
+    if not ent.project_ids and is_vague(norm) and not question_is_info(norm) and not _any(COMPARE, norm) and (vague_words or (
+            (has_place or ent.place) and not question)):
+        if has_place or ent.place:
+            return Plan("location_overview", ent)
+        return Plan("vague", ent, topic=vague_topic(norm, ent.property_type))
     return Plan("general", ent, ambiguous=True)

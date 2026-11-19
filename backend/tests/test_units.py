@@ -114,9 +114,13 @@ def test_calculator_installments():
 def test_calculator_currency_peg_only():
     c = calculator.parse_and_compute("convert 3,672,500 AED to USD")
     assert c["kind"] == "currency_convert" and c["result"]["amount"] == 1_000_000.0 and c["result"]["approximate"]
-    assert calculator.parse_and_compute("convert 100 EUR to GBP") is None  # no peg -> refuse, never invent a rate
-    with pytest.raises(ValueError):
+    calculator.clear_live_rates()
+    with pytest.raises(calculator.RateUnavailable):  # no cached ECB rate -> refuse, never invent one
+        calculator.parse_and_compute("convert 100 EUR to GBP")
+    with pytest.raises(calculator.RateUnavailable):
         calculator.currency_convert(1, "EUR", "USD")
+    with pytest.raises(ValueError):  # no peg and no ECB feed for it
+        calculator.currency_convert(1, "JPY", "USD")
 
 
 def test_calculator_arabic():
@@ -192,8 +196,9 @@ def test_cards_built_from_db(store):
     assert project_card(store.project_by_id("p-dubai-b"))["price_label"] == "Price on request"
     lc = listing_card(store.listing_by_id("l-1"))
     assert lc["listing_type"] == "buy" and lc["price"] == {"amount": 1200000, "currency": "SAR"} and lc["beds"] == 2
-    assert set(lc) - {"city_display"} == {"id", "title", "site", "listing_type", "price", "beds", "baths", "area_m2", "district", "city",
+    assert set(lc) - {"city_display", "area_flag", "price_usd_approx"} == {"id", "title", "site", "listing_type", "price", "beds", "baths", "area_m2", "district", "city",
                        "image_url", "source_url"}
+    assert lc["price_usd_approx"] == 320000  # 1,200,000 SAR / 3.75 (official peg)
 
 
 def test_compare_nulls_for_gaps(store):

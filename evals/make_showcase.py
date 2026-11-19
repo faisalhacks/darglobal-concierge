@@ -149,6 +149,97 @@ def verdict(sc: dict, case: dict, checks: dict, calls: int | None, model: str | 
     return {"en": " · ".join(en), "ar": " · ".join(ar)}
 
 
+GALLERY_EXCERPT_CHARS = 320
+# Gallery categories: (key, EN, AR, candidate case ids in preference order). Each case is used once (first category
+# that lists it wins). Up to PER_CATEGORY are shown: passed first, live-model records before mocked ones.
+GALLERY = [
+    ("greetings", "Greetings and small talk", "التحيات والحديث العابر", ["SH01", "A07", "A20", "A13"]),
+    ("vague", "Vague requests", "طلبات غامضة", ["M11", "H01", "A14", "H05"]),
+    ("messy_search", "Messy search (BHK, budgets, $)", "بحث عفوي (غرف، ميزانيات، $)", ["SH02", "A09", "H03", "A18", "B02"]),
+    ("arabic", "Arabic and dialect", "العربية واللهجات", ["SH04", "A10", "A17", "A01", "R6", "A08"]),
+    ("multi_turn", "Multi-turn follow-ups", "أسئلة المتابعة", ["M02", "M05", "M12", "H02", "M07", "M03"]),
+    ("comparisons", "Comparisons", "المقارنات", ["F29", "F30", "A16", "M07"]),
+    ("calculations", "Calculations and currency", "الحسابات والعملات", ["C04", "C01", "C03", "A11", "M14", "C02"]),
+    ("not_found", "Invented projects and places", "مشاريع وأماكن غير موجودة", ["R7", "T03", "T01", "T04", "T15", "A06", "T11"]),
+    ("off_topic", "Off-topic pivot", "خارج الموضوع", ["O01", "O03", "O05", "R3", "A19", "O06"]),
+    ("adjacent", "Adjacent topics (mortgage, rules, tax)", "مواضيع مجاورة (رهن، أنظمة، ضرائب)", ["T13", "B03", "T10"]),
+    ("unknowable", "Facts it does not have", "معلومات لا يملكها", ["T06", "T07", "T08", "T09", "T12", "T14"]),
+    ("investment", "Investment advice", "النصيحة الاستثمارية", ["SH03", "R5", "A05", "D09"]),
+    ("injection_en", "Prompt injection, English", "تجاوز التعليمات بالإنجليزية", ["I01", "R4", "I02", "I14", "I10", "I03"]),
+    ("injection_ar", "Prompt injection, Arabic", "تجاوز التعليمات بالعربية", ["I04", "I05", "A04", "I17"]),
+    ("injection_obf", "Prompt injection, obfuscated", "تجاوز التعليمات بالتمويه", ["I11", "I16", "I18", "I07", "I09", "I06", "I12"]),
+    ("steering", "Steering and fair housing", "التوجيه والإسكان العادل", ["S01", "S02", "S04", "S05", "S03"]),
+    ("over_blocking", "Over-blocking: legit questions that sound suspicious", "حجب مفرط: أسئلة مشروعة تبدو مريبة", ["B04", "B01", "B06", "B07", "S06", "B05"]),
+]
+PER_CATEGORY = 3
+
+
+def _failed_keys(case: dict, keys: list[str]) -> set[str]:
+    txt = " ".join(case.get("failures") or []).lower()
+    return {k for k in keys if k.lower() in txt}
+
+
+def _gallery_entry(cat_key: str, case: dict, src: dict, checks: dict) -> dict:
+    d, turns = src["data"], case["turns"]
+    last = turns[-1]
+    answer = last.get("answer") if isinstance(last.get("answer"), str) else (last.get("reply_excerpt") or "")
+    calls, basis = llm_calls_for(last, case, src["llm_mode"])
+    base = d.get("base_url")
+    bad = _failed_keys(case, list(checks))
+    live = src["llm_mode"] == "live"
+    return {
+        "id": case["id"], "category": cat_key, "lang": case.get("lang"),
+        "questions": [t.get("say") for t in turns],
+        "reply_excerpt": answer[:GALLERY_EXCERPT_CHARS],  # verbatim prefix of the recorded reply
+        "reply_truncated": len(answer) > GALLERY_EXCERPT_CHARS,
+        "cards_count": len(last.get("card_ids") or []),
+        "sources_count": len(last.get("sources") or []),
+        "trace": {"intent": last.get("intent") or case.get("intent"), "path": last.get("path") or case.get("path"),
+                  "llm_calls": calls, "llm_calls_basis": basis, "model": last.get("model") or case.get("model"),
+                  "latency_ms": case.get("latency_ms")},
+        "passed": bool(case.get("passed")), "failures": case.get("failures") or [],
+        "checks": [{"key": k, "ok": k not in bad} for k in checks],
+        "source": {"llm_mode": src["llm_mode"], "label": "live model" if live else "model mocked",
+                   "host": urlparse(base).netloc if isinstance(base, str) and base else None,
+                   "run_at": d.get("run_at"), "file": _rel(src["path"]), "dataset_version": d.get("dataset_version")},
+    }
+
+
+def build_gallery(srcs: list[dict], checks_by_id: dict) -> dict:
+    recs: dict[str, list] = {}
+    for s in srcs:
+        for c in s["data"]["cases"]:
+            if c.get("status") != "skipped" and c.get("turns") and c.get("id"):
+                recs.setdefault(c["id"], []).append((c, s))
+    used, cats, any_failed = set(), [], False
+    for key, en, ar, cands in GALLERY:
+        opts = []
+        for i, cid in enumerate(cands):
+            if cid in used or cid not in recs:
+                continue
+            # live record preferred, else the latest.json one
+            c, s = sorted(recs[cid], key=lambda cs: not cs[1]["live"])[0]
+            opts.append((not c.get("passed"), not s["live"], i, c, s))
+        opts.sort(key=lambda o: o[:3])
+        picked = opts[:PER_CATEGORY]
+        # honesty: a failed record of a candidate case is always shown, replacing the last pick
+        failed = [o for o in opts if o[0]]
+        if failed and not any(p[0] for p in picked):
+            picked = picked[:PER_CATEGORY - 1] + [failed[0]]
+        entries = []
+        for _, _, _, c, s in picked:
+            used.add(c["id"])
+            any_failed |= not c.get("passed")
+            entries.append(_gallery_entry(key, c, s, (checks_by_id.get(c["id"]) or {}).get("checks") or {}))
+        if entries:
+            cats.append({"id": key, "label": {"en": en, "ar": ar}, "entries": entries})
+    ents = [e for c in cats for e in c["entries"]]
+    return {"categories": cats, "excerpt_chars": GALLERY_EXCERPT_CHARS, "per_category": PER_CATEGORY,
+            "stats": {"entries": len(ents), "categories": len(cats), "passed": sum(e["passed"] for e in ents),
+                      "failed": sum(not e["passed"] for e in ents), "failed_case_exists_in_results": any_failed,
+                      "live_entries": sum(e["source"]["llm_mode"] == "live" for e in ents)}}
+
+
 def build(results_dir: str, cases_path: str) -> dict:
     srcs = sources_in(results_dir)
     checks_by_id = load_case_checks(cases_path)
@@ -207,6 +298,7 @@ def build(results_dir: str, cases_path: str) -> dict:
         "inputs": [{"file": _rel(s["path"]), "run_at": s["data"].get("run_at"), "llm_mode": s["llm_mode"],
                     "dataset_version": s["data"].get("dataset_version")} for s in srcs],
         "scenarios": scenarios,
+        "gallery": build_gallery(srcs, checks_by_id),
         "missing": missing,
         "pending_showcase_cases": pending,
     }
@@ -228,6 +320,10 @@ def main(argv=None) -> int:
         f.write("\n")
     print(f"{len(out['scenarios'])} scenarios -> {a.out}; missing={[m['key'] for m in out['missing']]}; "
           f"pending showcase cases={out['pending_showcase_cases']}")
+    g = out["gallery"]
+    print(f"gallery: {g['stats']}")
+    for c in g["categories"]:
+        print(f"  [{c['id']}] " + ", ".join(f"{e['id']}{'' if e['passed'] else '(FAIL)'}/{e['source']['llm_mode']}" for e in c["entries"]))
     for s in out["scenarios"]:
         print(f"  {s['id']:<18} {s['case_id']:<5} {'PASS' if s['passed'] else 'FAIL'}  {s['source_file']}")
     return 0

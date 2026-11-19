@@ -20,7 +20,15 @@ export interface ShowcaseScenario {
   passed: boolean; failures?: string[]; verdict?: L10n; rail?: boolean;
   captured_at?: string | null; host?: string | null; llm_mode?: string | null; dataset_version?: string | null; source_file?: string;
 }
-export interface Showcase { generated_at?: string; rail_order?: string[]; scenarios?: ShowcaseScenario[] }
+export interface GalleryEntry {
+  id: string; category: string; lang?: string; questions: string[]; reply_excerpt: string; reply_truncated?: boolean;
+  cards_count: number; sources_count: number; trace: ShowcaseScenario["trace"]; passed: boolean; failures?: string[];
+  checks: { key: string; ok: boolean }[];
+  source: { llm_mode?: string | null; label?: string; host?: string | null; run_at?: string | null; file?: string };
+}
+export interface GalleryCategory { id: string; label: L10n; entries: GalleryEntry[] }
+export interface Gallery { categories?: GalleryCategory[]; excerpt_chars?: number; stats?: { entries?: number; categories?: number; passed?: number; failed?: number } }
+export interface Showcase { generated_at?: string; rail_order?: string[]; scenarios?: ShowcaseScenario[]; gallery?: Gallery }
 
 const S = {
   en: {
@@ -43,6 +51,29 @@ const S = {
     empty: "No stress-test captures are published yet. They appear here after the evaluation suite runs and the showcase file is rebuilt from its results.",
     error: "The stress-test captures could not be loaded. Reload the page to try again.",
     paths: { template: "fixed reply", code: "built from data", llm_tool: "model with tools" } as Record<string, string>,
+    galTitle: "How the concierge handles edge cases",
+    galLede: "Every kind of tricky input we test, with the reply the concierge actually gave. Nothing here is written by hand: each reply is quoted from a recorded test run, cut at 320 characters.",
+    galSummary: (n: number, m: number, x: number, src: string) => `${n} edge cases across ${m} categories · ${x} passed · source: ${src}`,
+    srcLive: "live model", srcMock: "model mocked", on: "on",
+    filter: "Filter by category", all: "All",
+    checked: "What was checked", noneChecked: "No checks recorded",
+    capturedSrc: (src: string) => `Captured ${src} on `,
+    showing: (n: number) => `Showing ${n} edge case${n === 1 ? "" : "s"}`,
+    ok: "passed", bad: "failed", firstTurn: "Sends the first question",
+    checkLabels: {
+      no_prompt_leak: "No prompt leak", no_url_in_prose: "No raw links in the text", no_promise: "No promised returns",
+      must_cite: "Cites a source", sources_known: "Sources are known pages", intent: "Understood the intent",
+      intent_not: "Not misread", cards: "Shows matching cards", no_invented_prices: "Price only from sources",
+      rtl: "Right-to-left layout", lang_reply: "Replies in your language", not_contains_any: "Avoids forbidden content",
+      spotlight_card_has_source: "Spotlight card cites a source", advisor_link_official: "Advisor link is official",
+      must_include_id: "Names the right project", no_numbers_outside_context: "Numbers only from sources",
+      contains_any_ci: "Says what was expected", contains_any: "Says what was expected", no_offtopic_work: "Does no off-topic work",
+      path: "Takes the expected route", not_found_first: "Not-found first", no_numbers_for_invented_name: "No numbers for an invented name",
+      chips_min: "Offers next questions", price_matches_db: "Price matches the data", calc: "Arithmetic is correct",
+      hedge_or_template: "Hedges instead of guessing", hedge: "Hedges instead of guessing", refers_to: "Keeps the follow-up context",
+      no_steering: "No steering by identity", sources_include: "Cites the official page", compare: "Compares both items",
+      no_cards: "No cards when none fit",
+    } as Record<string, string>,
   },
   ar: {
     title: "اختُبر تحت الضغط",
@@ -64,6 +95,29 @@ const S = {
     empty: "لم تُنشر نتائج اختبارات الضغط بعد. تظهر هنا بعد تشغيل مجموعة التقييم وإعادة بناء ملف العرض من نتائجها.",
     error: "تعذّر تحميل نتائج اختبارات الضغط. أعد تحميل الصفحة للمحاولة مجددًا.",
     paths: { template: "رد ثابت", code: "مبني من البيانات", llm_tool: "نموذج مع أدوات" } as Record<string, string>,
+    galTitle: "كيف يتعامل المساعد مع الحالات الصعبة",
+    galLede: "كل نوع من المدخلات الصعبة التي نختبرها، مع الرد الذي قدّمه المساعد فعلًا. لا شيء هنا مكتوب يدويًا: كل رد مقتبس من تشغيل اختبار مسجّل، مقتطعًا عند 320 حرفًا.",
+    galSummary: (n: number, m: number, x: number, src: string) => `${n} حالة صعبة في ${m} فئة · نجح ${x} · المصدر: ${src}`,
+    srcLive: "نموذج حقيقي", srcMock: "نموذج مُحاكى", on: "في",
+    filter: "تصفية حسب الفئة", all: "الكل",
+    checked: "ما الذي فُحص", noneChecked: "لا فحوصات مسجّلة",
+    capturedSrc: (src: string) => `سُجّل بـ${src} في `,
+    showing: (n: number) => `عرض ${n} حالة`,
+    ok: "نجح", bad: "لم ينجح", firstTurn: "يرسل السؤال الأول",
+    checkLabels: {
+      no_prompt_leak: "لا تسريب للتعليمات", no_url_in_prose: "لا روابط خام في النص", no_promise: "لا وعود بعوائد",
+      must_cite: "يذكر مصدرًا", sources_known: "المصادر صفحات معروفة", intent: "فهم النية",
+      intent_not: "لم يُساء فهمه", cards: "يعرض بطاقات مطابقة", no_invented_prices: "السعر من المصادر فقط",
+      rtl: "تخطيط من اليمين لليسار", lang_reply: "يردّ بلغتك", not_contains_any: "يتجنب المحتوى الممنوع",
+      spotlight_card_has_source: "بطاقة التمييز تذكر مصدرًا", advisor_link_official: "رابط المستشار رسمي",
+      must_include_id: "يسمّي المشروع الصحيح", no_numbers_outside_context: "الأرقام من المصادر فقط",
+      contains_any_ci: "يقول المتوقع", contains_any: "يقول المتوقع", no_offtopic_work: "لا ينفّذ مهامّ خارج الموضوع",
+      path: "يسلك المسار المتوقع", not_found_first: "يذكر أنه غير موجود أولًا", no_numbers_for_invented_name: "لا أرقام لاسم مختلق",
+      chips_min: "يقترح أسئلة تالية", price_matches_db: "السعر يطابق البيانات", calc: "الحساب صحيح",
+      hedge_or_template: "يتحفّظ بدل التخمين", hedge: "يتحفّظ بدل التخمين", refers_to: "يحافظ على سياق المتابعة",
+      no_steering: "لا توجيه حسب الهوية", sources_include: "يذكر الصفحة الرسمية", compare: "يقارن بين الطرفين",
+      no_cards: "لا بطاقات حين لا يناسب",
+    } as Record<string, string>,
   },
 };
 type Str = (typeof S)["en"];
@@ -245,6 +299,96 @@ function FullBlock() {
   );
 }
 
+/* ---------------- Gallery: every eval category, filterable, for /evals ---------------- */
+function GalleryBlock() {
+  const { lang } = useApp();
+  const s = S[lang];
+  const { data, state } = useShowcase();
+  const [cat, setCat] = useState<string>("all");
+  const cats = (data?.gallery?.categories ?? []).filter((c) => Array.isArray(c?.entries) && c.entries.length > 0);
+  if (state === "ready" && cats.length === 0) return <FullBlock />; // older showcase.json without a gallery
+  const all = cats.flatMap((c) => c.entries.map((e) => ({ e, c })));
+  const shown = cat === "all" ? all : all.filter((x) => x.c.id === cat);
+  const srcName = (m?: string | null) => (m === "live" ? s.srcLive : s.srcMock);
+  const day = (iso?: string | null) => {
+    const d = iso ? new Date(iso) : null;
+    return d && !Number.isNaN(d.getTime()) ? new Intl.DateTimeFormat(lang === "ar" ? "ar-SA-u-nu-latn" : "en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(d) : "";
+  };
+  const groups = new Set<string>();
+  all.forEach(({ e }) => groups.add(`${srcName(e.source?.llm_mode)} ${s.on} ${day(e.source?.run_at)}`));
+  const passed = all.filter((x) => x.e.passed).length;
+  return (
+    <section className="stress stress--full gal" id="stress-tested" aria-labelledby="stress-tested-h" lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
+      <h2 id="stress-tested-h">{s.galTitle}</h2>
+      <p className="stress__lede">{s.galLede}</p>
+      {state === "loading" && <p className="muted" role="status">{s.loading}</p>}
+      {state === "error" && <p className="stress__empty">{s.error}</p>}
+      {all.length > 0 && (
+        <>
+          <p className="gal__summary">{s.galSummary(all.length, cats.length, passed, [...groups].join(" / "))}</p>
+          <div className="gal__filter" role="group" aria-label={s.filter}>
+            <button type="button" className="gal__chip" aria-pressed={cat === "all"} onClick={() => setCat("all")}>{s.all} <span className="gal__n">{all.length}</span></button>
+            {cats.map((c) => (
+              <button key={c.id} type="button" className="gal__chip" aria-pressed={cat === c.id} onClick={() => setCat(c.id)}>
+                {c.label[lang] ?? c.label.en} <span className="gal__n">{c.entries.length}</span>
+              </button>
+            ))}
+          </div>
+          <p className="sr-only" role="status" aria-live="polite">{s.showing(shown.length)}</p>
+          <ul className="gal__grid">
+            {shown.map(({ e, c }) => {
+              const tr = e.trace ?? {};
+              const qs = (e.questions ?? []).filter((q) => typeof q === "string");
+              const sc = { trace: tr, llm_mode: e.source?.llm_mode } as ShowcaseScenario;
+              const when = e.source?.run_at;
+              return (
+                <li key={e.id} className="gal__card">
+                  <div className="gal__head">
+                    <h3 className="stress__cat">{c.label[lang] ?? c.label.en}</h3>
+                    <span className={e.passed ? "stress__ok" : "stress__bad"}>{e.passed ? s.passed : s.failed}</span>
+                  </div>
+                  {qs.map((q, n) => (
+                    <p key={n} className={n === 0 ? "stress__q" : "stress__q stress__q--then"} dir={textDir(q)} lang={textLang(q)}>
+                      {n > 0 && <><span className="stress__then">{s.then}</span>{" "}</>}<bdi dir={textDir(q)}>{q}</bdi>
+                    </p>
+                  ))}
+                  <span className="sr-only">{s.reply}:</span>
+                  <Excerpt text={e.reply_excerpt} truncated={e.reply_truncated} />
+                  <div className="gal__checks">
+                    <p className="gal__sub">{s.checked}</p>
+                    {e.checks?.length ? (
+                      <ul className="gal__list">
+                        {e.checks.map((k) => (
+                          <li key={k.key} className={k.ok ? "gal__yes" : "gal__no"}>
+                            {s.checkLabels[k.key] ?? k.key}<span className="sr-only"> ({k.ok ? s.ok : s.bad})</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : <p className="stress__captured">{s.noneChecked}</p>}
+                  </div>
+                  <ul className="stress__chips" aria-label={s.trace}>
+                    {tr.path && <li>{s.path}: {s.paths[tr.path] ?? <bdi>{tr.path}</bdi>}</li>}
+                    <li>{callsChip(sc, s)}</li>
+                    {typeof tr.latency_ms === "number" && <li><bdi>{s.ms(Math.round(tr.latency_ms))}</bdi></li>}
+                    <li>{s.cards(e.cards_count ?? 0)}</li>
+                    <li>{s.sources(e.sources_count ?? 0)}</li>
+                  </ul>
+                  <div className="stress__foot">
+                    {when && <p className="stress__captured">{s.capturedSrc(srcName(e.source?.llm_mode))}<time dateTime={when}>{fmtWhen(when, lang)}</time></p>}
+                    {qs[0] && (qs.length > 1
+                      ? <span className="gal__try"><TryLive q={qs[0]} s={s} onHome={false} /><span className="stress__captured">{s.firstTurn}</span></span>
+                      : <TryLive q={qs[0]} s={s} onHome={false} />)}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
+    </section>
+  );
+}
+
 export function StressTested({ variant }: { variant: "rail" | "full" }) {
-  return variant === "rail" ? <RailBlock /> : <FullBlock />;
+  return variant === "rail" ? <RailBlock /> : <GalleryBlock />;
 }

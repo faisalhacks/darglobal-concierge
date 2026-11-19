@@ -41,6 +41,14 @@ SQLite (read-only at runtime) + prebuilt index (built outside Docker, COPYed)
 - **Host: Railway (1 GB, 30-day trial) is the only host**, not Cloud Run as in the original spec (deviation D1; see [docs/DECISIONS.md](docs/DECISIONS.md)). Hybrid retrieval needs more than 512 MB, so a 512 MB host would have to run keyword-only.
 - **Why not self-host a model:** no GPU budget; the free pool plus the extractive fallback is enough for an assessment prototype.
 
+## Model chain
+
+1. **Primary: free models via OpenRouter**, as the brief asks (`OPENROUTER_MODELS`, one model per request, 8 s first-token limit, daily budget `LLM_DAILY_BUDGET`).
+2. **Resilience backup: the same Nemotron model through NVIDIA's OpenAI-compatible API** (`https://integrate.api.nvidia.com/v1`). Used only when the OpenRouter chain fails with quota (402 or the free daily cap), all models down, or timeouts, never first. Off unless `BACKUP_PROVIDER=nvidia`; needs `NVIDIA_API_KEY`; model `NVIDIA_MODEL`; its own cap `BACKUP_DAILY_BUDGET` (default 200) and breaker. Same prompts, guardrails and first-token limit; a backup hop counts toward the 2-calls-per-message limit.
+3. **Code-built answer** from the dataset (cards and sources unchanged) if both fail.
+
+Disclosure: when the backup words an answer, `trace.provider` is `"nvidia-backup"` and "How I found this" says "Worded by Nemotron via NVIDIA (backup: OpenRouter free quota reached)" (English and Arabic); `/api/meta` `llm.backup` reports `{enabled, provider, model, used, cap}`; the How it works page explains the chain. Keys are server-side environment variables only, never in code, the image or the browser.
+
 ## Data
 
 - **Wasalt:** fetched by a single polite fetch lane (one request at a time, at least 2 s apart, identifying user agent, robots.txt respected, `/search` and login areas never fetched). Sample only, with attribution and a link on every card, images hot-linked, no contact data. **Conflict disclosed:** Wasalt's `llms.txt` allows extraction of public listing content for non-commercial use, while its Terms of Use restrict copying content. This is a small, non-commercial, attributed sample for an assessment; it should be taken down after review.

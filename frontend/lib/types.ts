@@ -68,6 +68,7 @@ export interface TraceEvent {
   retrieved: { id: string; score: number; title?: string; site?: string; section?: string }[]; llm_calls: number; model: string | null;
   latency_ms: number; cache_hit: boolean; degraded: boolean;
   fallback_hops?: number;
+  provider?: "openrouter" | "nvidia-backup" | null;
   degraded_reason?: DegradedReason | null;
 }
 export type DegradedReason = "rate_limited" | "quota" | "timeout" | "all_models_down" | "maintenance" | "no_model";
@@ -76,6 +77,7 @@ export interface LlmMeta {
   mode: "live" | "mock" | "off"; state: LlmState;
   budget?: { used: number; cap: number };
   pool?: { model: string; state: "healthy" | "cooling" | "removed" }[];
+  backup?: { enabled: boolean; provider: "nvidia" | null; model: string | null; used: number; cap: number };
 }
 export interface Coverage {
   DarGlobal?: { projects: number; detail_pages: number; prices_published: boolean };

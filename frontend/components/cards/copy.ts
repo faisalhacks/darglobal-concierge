@@ -42,6 +42,7 @@ const en = {
   stepTemplate: "Answered with a fixed reply",
   stepWorded: "A language model worded the answer; facts and links come from the pages",
   stepFallback: "Worded from the dataset because the language model was unavailable",
+  stepBackup: "Worded by Nemotron via NVIDIA (backup: OpenRouter free quota reached)",
   stepTime: (time: string) => `Took ${time}`,
   and: " and ",
   // handoff
@@ -102,6 +103,7 @@ const ar: Copy = {
   stepTemplate: "أجبت برد ثابت",
   stepWorded: "صاغ نموذج لغوي الإجابة؛ الحقائق والروابط من الصفحات نفسها",
   stepFallback: "صيغت الإجابة من البيانات مباشرة لأن النموذج اللغوي لم يكن متاحاً",
+  stepBackup: "صاغ الإجابة نموذج Nemotron عبر NVIDIA (نسخة احتياطية: بلغ حدّ OpenRouter المجاني)",
   stepTime: (time: string) => `استغرق ذلك ${time}`,
   and: " و ",
   handoffTitle: "تحدّث مع مستشار",

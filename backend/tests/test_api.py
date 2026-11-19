@@ -21,7 +21,7 @@ def assert_contract(d):
     assert m["lang"] in ("en", "ar") and m["dataset_version"] == "fixture-v1" and m["data_as_of"] == "2026-11-18"
     t = d["trace"][0]
     assert set(t) - {"steps"} == {"intent", "path", "tool", "retrieved", "llm_calls", "model", "fallback_hops",
-                                  "latency_ms", "cache_hit", "degraded", "degraded_reason"}
+                                  "latency_ms", "cache_hit", "degraded", "degraded_reason", "provider"}
     assert all(isinstance(x, str) and "/" not in x for x in t.get("steps", []))  # plain language, no model ids
     assert t["degraded_reason"] in (None, "rate_limited", "quota", "timeout", "all_models_down", "maintenance", "no_model")
     assert isinstance(t["fallback_hops"], int) and (t["degraded_reason"] is None) == (not t["degraded"])

@@ -379,7 +379,7 @@ def test_baked_answer_cache_hit(tmp_path, ask):
 
 def test_meta_contract_c2(client):
     m = client.get("/api/meta").json()
-    assert set(m["llm"]) == {"mode", "state", "budget", "pool"} and m["llm"]["mode"] == "mock"
+    assert set(m["llm"]) == {"mode", "state", "budget", "pool", "backup"} and m["llm"]["mode"] == "mock"
     assert m["llm"]["state"] == "ok" and m["llm_available"] is True
     assert m["coverage"]["DarGlobal"] == {"projects": 3, "detail_pages": 3, "prices_published": True}
     assert m["coverage"]["Wasalt"] == {"projects": 0, "listings": 3}
@@ -399,7 +399,7 @@ def test_readyz_contract(client):
 
 def test_meta_off_mode(make_client):
     m = make_client(env={"LLM_MODE": "off"}).get("/api/meta").json()
-    assert m["llm"] == {"mode": "off", "state": "off", "budget": {"used": 0, "cap": 45}, "pool": []}
+    assert m["llm"] == {"mode": "off", "state": "off", "budget": {"used": 0, "cap": 45}, "pool": [], "backup": {"enabled": False, "provider": None, "model": None, "used": 0, "cap": 0}}
     assert m["llm_available"] is False
 
 

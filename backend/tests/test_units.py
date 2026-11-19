@@ -247,9 +247,10 @@ def test_retrieval_hybrid_rrf(store):
     assert len(hits) <= 6
 
 
-@pytest.mark.parametrize("msg", ["Can foreigners buy property in Riyadh?", "How does renting work in Jeddah?"])
-def test_questions_are_not_listing_searches(store, msg):
-    assert plan(msg, store).intent == "general"
+@pytest.mark.parametrize("msg,intent", [("Can foreigners buy property in Riyadh?", "adjacent"),  # ownership rules
+                                        ("How does renting work in Jeddah?", "general")])
+def test_questions_are_not_listing_searches(store, msg, intent):
+    assert plan(msg, store).intent == intent
 
 
 def test_unknown_place_is_location_no_data(store):

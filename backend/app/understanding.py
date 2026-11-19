@@ -16,7 +16,7 @@ INTENTS = ("search", "project_info", "compare", "location_overview", "brand_part
            "contact_sales", "general", "vague")
 PROPERTY_TYPES = ("villa", "apartment", "townhouse", "penthouse", "land", "duplex", "office", "showroom", "warehouse")
 CODE_SURE = ("injection", "steering", "advice", "off_topic", "greeting", "thanks", "goodbye", "identity", "ack",
-             "calculation", "contact_sales", "find_my_home", "compare")
+             "calculation", "contact_sales", "find_my_home", "compare", "adjacent")
 
 UNDERSTAND_PROMPT = """You map one property-concierge message onto a fixed JSON schema. Do not answer the user.
 Use ONLY values from <holdings> for city, country, property_type, brand and project_names; if the user means

@@ -259,6 +259,43 @@ TEMPLATES: dict[str, dict[str, str]] = {
         "ar": "{answer}هذا خارج نطاقي قليلاً، فأنا مساعد عقاري لدار جلوبال ووصلت. وبما أنك هنا، هل تودّ التعرّف على "
               "{name}؟ {fact}",
     },
+    # Property-adjacent questions (visa, finance, tax, ownership rules, living costs): honest acknowledgement + official
+    # bodies (no links, no rules stated), the human route, and a way back to the data. {bodies} is code-built.
+    "adjacent_ack": {
+        "en": "That is a fair question, but I can't confirm it from the published property data, and these rules change "
+              "and differ by country. Please check with the official bodies: {bodies}.",
+        "ar": "سؤال وجيه، لكنني لا أستطيع تأكيده من بيانات العقارات المنشورة، فهذه الأنظمة تتغير وتختلف من دولة إلى "
+              "أخرى. يُرجى الرجوع إلى الجهات الرسمية: {bodies}.",
+    },
+    "adjacent_ack_relocate": {
+        "en": "A move is a big step, and I'd love to help you plan it. I can't confirm visa, residency, finance or tax "
+              "details from the published property data, and these rules change and differ by country, so please check "
+              "with the official bodies: {bodies}.",
+        "ar": "الانتقال خطوة كبيرة ويسعدني مساعدتك في التخطيط لها. لا أستطيع تأكيد تفاصيل التأشيرات أو الإقامة أو "
+              "التمويل أو الضرائب من بيانات العقارات المنشورة، وهذه الأنظمة تتغير وتختلف من دولة إلى أخرى، لذا يُرجى "
+              "الرجوع إلى الجهات الرسمية: {bodies}.",
+    },
+    "adjacent_bodies_generic": {
+        "en": "the official immigration, tax or financial authority of the country concerned",
+        "ar": "الجهة الرسمية المختصة بالهجرة أو الضرائب أو التمويل في الدولة المعنية",
+    },
+    "adjacent_advisor": {
+        "en": "A DarGlobal advisor can explain the programmes linked to their projects; the official get-in-touch page "
+              "is linked below.",
+        "ar": "يمكن لمستشار دار جلوبال شرح البرامج المرتبطة بمشاريعهم؛ وصفحة التواصل الرسمية مرفقة أدناه.",
+    },
+    "adjacent_back": {
+        "en": "In the meantime I'm happy to keep exploring properties with you{where}.",
+        "ar": "وفي الأثناء يسعدني أن نواصل استكشاف العقارات معاً{where}.",
+    },
+    "adjacent_note": {
+        "en": "On your other question: I can't confirm visa, finance, tax or legal rules from the published data and they "
+              "differ by country, so please check the official bodies; a DarGlobal advisor can explain the programmes "
+              "linked to their projects (official contact page below).",
+        "ar": "وبخصوص سؤالك الآخر: لا أستطيع تأكيد أنظمة التأشيرات أو التمويل أو الضرائب أو القانون من البيانات "
+              "المنشورة، وهي تختلف من دولة إلى أخرى، لذا يُرجى الرجوع إلى الجهات الرسمية؛ ويمكن لمستشار دار جلوبال شرح "
+              "البرامج المرتبطة بمشاريعهم (صفحة التواصل الرسمية أدناه).",
+    },
     "fmh_q1": {"en": "Which city or country interests you?", "ar": "ما المدينة أو الدولة التي تهتم بها؟"},
     "fmh_q2": {"en": "What budget range do you have in mind?", "ar": "ما نطاق الميزانية الذي تفكر فيه؟"},
     "fmh_q3": {"en": "Is this for living, a holiday home, or investment?",

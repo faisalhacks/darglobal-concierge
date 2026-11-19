@@ -119,6 +119,8 @@ class Plan:
     text: str | None = None  # rewritten message for a follow-up ("And if it was 150 m2?" -> full calculation)
     step: int = 0  # find-my-home step (1 = ask place, 2 = ask budget, 3 = ask purpose, 4 = shortlist)
     topic: str | None = None  # vague: luxury | invest | ptype | generic
+    adjacent: bool = False  # the message also asks a property-adjacent question (visa, finance, tax ...)
+    adjacent_topic: str | None = None  # visa | finance | tax | ownership | living
 
 
 # ---------------- existence gate (SPEC §0 never invent, R7 traps) ----------------
@@ -708,6 +710,60 @@ def _ambiguous_names(message: str, store: Store) -> list[list[str]]:
     return out if len(out) >= 2 else []
 
 
+# ---------------- property-adjacent topics (visa, finance, tax, ownership rules, living costs) ----------------
+# Outside the dataset but not off-topic: the concierge says so honestly, names the official bodies and offers the human
+# route. Patterns run on normalize_text() output (Arabic letters folded: ة->ه, أ/إ->ا, ى->ي) and tolerate typos.
+ADJACENT_TOPICS: dict[str, list[str]] = {
+    "visa": [r"\bvi[sz]a+s?\b", r"\bvisas\b", r"\bresiden(cy|ce|t|ts)\b", r"\bresidence (permit|card|visa)\b",
+             r"\bi[qck]+a+m+a+h?\b", r"\bgolden (visa|residen\w*)\b", r"\bpremium residen\w*\b", r"\bgreen card\b",
+             r"\bwork permit\b", r"\bcitizenship\b", r"\bimmigration\b", r"\bpassport\b",
+             r"تاشير", r"اقامه", r"الاقامه", r"فيزا", r"جنسيه", r"الهجره", r"بطاقه خضراء"],
+    "finance": [r"\bmor?t?gag\w*\b", r"\bmortage\w*\b", r"\bloans?\b", r"\bfinanc\w+\b", r"\bfinnanc\w+\b",
+                r"\binterest rates?\b", r"\blend(er|ing)\b", r"\bbank (loan|finance)\b",
+                r"تمويل", r"رهن", r"قرض", r"قروض", r"سعر الفايده", r"نسبه الفايده"],
+    "tax": [r"\btax(es|ation)?\b", r"\bvat\b", r"\bfees?\b", r"\bstamp duty\b", r"\bzakat\b", r"\bcapital gains?\b",
+            r"\btransfer (fee|cost)s?\b", r"\bregistration (fee|cost)s?\b",
+            r"ضريب", r"رسوم", r"زكاه"],
+    "ownership": [r"\blegal(ly)?\b", r"\blaws?\b", r"\bregulations?\b", r"\bfreehold\b", r"\bleasehold\b",
+                  r"\bforeign(er|ers)?\b.{0,40}\b(own|ownership|buy|purchase)\w*\b",
+                  r"\b(own|ownership|buy|purchase)\w*\b.{0,40}\bforeign(er|ers)?\b", r"\bnon[- ]?residents?\b",
+                  r"\bcan (a )?(foreigners?|expats?|non[- ]?residents?) (buy|own)\b", r"\bproperty ownership\b",
+                  r"تملك الاجانب", r"تملك", r"للاجانب", r"للأجانب", r"قانون", r"قانوني", r"تشريع"],
+    "living": [r"\bschools?\b", r"\bcost of living\b", r"\bliving costs?\b", r"\bhealth ?care\b", r"\bhospitals?\b",
+               r"\bexpat(s|riate)?\b", r"\bquality of life\b", r"\bsafe(ty)? (to live|for families)\b",
+               r"\b(weather|climate)\b.{0,40}\b(live|living|move|relocat\w*)\b",
+               r"مدارس", r"مدرسه", r"تكلفه المعيشه", r"غلاء المعيشه", r"رعايه صحيه", r"مستشفي", r"مستشفيات"],
+    # "I am planning to relocate to ..." is a statement of intent, not yet a question: see adjacent_topic()
+    "relocate": [r"\brelocat\w*\b", r"\breloc\b", r"\b(moving|move|migrat\w*|emigrat\w*) (to|abroad)\b", r"\bmoving\b",
+                 r"الانتقال", r"انتقل", r"اهاجر"],
+}
+_RELOCATE_QUESTION = re.compile(r"\?|؟|^(how|what|which|where|when|can|could|do|does|should|is|are|will)\b|"
+                                r"^(هل|كيف|ما|اين|متي|اي)\b|\b(need|help|process|steps|logistics|require\w*|procedure)\b|"
+                                r"يلزم|اساعد|خطوات|اجراءات")
+_NEAR_SCHOOL = re.compile(r"\b(near|close to|next to|nearby|around|walking distance)\s+(the\s+|a\s+|good\s+)?schools?\b")
+_WEATHER_ONLY = re.compile(r"\b(weather|climate)\b|الطقس|المناخ")
+
+
+def adjacent_topic(norm: str) -> str | None:
+    """The property-adjacent topic a message asks about (first match in priority order), or None."""
+    t = _NEAR_SCHOOL.sub(" ", norm)
+    for topic, pats in ADJACENT_TOPICS.items():
+        if any(re.search(p, t) for p in pats):
+            if topic == "relocate":
+                # a plain statement ("ok, i am planning to relocate to") gets a warmer opening than a question
+                # about relocating ("how do I relocate my family"); both are answered as adjacent topics
+                return "living" if _RELOCATE_QUESTION.search(t.strip()) else "relocate"
+            return topic
+    return None
+
+
+def _property_request(norm: str, ent: "Entities") -> bool:
+    """True when the message also asks for properties (a project, a listing filter, a place to browse)."""
+    if ent.project_ids or ent.listing_signal() or ent.property_type:
+        return True
+    return bool((ent.city or ent.country) and (_any(SEARCH, norm) or _any(LOCATION, norm) or _any(PLACE_BROWSE, norm)))
+
+
 def plan(message: str, store: Store, history: list[dict] | None = None, flags: dict | None = None) -> Plan:
     flags = flags or {}
     norm = normalize_text(message)
@@ -737,6 +793,18 @@ def plan(message: str, store: Store, history: list[dict] | None = None, flags: d
     has_money = not listing_like and bool(re.search(r"\d", norm)) and (ent.currency is not None or re.search(r"\d\s*%|\d\s*(m|k|million|مليون)\b", norm))
     if _any(CALC, norm) and has_money:
         return Plan("calculation", ent)
+    adj = None if flags.get("_skip_adjacent") else adjacent_topic(norm)
+    if adj == "finance" and unpublished_topic(message) == "mortgage_rate" and (ent.project_ids or ent.site):
+        adj = None  # "mortgage rate for <project / Wasalt>": the existing not-published answer stays
+    if adj and not (_any(CALC, norm) and re.search(r"\d", norm) and not _property_request(norm, ent)) and not re.search(
+            r"^(what('?s| is| would be)? ?(the |my )?)?(monthly payments?|mortgage (payment|calculator)|emi|"
+            r"loan (payment|calculator)|instal?ments?|القسط الشهري|حاسبه التمويل)\??$", norm):
+        if _property_request(norm, ent):  # mixed: the property part is answered normally, the note is added
+            sub = plan(message, store, history, {**flags, "_skip_adjacent": True})
+            if sub.intent not in ("general", "vague", "off_topic"):
+                sub.adjacent, sub.adjacent_topic = True, adj
+                return sub
+        return Plan("adjacent", ent, adjacent=True, adjacent_topic=adj)
     if _any(OFF_TOPIC, norm) and not ent.project_ids:
         return Plan("off_topic", ent)
     if _any(CALC, norm) and re.search(r"\d", norm) and not listing_like:

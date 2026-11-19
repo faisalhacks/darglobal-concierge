@@ -412,6 +412,11 @@ class Engine:
                  "latency_ms": int((time.monotonic() - t0) * 1000),
                  "cache_hit": False, "degraded": bool(degraded), "degraded_reason": reason,
                  "steps": self._steps(ans, lang, degraded, understood)}
+        # BACKUP-PROVIDER HOOK: disclosure of who worded the answer (null when no model did)
+        trace["provider"] = getattr(rec, "provider", None) if rec.calls and not degraded else None
+        if trace["provider"] == "nvidia-backup":
+            trace["steps"].append("Worded by Nemotron via NVIDIA (backup: OpenRouter free quota reached)" if lang != "ar"
+                                  else "صاغ الإجابة نموذج Nemotron عبر NVIDIA (نسخة احتياطية: بلغ حدّ OpenRouter المجاني)")
         yield "trace", trace
         yield "done", {}
         log.info("chat request_id=%s intent=%s path=%s llm_calls=%d model=%s hops=%d degraded=%s latency_ms=%d "

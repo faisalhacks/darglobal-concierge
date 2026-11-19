@@ -24,6 +24,7 @@ export function traceSteps(tr: TraceEvent, lang: Lang, nSources: number, names: 
   const tool = tr.tool ? t.toolLabels[tr.tool] : null;
   if (tool) steps.push(c.stepTool(tool));
   if (tr.llm_calls > 0) steps.push(c.stepWorded);
+  if (tr.provider === "nvidia-backup") steps.push(c.stepBackup);
   else if (tr.degraded || tr.degraded_reason) steps.push(c.stepFallback);
   else if (tr.path === "template") steps.push(c.stepTemplate);
   else steps.push(c.stepCode);

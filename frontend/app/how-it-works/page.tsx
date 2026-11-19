@@ -200,7 +200,7 @@ export default function HowItWorks() {
 
         <section>
           <h2>Model chain</h2>
-          <p>Only free models on OpenRouter are used, in the order below. If one sends no first token within 8 seconds, the next free model is tried; if none answers, the answer is assembled from the dataset with the same sources and cards. The app also caps itself at {fmtNumber(cap, "en")} model requests a day.</p>
+          <p>Primary: free models via OpenRouter, as the brief asks, in the order below. If one sends no first token within 8 seconds, the next free model is tried; if none answers, the answer is assembled from the dataset with the same sources and cards. The app also caps itself at {fmtNumber(cap, "en")} model requests a day.</p>
           {meta ? (
             <>
               <p>
@@ -227,6 +227,12 @@ export default function HowItWorks() {
               ) : null}
             </>
           ) : <p className="muted">Model details load from the server.</p>}
+          <p>
+            Resilience backup: the same Nemotron model through NVIDIA&apos;s own API. It is used only when OpenRouter&apos;s free daily limit or
+            availability fails, never first. When it words an answer, "How I found this" says so. It has its own daily cap, and the code-built
+            answer is still the last step. All keys stay on the server and are never sent to your browser.
+            {meta?.llm?.backup?.enabled ? ` The backup is switched on (${fmtNumber(meta.llm.backup.used, "en")} of ${fmtNumber(meta.llm.backup.cap, "en")} backup requests used today).` : " The backup is switched off on this build."}
+          </p>
         </section>
 
         <section>

@@ -51,6 +51,9 @@ class LLMResult:
         self.content_chars = 0
         self.reasoning_chars = 0
         self.understanding: dict | None = None  # validated query-understanding result (trace only)
+        # BACKUP-PROVIDER HOOK (backup_provider.py): who worded the answer, and why the backup was used
+        self.provider: str | None = None  # "openrouter" | "nvidia-backup" | None
+        self.backup_reason: str | None = None
 
 
 # Provider spellings of "the answer is complete" (OpenRouter normalises most to "stop"; some pass native values).
@@ -154,6 +157,7 @@ class OpenRouterClient:
         if sent:
             self.router.ok(sent[idx], ttft_ms)
         rec.fallback_hops = hops_before + idx
+        rec.provider = "openrouter"  # BACKUP-PROVIDER HOOK
 
     async def _stream_once(self, messages: list[dict], models: list[str], rec: LLMResult,
                            max_tokens: int, hops_before: int) -> AsyncIterator[str]:

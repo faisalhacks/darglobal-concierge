@@ -27,6 +27,7 @@ from .arabic import detect_lang
 from .planner import place_display
 from .chat import ChatRequest, Engine
 from .config import FLAG_NAMES, Settings, load_settings
+from .backup_provider import wrap_with_backup  # BACKUP-PROVIDER HOOK
 from .llm import MockLLM, OpenRouterClient
 from .retrieval import Retriever
 from .store import Store, compare_payload, detail_level, listing_card, project_card
@@ -225,7 +226,9 @@ def _make_llm(s: Settings):
     if s.llm_mode == "mock":
         return MockLLM(fail_with=os.environ.get("MOCK_LLM_FAIL") or None)
     if s.llm_available:
-        return OpenRouterClient(s)
+        # BACKUP-PROVIDER HOOK: no-op unless BACKUP_PROVIDER=nvidia (+ NVIDIA_API_KEY)
+        return wrap_with_backup(OpenRouterClient(s), first_token_s=s.llm_first_token_timeout_s,
+                                total_s=s.llm_total_timeout_s)
     return None
 
 
@@ -341,13 +344,20 @@ def create_app(settings: Settings | None = None, llm=None, embedder=None) -> Fas
 
     chips_cache = starter_chips(store)
 
+    def backup_meta() -> dict:  # BACKUP-PROVIDER HOOK
+        if engine.llm is not None and hasattr(engine.llm, "cfg") and callable(getattr(engine.llm, "meta", None)):
+            return engine.llm.meta()
+        return {"enabled": False, "provider": None, "model": None, "used": 0, "cap": 0}
+
     def llm_meta() -> dict:
         router = getattr(engine.llm, "router", None)
         mode = s.llm_mode_label
         if mode == "off" or engine.llm is None or router is None:
-            return {"mode": "off", "state": "off", "budget": {"used": 0, "cap": s.llm_daily_budget}, "pool": []}
+            return {"mode": "off", "state": "off", "budget": {"used": 0, "cap": s.llm_daily_budget}, "pool": [],
+                    "backup": backup_meta()}
         state = "maintenance" if s.maintenance_mode else router.state
-        return {"mode": mode, "state": state, "budget": router.budget(), "pool": router.snapshot()}
+        return {"mode": mode, "state": state, "budget": router.budget(), "pool": router.snapshot(),
+                "backup": backup_meta()}
 
     # ------------------------------------------------------------------ data
     @app.get("/api/meta")

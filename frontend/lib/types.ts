@@ -35,6 +35,7 @@ export interface ErrorEvent { code: ErrorCode; message: string; retry_after_s?: 
 export interface ApiMeta {
   dataset_version: string; data_as_of: string;
   counts: { projects: number; listings: number; pages: number; chunks: number };
+  counts_by_site?: Record<string, { projects: number; listings: number }>;
   completeness: Record<string, number>; models: string[]; llm_available: boolean;
   flags: Record<string, boolean>;
   candidate: { name: string | null; github: string | null; linkedin: string | null; email: string | null };

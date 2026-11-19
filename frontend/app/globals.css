@@ -32,7 +32,7 @@
     --text-muted: #6b645a;
     --border: #ddd5c8;
     --gold: #c2a36b;
-    --gold-strong: #8a6d36; /* darker gold for text-on-light contrast */
+    --gold-strong: #7a5f2c; /* darker gold: >= 4.5:1 on the light surface */
     --danger: #b3322e;
     color-scheme: light;
   }
@@ -437,3 +437,32 @@ html[dir="rtl"] .composer__row { padding: 6px var(--sp-16) 6px 6px; }
   .site-footer--compact .site-footer__row .site-footer__email-short { display: inline-flex; }
 }
 .chat__banners { border-bottom: 1px solid var(--border); padding-bottom: var(--sp-12); }
+
+/* ---------- Review fixes ---------- */
+/* The scroller is the containing block for the visually-hidden spans inside each turn; without this they
+   escaped its clipping and grew the document, so the whole page scrolled away. */
+.chat__scroll { position: relative; }
+.app-shell { overflow: hidden; }
+.placard__sites { margin: 0 0 var(--sp-12); font-size: var(--fs-14); color: var(--text-muted); font-variant-numeric: lining-nums tabular-nums; }
+.nav-short { display: none; }
+.lang-toggle button { min-height: 44px; }
+.site-footer__row a { padding-block: 10px; margin-block: -10px; }
+@media (max-width: 860px) {
+  /* Give the conversation the screen once it has started. */
+  .home:has(.chat--active) .rail { display: none; }
+  .chat__banners { padding: var(--sp-8) var(--sp-16); }
+  .banner { font-size: var(--fs-12); padding: 4px var(--sp-8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .site-footer--compact .site-footer__disclaimer { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .greeting .chips {
+    -webkit-mask-image: linear-gradient(to right, #000 82%, transparent);
+    mask-image: linear-gradient(to right, #000 82%, transparent);
+  }
+  [dir="rtl"] .greeting .chips {
+    -webkit-mask-image: linear-gradient(to left, #000 82%, transparent);
+    mask-image: linear-gradient(to left, #000 82%, transparent);
+  }
+}
+@media (max-width: 480px) {
+  .nav-long { display: none; }
+  .nav-short { display: inline; }
+}

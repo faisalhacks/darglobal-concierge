@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { safeImage, safeUrl } from "@/lib/api";
 import { fmtDate, fmtMoney, fmtNumber } from "@/lib/format";
-import type { Strings } from "@/lib/i18n";
+import { STRINGS, type Strings } from "@/lib/i18n";
 import type {
   CalcEvent, Chip, CompareEvent, Lang, ListingCard as LC, ProjectCard as PC, Source, TraceEvent,
 } from "@/lib/types";
@@ -73,7 +73,7 @@ export function ListingCard({ l, t, lang }: { l: LC; t: Strings; lang: Lang }) {
         <h3 className="card__title card__title--sm">{l.title}</h3>
         <p className="card__place">{[l.district, l.city].filter(Boolean).join(", ")}</p>
         {facts.length > 0 && <ul className="card__facts">{facts.map((f) => <li key={f}><bdi>{f}</bdi></li>)}</ul>}
-        <p className="card__price">{price ? <bdi>{price}</bdi> : <span className="muted">{t.priceOnRequest}</span>}</p>
+        <p className="card__price">{price ? <><bdi>{price}</bdi>{l.listing_type === "rent" && <span className="card__price-label"> · {t.rentNoPeriod}</span>}</> : <span className="muted">{t.priceOnRequest}</span>}</p>
         <SourceLink url={l.source_url} site={l.site} t={t} />
       </div>
     </article>
@@ -119,12 +119,27 @@ export function CompareTable({ c, t }: { c: CompareEvent; t: Strings }) {
   );
 }
 
-function kv(o: Record<string, unknown>) {
-  return Object.entries(o ?? {}).map(([k, v]) => [k.replace(/_/g, " "), typeof v === "object" ? JSON.stringify(v) : String(v)] as const);
+function kv(o: Record<string, unknown>, t: Strings, lang: Lang, cur?: string | null) {
+  return Object.entries(o ?? {})
+    .filter(([k, v]) => !["currency", "approximate"].includes(k) && v != null && typeof v !== "object")
+    .map(([k, v]) => {
+      const label = t.calcLabels[k] ?? k.replace(/_/g, " ");
+      let shown = String(v);
+      if (typeof v === "number") {
+        const money = !/percent|^n$|instal|rate|area/.test(k) || /per_instal|per_m2/.test(k);
+        shown = fmtNumber(v, lang) + (k.includes("percent") ? "%" : money && cur ? ` ${cur}` : "");
+      }
+      return [label, shown] as const;
+    });
 }
 
 export function CalcResult({ c, t }: { c: CalcEvent; t: Strings }) {
-  const results = kv(c.result);
+  const lang: Lang = t === STRINGS.ar ? "ar" : "en";
+  const r = (c.result ?? {}) as Record<string, unknown>;
+  const inp = (c.inputs ?? {}) as Record<string, unknown>;
+  const cur = (r.currency ?? inp.currency ?? null) as string | null;
+  const inCur = (inp.currency ?? inp.from ?? null) as string | null;
+  const results = kv(r, t, lang, cur);
   return (
     <section className="calc" aria-label={t.calcKinds[c.kind] ?? c.kind}>
       <p className="calc__kind">{t.calcKinds[c.kind] ?? c.kind}</p>
@@ -132,7 +147,7 @@ export function CalcResult({ c, t }: { c: CalcEvent; t: Strings }) {
         {results.map(([k, v]) => (<div key={k}><dt>{k}</dt><dd><bdi>{v}</bdi></dd></div>))}
       </dl>
       <dl className="calc__meta">
-        <div><dt>{t.calcInputs}</dt><dd>{kv(c.inputs).map(([k, v]) => <span key={k}>{k}: <bdi>{v}</bdi></span>)}</dd></div>
+        <div><dt>{t.calcInputs}</dt><dd>{kv(inp, t, lang, inCur).map(([k, v]) => <span key={k}>{k}: <bdi>{v}</bdi></span>)}</dd></div>
         <div><dt>{t.calcFormula}</dt><dd><code dir="ltr">{c.formula}</code></dd></div>
       </dl>
       <p className="calc__disclaimer">{c.disclaimer}</p>

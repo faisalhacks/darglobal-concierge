@@ -59,4 +59,8 @@ EXPOSE 7860
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
   CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:7860/healthz',timeout=4).status==200 else 1)"
 
-CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "7860", "--proxy-headers", "--forwarded-allow-ips", "*", "--no-access-log"]
+# No --forwarded-allow-ips "*": uvicorn would then take the client-controlled LEFT-most X-Forwarded-For hop as
+# the client address. The app reads the hop its own edge proxy appended (TRUSTED_PROXY_HOPS, right-most).
+# --limit-concurrency bounds in-flight requests (memory) on a shared free CPU Space.
+ENV TRUSTED_PROXY_HOPS=1
+CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "7860", "--no-proxy-headers", "--limit-concurrency", "64", "--no-access-log"]

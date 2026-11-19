@@ -57,6 +57,8 @@ class Settings:
     embeddings: str = "auto"  # auto | off
     embed_cache_dir: str | None = None
     max_body_bytes: int = 16_384
+    trusted_proxy_hops: int = 0  # proxies in front of us that append to X-Forwarded-For (1 on HF Spaces / Render)
+    global_llm_per_min: int = 30  # process-wide chat cap while an LLM is configured (0 = off)
     llm_tool_routing: bool = True
     flags: dict[str, bool] = field(default_factory=dict)
     candidate: dict[str, str | None] = field(default_factory=dict)
@@ -109,6 +111,8 @@ def load_settings() -> Settings:
         embeddings=os.environ.get("EMBEDDINGS", "auto").strip().lower(),
         embed_cache_dir=os.environ.get("EMBED_CACHE_DIR") or None,
         max_body_bytes=_int("MAX_BODY_BYTES", 16_384),
+        trusted_proxy_hops=max(0, _int("TRUSTED_PROXY_HOPS", 0)),
+        global_llm_per_min=max(0, _int("GLOBAL_LLM_PER_MIN", 30)),
         llm_tool_routing=_bool("LLM_TOOL_ROUTING", True),
         flags={f: _bool(f) for f in FLAG_NAMES},
         candidate={

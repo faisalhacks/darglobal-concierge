@@ -84,9 +84,18 @@ export default function HowItWorks() {
       <div lang="en" dir="ltr">
         <h1>How the concierge answers</h1>
         <p className="lede">
-          It reads only what DarGlobal and Wasalt publish, decides in code what kind of question it is, and lets a free language
+          It reads only what is published on the public sites, decides in code what kind of question it is, and lets a free language
           model write the sentences. Everything else on screen is assembled from the dataset.
         </p>
+
+        <section>
+          <h2>Known limits</h2>
+          <ul>
+            <li><strong>No DarGlobal data.</strong> darglobal.co.uk answers automated clients with a challenge page, so its project pages could not be collected. The dataset holds Wasalt projects, listings and guides only, and DarGlobal questions get a &ldquo;no verified information&rdquo; answer.</li>
+            <li><strong>No model on this deployment yet.</strong> Without an OpenRouter key every answer is built in code: a template or a quoted passage, plus cards and sources. The output checks below are unit tested; they have not yet run against real model output.</li>
+            <li><strong>Rent periods.</strong> Wasalt listing pages do not state whether a rent is per month or per year, so rent prices are shown with &ldquo;period not published&rdquo;.</li>
+          </ul>
+        </section>
 
         <section>
           <h2>Architecture</h2>
@@ -96,10 +105,11 @@ export default function HowItWorks() {
         <section>
           <h2>What happens to one question</h2>
           <ol className="steps">
-            <li><div><strong>Screen.</strong> The message is trimmed, capped at 1,000 characters and checked for injection patterns in English, Arabic and transliteration. A clear attempt gets a fixed reply and never reaches a model.</div></li>
+            <li><div><strong>Screen.</strong> The message is trimmed, capped at 1,000 characters, normalised (full-width forms, hidden characters, spaced-out letters, leetspeak) and checked for injection patterns in English, Arabic and transliteration. Earlier turns of the conversation go through the same screen. A clear attempt gets a fixed reply and never reaches a model. The pattern list is a tripwire; the structural checks below are what hold when a paraphrase slips past it.</div></li>
+            <li><div><strong>Existence check.</strong> If the question names a project or a place that is not in the data, the answer says so and attaches no cards or sources, instead of showing nearby real projects that would read as confirmation.</div></li>
             <li><div><strong>Plan.</strong> A code planner names the intent (a project, a city, a comparison, a calculation, contact, out of scope) and pulls out entities such as city, budget and bedrooms.</div></li>
             <li><div><strong>Fetch.</strong> Clear intents call a read-only tool directly. Only ambiguous ones let the model pick a tool, at most once.</div></li>
-            <li><div><strong>Retrieve.</strong> BM25 and multilingual embeddings each rank the passages; reciprocal rank fusion merges them, so exact names and paraphrases both land.</div></li>
+            <li><div><strong>Retrieve.</strong> BM25 and multilingual embeddings each rank the passages and reciprocal rank fusion merges them. Measured honestly (experiment E1): on exact project-name lookups BM25 alone did better than the fusion (Arabic hit@1 0.94 vs 0.67, English 1.00 vs 0.92), and city queries scored near zero precision for every method. Those queries were the project names themselves, so E1 shows lexical lookup works; it does not yet show that paraphrases land.</div></li>
             <li><div><strong>Write.</strong> One model call drafts the prose from the retrieved passages, which are marked as untrusted text. Two calls at most per message.</div></li>
             <li><div><strong>Check.</strong> Every price in the prose must appear in the retrieved context; otherwise it becomes &ldquo;not published&rdquo;. URLs and system-prompt fragments are removed.</div></li>
             <li><div><strong>Assemble.</strong> Cards, comparison tables, calculations, sources and the date of the data are built in code and streamed after the prose.</div></li>
@@ -140,7 +150,7 @@ export default function HowItWorks() {
             <dt>Input</dt><dd>Length cap, control characters stripped, injection screen in English and Arabic.</dd>
             <dt>Context</dt><dd>Retrieved page text is wrapped as untrusted and stripped of HTML.</dd>
             <dt>Tools</dt><dd>Read-only. Nothing writes, sends or browses.</dd>
-            <dt>Output</dt><dd>Price check against context, URL removal, banned phrases such as guaranteed returns.</dd>
+            <dt>Output</dt><dd>Price check against context; removal of URLs (including defanged ones), e-mail addresses and phone numbers; a canary token and rule-paraphrase check that stops a recitation of the instructions; banned phrases such as guaranteed returns. The rules themselves are not secret: they are the ones described on this page.</dd>
             <dt>Links</dt><dd>Only official DarGlobal and Wasalt domains are rendered as links.</dd>
             <dt>Advice</dt><dd>No investment advice and no return predictions; facts and official contacts instead.</dd>
           </dl>

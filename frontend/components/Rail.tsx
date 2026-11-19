@@ -21,6 +21,12 @@ export function Rail() {
         {metaState === "error" && <p className="placard__state">{t.statUnavailable}</p>}
         {meta && (
           <>
+            {meta.counts_by_site && (
+              <p className="placard__sites">
+                {t.statBySite(fmtNumber(meta.counts_by_site.DarGlobal?.projects ?? 0, lang),
+                  fmtNumber(meta.counts_by_site.Wasalt?.projects ?? 0, lang))}
+              </p>
+            )}
             <dl className="placard__stats">
               {stats.map((s) => (
                 <div key={s.k}><dd>{s.v}</dd><dt>{s.k}</dt></div>

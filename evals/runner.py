@@ -262,7 +262,7 @@ def chat_stream(base, payload, timeout=60, extra_headers=None):
                      headers={"Content-Type": "application/json", "Accept": "text/event-stream", **(extra_headers or {})})
         r = conn.getresponse()
         res["http_status"] = r.status
-        if r.status != 200:
+        if r.status != 200 and "text/event-stream" not in (r.getheader("content-type") or ""):
             body = r.read().decode("utf-8", "replace")
             res["transport_error"] = f"HTTP {r.status}: {body[:200]}"
             try:

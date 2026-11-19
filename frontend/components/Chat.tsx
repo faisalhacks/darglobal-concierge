@@ -91,14 +91,28 @@ export function Chat({ embedded = false }: { embedded?: boolean }) {
   }, [rateUntil, lang]);
   const rateLeft = Math.max(0, Math.ceil((rateUntil - now) / 1000));
 
-  // Keep the newest content in view while streaming, unless the reader scrolled up.
+  // On send, bring the new question to the top of the message area. While the answer streams, follow it only
+  // as long as the whole answer still fits below the question; never jump past the start of the answer.
   useEffect(() => {
     const el = scrollRef.current;
-    if (el && stickRef.current) el.scrollTo({ top: el.scrollHeight, behavior: "instant" as ScrollBehavior });
+    if (!el || !stickRef.current) return;
+    const users = el.querySelectorAll<HTMLElement>(".turn--user");
+    const q = users[users.length - 1];
+    if (!q) return;
+    const top = q.getBoundingClientRect().top - el.getBoundingClientRect().top + el.scrollTop - 8;
+    const bottom = el.scrollHeight - el.clientHeight;
+    el.scrollTo({ top: Math.max(0, Math.min(top, bottom)), behavior: "instant" as ScrollBehavior });
   }, [turns]);
   const onScroll = () => {
     const el = scrollRef.current;
-    if (el) stickRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 120;
+    if (!el) return;
+    const users = el.querySelectorAll<HTMLElement>(".turn--user");
+    const q = users[users.length - 1];
+    // the reader scrolled away from the latest question: stop moving the view for them
+    const qTop = q ? q.getBoundingClientRect().top - el.getBoundingClientRect().top + el.scrollTop - 8 : 0;
+    if (q && Math.abs(el.scrollTop - Math.max(0, qTop)) > 40 && el.scrollHeight - el.scrollTop - el.clientHeight > 4) {
+      stickRef.current = false;
+    }
   };
 
   // Auto-grow composer
@@ -161,7 +175,14 @@ export function Chat({ embedded = false }: { embedded?: boolean }) {
           case "sources": patch(aId, (a) => ({ ...a, sources: d as Source[] })); break;
           case "chips": patch(aId, (a) => ({ ...a, chips: d as Chip[] })); break;
           case "trace": patch(aId, (a) => ({ ...a, trace: d as TraceEvent })); break;
-          case "done": finished = true; patch(aId, (a) => ({ ...a, status: "done" })); break;
+          case "done":
+            finished = true;
+            patch(aId, (a) => {
+              const first = (a.text.split(/(?<=[.!?؟])\s/)[0] ?? "").slice(0, 160);
+              setAnnounce(`${STRINGS[a.lang]?.answerReady ?? STRINGS[lang].answerReady} ${first}`);
+              return { ...a, status: "done" };
+            });
+            break;
           case "error": {
             const e = d as ErrorEvent;
             finished = true;
@@ -179,7 +200,7 @@ export function Chat({ embedded = false }: { embedded?: boolean }) {
     } finally {
       abortRef.current = null;
       setBusy(false);
-      setAnnounce("");
+      setAnnounce((s) => (s === STRINGS[lang].thinking ? "" : s));
     }
   }, [lang, patch]);
 
@@ -226,7 +247,7 @@ export function Chat({ embedded = false }: { embedded?: boolean }) {
   };
 
   return (
-    <section className={`chat${embedded ? " chat--embedded" : ""}`} aria-label={t.concierge}>
+    <main className={`chat${embedded ? " chat--embedded" : ""}${turns.length > 0 ? " chat--active" : ""}`} aria-label={t.concierge}>
       {(!online || meta?.llm_available === false) && (
         <div className="chat__banners">
           {!online && <p className="banner banner--offline" role="status">{t.offline}</p>}
@@ -309,7 +330,7 @@ export function Chat({ embedded = false }: { embedded?: boolean }) {
         </div>
       </form>
       <p className="sr-only" role="status" aria-live="polite">{announce}</p>
-    </section>
+    </main>
   );
 }
 

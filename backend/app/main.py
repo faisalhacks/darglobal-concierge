@@ -42,9 +42,13 @@ def _flat_completeness(c: dict, prefix: str = "") -> dict:
     return out
 
 
-CSP = ("default-src 'self'; img-src 'self' https: data:; script-src 'self' 'unsafe-inline'; "
+# HF Spaces sets SPACE_HOST (e.g. user-space.hf.space) at runtime; frame only that host, not every *.hf.space.
+_FRAME_HOST = (f"https://{os.environ['SPACE_HOST'].strip()}" if os.environ.get("SPACE_HOST", "").strip()
+               else "https://*.hf.space")
+CSP = ("default-src 'self'; img-src 'self' https://imagedelivery.net https://*.wasalt.sa https://*.wasalt.com "
+       "https://*.darglobal.co.uk data:; script-src 'self' 'unsafe-inline'; "
        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; "
-       "connect-src 'self'; frame-ancestors 'self' https://huggingface.co https://*.hf.space; "
+       "connect-src 'self'; frame-ancestors 'self' https://huggingface.co " + _FRAME_HOST + "; "
        "base-uri 'self'; form-action 'self'; object-src 'none'")
 
 
@@ -86,24 +90,87 @@ class SecurityHeaders(BaseHTTPMiddleware):
         return resp
 
 
-class BodyLimit(BaseHTTPMiddleware):
+class GlobalBudget:
+    """Process-wide cap on chat requests per minute while an LLM is configured. It does not depend on client
+    identity, so it still bounds LLM spend if a client manages to rotate its apparent address."""
+
+    def __init__(self, per_minute: int):
+        self.n = per_minute
+        self._q: deque = deque()
+
+    def check(self) -> tuple[bool, int]:
+        if self.n <= 0:
+            return True, 0
+        now = time.monotonic()
+        while self._q and now - self._q[0] > 60:
+            self._q.popleft()
+        if len(self._q) >= self.n:
+            return False, max(1, int(60 - (now - self._q[0])) + 1)
+        self._q.append(now)
+        return True, 0
+
+
+class _TooLarge(Exception):
+    pass
+
+
+class BodyLimit:
+    """Pure ASGI middleware. Rejects bodies over max_bytes whether or not Content-Length is sent: the body is
+    counted while it streams (chunked uploads included), so an oversized request is never buffered whole."""
+
     def __init__(self, app, max_bytes: int):
-        super().__init__(app)
+        self.app = app
         self.max = max_bytes
 
-    async def dispatch(self, request: Request, call_next):
-        if request.method in ("POST", "PUT", "PATCH"):
-            cl = request.headers.get("content-length")
-            if cl and cl.isdigit() and int(cl) > self.max:
-                return JSONResponse({"code": "BAD_INPUT", "message": "Request too large."}, status_code=413)
-        return await call_next(request)
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http" or scope.get("method") not in ("POST", "PUT", "PATCH"):
+            return await self.app(scope, receive, send)
+        for k, v in scope.get("headers") or []:
+            if k == b"content-length" and (not v.isdigit() or int(v) > self.max):
+                return await self._reject(send)
+        seen = 0
+        started = False
+
+        async def limited_receive():
+            nonlocal seen
+            msg = await receive()
+            if msg["type"] == "http.request":
+                seen += len(msg.get("body") or b"")
+                if seen > self.max:
+                    raise _TooLarge()
+            return msg
+
+        async def tracking_send(msg):
+            nonlocal started
+            if msg["type"] == "http.response.start":
+                started = True
+            await send(msg)
+
+        try:
+            await self.app(scope, limited_receive, tracking_send)
+        except _TooLarge:
+            if not started:
+                await self._reject(send)
+
+    @staticmethod
+    async def _reject(send):
+        body = json.dumps({"code": "BAD_INPUT", "message": "Request too large."}).encode()
+        await send({"type": "http.response.start", "status": 413,
+                    "headers": [(b"content-type", b"application/json"),
+                                (b"content-length", str(len(body)).encode()), (b"connection", b"close")]})
+        await send({"type": "http.response.body", "body": body})
 
 
-def _client_ip(request: Request) -> str:
-    # HF Spaces / Render sit behind a proxy; use the first X-Forwarded-For hop when present.
-    fwd = request.headers.get("x-forwarded-for")
-    if fwd:
-        return fwd.split(",")[0].strip()
+def _client_ip(request: Request, trusted_hops: int = 0) -> str:
+    """Client address for rate limiting.
+
+    The left-most X-Forwarded-For hop is written by the client and can be anything, so it is never used.
+    With trusted_hops=N (N proxies we control, e.g. 1 for the HF Spaces / Render edge) the address is the N-th
+    hop from the right, i.e. the one our own edge proxy appended. With 0 the header is ignored entirely."""
+    if trusted_hops > 0:
+        hops = [h.strip() for h in (request.headers.get("x-forwarded-for") or "").split(",") if h.strip()]
+        if len(hops) >= trusted_hops:
+            return hops[-trusted_hops]
     return request.client.host if request.client else "unknown"
 
 
@@ -129,6 +196,7 @@ def create_app(settings: Settings | None = None, llm=None, embedder=None) -> Fas
                           embedder=embedder)
     engine = Engine(s, store, retriever, llm if llm is not None else _make_llm(s))
     limiter = RateLimiter(s.rate_limit_n, s.rate_limit_window_s)
+    budget = GlobalBudget(s.global_llm_per_min)
 
     app = FastAPI(title="Property Concierge (candidate prototype)", docs_url=None, redoc_url=None,
                   openapi_url=None)
@@ -142,16 +210,31 @@ def create_app(settings: Settings | None = None, llm=None, embedder=None) -> Fas
     # ------------------------------------------------------------------ chat
     @app.post("/api/chat/stream")
     async def chat_stream(request: Request):
+        headers = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
+
+        def one(event, data, status=200, extra=None):
+            async def gen():
+                yield sse(event, data)
+            return StreamingResponse(gen(), media_type="text/event-stream", headers={**headers, **(extra or {})},
+                                     status_code=status)
+
+        # Quota abuse via CSRF: a cross-site "simple" POST (text/plain) is not served, and a browser request
+        # from a foreign Origin is refused (CORS alone would only have hidden the response from the attacker).
+        ctype = (request.headers.get("content-type") or "").split(";")[0].strip().lower()
+        if ctype != "application/json":
+            return JSONResponse({"code": "BAD_INPUT", "message": "Content-Type must be application/json."},
+                                status_code=415)
+        origin = request.headers.get("origin")
+        # Same-origin requests (the page served by this app, on whatever host the Space runs) are always allowed;
+        # a browser sets Host to the real target, so a cross-site page cannot fake this match.
+        same_origin = bool(origin) and origin.split("://", 1)[-1].rstrip("/").lower() == \
+            (request.headers.get("host") or "").lower()
+        if origin and not same_origin and origin not in s.allowed_origins:
+            return JSONResponse({"code": "BAD_INPUT", "message": "Origin not allowed."}, status_code=403)
         try:
             body = await request.json()
         except (ValueError, UnicodeDecodeError):
             body = None
-        headers = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
-
-        def one(event, data, status=200):
-            async def gen():
-                yield sse(event, data)
-            return StreamingResponse(gen(), media_type="text/event-stream", headers=headers, status_code=status)
 
         if not isinstance(body, dict) or not isinstance(body.get("message"), str):
             return one("error", {"code": "BAD_INPUT", "message": "Body must be JSON with a string 'message'."})
@@ -160,10 +243,14 @@ def create_app(settings: Settings | None = None, llm=None, embedder=None) -> Fas
         history = body.get("history") if isinstance(body.get("history"), list) else []
         if len(history) > 8:
             history = history[-8:]
-        ok, retry = limiter.check(_client_ip(request))
+        ok, retry = limiter.check(_client_ip(request, s.trusted_proxy_hops))
+        if ok and s.llm_available:
+            ok, retry = budget.check()
         if not ok:
+            # 429 + Retry-After so proxies and monitoring see the throttling; the SSE error frame is the contract.
             return one("error", {"code": "RATE_LIMITED", "retry_after_s": retry,
-                                 "message": templates.t("rate_limited", detect_lang(msg, lang))})
+                                 "message": templates.t("rate_limited", detect_lang(msg, lang))},
+                       status=429, extra={"Retry-After": str(retry)})
         req = ChatRequest(session_id=str(body.get("session_id") or "")[:64], message=msg, history=history, lang=lang)
 
         async def gen():
@@ -181,6 +268,10 @@ def create_app(settings: Settings | None = None, llm=None, embedder=None) -> Fas
     async def meta():
         return {
             "dataset_version": store.version, "data_as_of": store.data_as_of, "counts": store.counts(),
+            "counts_by_site": {site: {"projects": sum(1 for p in store.projects if str(p.get("site") or "").lower() == site.lower()),
+                                      "listings": sum(1 for x in store.listings
+                                                      if str(x.get("site") or "Wasalt").lower() == site.lower())}
+                               for site in ("DarGlobal", "Wasalt")},
             "completeness": _flat_completeness(store.meta.get("completeness") or {}), "models": s.openrouter_models,
             "llm_available": s.llm_available and not s.maintenance_mode, "flags": s.flags,
             "candidate": s.candidate, "retrieval": retriever.mode, "maintenance_mode": s.maintenance_mode,

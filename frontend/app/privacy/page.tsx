@@ -22,7 +22,7 @@ export default function Privacy() {
         </section>
         <section>
           <h2>البيانات</h2>
-          <p>البيانات مأخوذة من صفحات عامة فقط على darglobal.co.uk و wasalt.sa، مع حذف أي بيانات شخصية. الصور تُعرض من مواقعها الأصلية.</p>
+          <p>البيانات مأخوذة من صفحات عامة فقط على wasalt.sa، مع حذف أي بيانات شخصية. تعذّر جمع صفحات darglobal.co.uk لأن الموقع يحجب العملاء الآليين، لذا لا تتضمن البيانات أي مشروع لدار جلوبال. صور المشاريع تُحمَّل في متصفحك مباشرة من شبكة صور وصلت (imagedelivery.net) دون إرسال المُحيل، ولا يُعاد استضافتها.</p>
           <p>ليست نصيحة استثمارية. تحقّق من كل التفاصيل مع الجهة الرسمية.</p>
         </section>
         {email && (<section><h2>التواصل</h2><p>للأسئلة حول هذا النموذج: <a href={`mailto:${email}`} dir="ltr">{email}</a></p></section>)}
@@ -45,7 +45,7 @@ export default function Privacy() {
       </section>
       <section>
         <h2>Where the data comes from</h2>
-        <p>Only publicly available pages on darglobal.co.uk and wasalt.sa, collected at a polite rate. Personal details such as agent names and phone numbers are removed. Images are shown from their original sites and not re-hosted.</p>
+        <p>Only publicly available pages on wasalt.sa, collected at a polite rate. Pages on darglobal.co.uk could not be collected because the site blocks automated clients, so the dataset holds no DarGlobal projects. Personal details such as agent names and phone numbers are removed. Project images load in your browser directly from Wasalt&apos;s image CDN (imagedelivery.net), with no referrer sent; they are not re-hosted.</p>
         <p>Nothing here is investment advice. Prices and availability change; verify every detail with DarGlobal or Wasalt directly.</p>
       </section>
       {email && (<section><h2>Questions</h2><p>About this prototype: <a href={`mailto:${email}`}>{email}</a></p></section>)}

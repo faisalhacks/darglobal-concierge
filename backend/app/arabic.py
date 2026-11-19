@@ -54,4 +54,8 @@ def detect_lang(text: str, requested: str = "auto") -> str:
     la = len(_LATIN_CHAR.findall(text or ""))
     if ar == 0:
         return "en"
-    return "ar" if ar >= la * 0.5 else "en"
+    if ar >= la * 0.5:
+        return "ar"
+    # Mixed text: two or more Arabic words (beyond a single name) means the user is writing Arabic.
+    words = re.findall(r"[\u0600-\u06FF]{2,}", text or "")
+    return "ar" if len(words) >= 2 else "en"

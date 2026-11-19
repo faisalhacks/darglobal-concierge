@@ -157,8 +157,10 @@ def test_rate_limit(make_client, ask):
     c = make_client(env={"RATE_LIMIT": "3/300"})
     for _ in range(3):
         assert "meta" in ask(c, "hello")
-    d = ask(c, "hello")
-    assert d["_order"] == ["error"] and d["error"][0]["code"] == "RATE_LIMITED" and d["error"][0]["retry_after_s"] > 0
+    r = c.post("/api/chat/stream", json={"session_id": "t", "message": "hello", "history": [], "lang": "auto"})
+    assert r.status_code == 429 and int(r.headers["retry-after"]) > 0
+    d = parse_sse(r.text)
+    assert [e for e, _ in d] == ["error"] and d[0][1]["code"] == "RATE_LIMITED" and d[0][1]["retry_after_s"] > 0
 
 
 def test_cache_hit(client, ask):
@@ -177,7 +179,8 @@ def test_no_key_is_degraded(make_client, ask):
     assert_contract(d)
     t = d["trace"][0]
     assert t["degraded"] and t["llm_calls"] == 0
-    assert "AI writer is unavailable" in d["_text"] and "1,800,000 AED" in d["_text"]
+    # No key configured is permanent, not an outage: the copy must not claim the writer is "unavailable right now".
+    assert "without an AI writer" in d["_text"] and "unavailable" not in d["_text"] and "1,800,000 AED" in d["_text"]
     assert d["cards"][0]["projects"] and d["sources"][0]
     d = ask(c, "How do Wasalt auctions work?")
     assert_contract(d)

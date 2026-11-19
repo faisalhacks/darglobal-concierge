@@ -16,8 +16,8 @@ export function SiteHeader() {
   const { t, lang, setLang } = useApp();
   const path = usePathname() || "/";
   const nav = [
-    { href: "/how-it-works/", label: t.navHow },
-    { href: "/evals/", label: t.navEvals, secondary: true },
+    { href: "/how-it-works/", label: t.navHow, short: t.navHowShort },
+    { href: "/evals/", label: t.navEvals },
   ];
   return (
     <header className="site-header">
@@ -30,8 +30,8 @@ export function SiteHeader() {
         </Link>
         <nav className="site-nav" aria-label="Primary">
           {nav.map((n) => (
-            <Link key={n.href} href={n.href} className={`site-nav__link${"secondary" in n ? " site-nav__link--secondary" : ""}`} aria-current={path.startsWith(n.href.slice(0, -1)) ? "page" : undefined}>
-              {n.label}
+            <Link key={n.href} href={n.href} className="site-nav__link" aria-current={path.startsWith(n.href.slice(0, -1)) ? "page" : undefined}>
+              {"short" in n && n.short ? (<><span className="nav-long">{n.label}</span><span className="nav-short" aria-hidden="true">{n.short}</span></>) : n.label}
             </Link>
           ))}
           <div className="lang-toggle" role="group" aria-label={t.langToggleLabel}>

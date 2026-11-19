@@ -96,6 +96,73 @@ class Plan:
     entities: Entities
     ambiguous: bool = False
     follow_up: bool = False
+    unknown: str | None = None  # a named project/place the user asked about that is not in the dataset
+
+
+# ---------------- existence gate (SPEC §0 never invent, R7 traps) ----------------
+_NAMED_EN = re.compile(r"\b(?:project|development|tower|building|compound|community|villas?|residences?)\s+"
+                       r"(?:called|named)\s+[\"'“]?([a-z0-9][a-z0-9' -]{1,40}?)[\"'”]?"
+                       r"(?=\s+(?:in|and|at|with|located|by|that|which)\b|\s*[?,.!]|$)", re.I)
+_NAMED_AR = re.compile(r"(?:مشروع|مشروعا|برج|مجمع)\s+(?:اسمه|يسمي|باسم|يدعي)\s+(.{2,40}?)(?=\s+(?:في|و)\s|\s*و?سعر|[?,.!]|$)")
+_PLACE_EN = re.compile(r"\b(?:in|at|near|around)\s+(?:the\s+|your\s+|a\s+)?([A-Z][a-z]{2,}(?:\s+[A-Z][a-zA-Z0-9]{1,})*)")
+_NOT_PLACES = {"english", "arabic", "sar", "aed", "usd", "january", "february", "march", "april", "may", "june",
+               "july", "august", "september", "october", "november", "december", "total", "cash", "installments"}
+UNPUBLISHED = [
+    ("mortgage_rate", r"(mortgage|interest|financing|finance)\s+(interest\s+)?rates?|rates?\s+(of|for)\s+(mortgage|interest)"
+                      r"|apr\b|سعر الفائده|نسبه الفائده|نسبه التمويل"),
+    ("units_sold", r"units?\s+(have\s+|has\s+)?(been\s+|already\s+)?sold|how many (units|apartments|villas) (are|were) sold"),
+]
+
+
+def unpublished_topic(message: str) -> str | None:
+    norm = normalize_text(message)
+    return next((k for k, rx in UNPUBLISHED if re.search(rx, norm)), None)
+
+
+def _known_name(name: str, store: Store) -> bool:
+    n = normalize_text(name).strip(" -'\"")
+    if len(n) < 3:
+        return True
+    for p in store.projects:
+        for alias in project_aliases(p):
+            if n in alias or alias in n or difflib.SequenceMatcher(None, n, alias).ratio() >= 0.8:
+                return True
+    for x in store.listings:
+        if n and n in normalize_text(x.get("title") or ""):
+            return True
+    return False
+
+
+def _known_place(word: str, store: Store) -> bool:
+    n = normalize_text(word)
+    first = n.split()[0] if n else n
+    if not n or n in _NOT_PLACES or first in _NOT_PLACES:
+        return True
+    aliases = {a for al in PLACE_ALIASES.values() for a in al}
+    vals = {normalize_text(v) for r in store.projects + store.listings
+            for v in (r.get("city"), r.get("country"), r.get("district")) if v}
+    if any(n == a or n.startswith(a + " ") or a.startswith(n) for a in aliases | vals):
+        return True
+    if any(t in ("wasalt", "darglobal", "dar") for t in n.split()):
+        return True
+    return _known_name(word, store)
+
+
+def unknown_entity(message: str, norm: str, ent: Entities, store: Store) -> str | None:
+    """A project or place the user names explicitly that the dataset does not contain. Answering such a question
+    with nearby real data reads as confirmation, so the planner routes it to a not-found template instead."""
+    raw = re.sub(r"\s+", " ", message or "").strip()  # keep the user's casing for the reply
+    for rx, src in ((_NAMED_EN, raw), (_NAMED_AR, norm)):
+        m = rx.search(src)
+        if m and not _known_name(m.group(1), store):
+            return m.group(1).strip()
+    if ent.project_ids or ent.city or ent.country:
+        return None
+    for m in _PLACE_EN.finditer(message or ""):
+        cand = m.group(1).strip()
+        if not _known_place(cand, store):
+            return cand
+    return None
 
 
 def _has(norm: str, words) -> bool:
@@ -338,6 +405,10 @@ def plan(message: str, store: Store, history: list[dict] | None = None, flags: d
         return Plan("off_topic", ent)
     if _any(CALC, norm) and re.search(r"\d", norm):
         return Plan("calculation", ent)
+
+    unknown = unknown_entity(message, norm, ent, store)
+    if unknown:
+        return Plan("general", ent, unknown=unknown)
 
     follow_up = False
     if not ent.project_ids and history and _any(FOLLOW_UP, norm):

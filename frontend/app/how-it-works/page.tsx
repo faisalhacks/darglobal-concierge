@@ -25,8 +25,9 @@ function Diagram() {
         <desc id="dg-desc">
           Offline, a single-lane scraper collects public pages, which are extracted, validated and stored in SQLite with BM25 and
           embedding indexes. Online, a question passes input guardrails, then a code planner. Clear intents are answered in code;
-          ambiguous ones use one model tool call. Retrieval fuses BM25 and embeddings. A free model writes prose, with a fallback
-          model and a template if both fail. Cards, tables, sources and the trace are built in code and streamed to the browser.
+          low-confidence ones get one model call that returns validated filters. Retrieval fuses BM25 and embeddings. A free model
+          writes the prose, with the next free model and a code fallback if it fails. Cards, tables and sources are built in code and
+          streamed before the prose.
         </desc>
         <style>{`
           .d-box{fill:var(--surface-2);stroke:var(--border)}
@@ -62,14 +63,14 @@ function Diagram() {
         <Arrow d="M170 204H196" /><Arrow d="M370 204H396" /><Arrow d="M570 204H596" /><Arrow d="M770 204H796" />
         <Arrow d="M850 132V172" />
 
-        <Box x={600} y={290} w={360} h={56} title="Free model chain" sub="primary, then fallback, then a fixed template" />
+        <Box x={600} y={290} w={360} h={56} title="Free model chain" sub="first free model, next free model, then code" />
         <Arrow d="M880 232V286" />
         <Box x={200} y={290} w={370} h={56} title="Output checks and assembly" sub="prices verified, URLs removed; cards built in code" accent />
         <Arrow d="M600 318H574" />
         <Arrow d="M200 318H95V236" />
         <Arrow d="M485 232V286" />
         <text x="490" y="266" className="d-sub">templates skip the model</text>
-        <text x="24" y="380" className="d-sub">Stream: meta, tokens, cards, compare, calc, sources, chips, trace, done</text>
+        <text x="24" y="380" className="d-sub">Stream: meta, cards, compare, calc, sources, prose tokens, chips, trace, done</text>
       </svg>
       <figcaption>Every number on a card or in a table comes from the dataset, not from the model.</figcaption>
     </figure>
@@ -83,6 +84,7 @@ const FIELD: Record<string, string> = {
   image_urls: "Photos", area_m2: "Area", beds: "Bedrooms", baths: "Bathrooms", district: "District",
   property_types: "Property types", unit_types: "Unit types", amenities: "Amenities", developer: "Developer",
   brand_partner: "Brand partner", title: "Title", listing_type: "Sale or rent", project_ref: "Linked project",
+  area_min_m2: "Smallest unit area", name_any: "Name (English or Arabic)", property_type: "Property type",
 };
 const GROUP: Record<string, string> = { projects: "Projects", listings: "Listings", pages: "Pages" };
 const POOL_STATE: Record<string, string> = { healthy: "answering", cooling: "paused after a rate limit", removed: "removed for today" };
@@ -98,7 +100,7 @@ function Completeness({ comp }: { comp: [string, number][] }) {
   const groups = new Map<string, { field: string; r: number }[]>();
   for (const [k, r] of comp) {
     const [g, f] = k.includes(".") ? k.split(".", 2) : ["", k];
-    if (g === "by_site") continue; // counts, not percentages
+    if (g === "by_site" || k.split(".").length > 2) continue; // per-site counts and nested groups, not percentages
     const name = FIELD[f] ?? f.replace(/_/g, " ");
     const list = groups.get(g) ?? [];
     if (!list.some((x) => x.field === name)) list.push({ field: name, r });
@@ -131,13 +133,16 @@ export default function HowItWorks() {
   const hasDg = (dg?.projects ?? 0) > 0;
   const pool = meta?.llm?.pool ?? [];
   const budget = meta?.llm?.budget;
+  const mock = meta?.llm?.mode === "mock";
+  const cap = budget && budget.cap > 0 && budget.cap < 1000 ? budget.cap : 45; // the mock build reports a 1e9 sentinel
+  
   return (
     <PageShell englishOnly>
       <div lang="en" dir="ltr">
         <h1>How the concierge answers</h1>
         <p className="lede">
           It reads only what is published on the public sites and decides in code what kind of question it is. Most answers are
-          assembled in code from the dataset; a free language model writes the sentences only for open questions.
+          assembled in code from the dataset; a free language model words the reply and, for messy questions, helps read what was asked; the facts, cards and numbers always come from the dataset.
         </p>
 
         <section>
@@ -156,7 +161,7 @@ export default function HowItWorks() {
             ) : (
               <li><strong>No DarGlobal data yet.</strong> darglobal.co.uk answers automated clients with a challenge page, so no DarGlobal project page is in this dataset, and DarGlobal questions get a &ldquo;no verified information&rdquo; answer.</li>
             )}
-            <li><strong>A small free model budget.</strong> The free model account allows about 50 requests a day in total. Most answers are therefore assembled in code from the dataset (a template or a quoted passage, plus cards and sources), and common questions are answered from a cache built in advance.</li>
+            <li><strong>A small free model budget.</strong> The free model account allows about 50 requests a day, so the app caps itself at 45 model requests a day. Many answers are assembled in code from the dataset (a template or a quoted passage, plus cards and sources), and common questions are answered from a cache built in advance. At the cap, no model is called and every answer is assembled from the dataset.</li>
             <li><strong>Rent periods.</strong> Wasalt listing pages do not state whether a rent is per month or per year, so rent prices are shown with &ldquo;period not published&rdquo;.</li>
           </ul>
         </section>
@@ -170,37 +175,39 @@ export default function HowItWorks() {
           <h2>What happens to one question</h2>
           <ol className="steps">
             <li><div><strong>Screen.</strong> The message is trimmed, capped at 1,000 characters, normalised (full-width forms, hidden characters, spaced-out letters, leetspeak) and checked for injection patterns in English, Arabic and transliteration. Earlier turns of the conversation go through the same screen. A clear attempt gets a fixed reply and never reaches a model. The pattern list is a tripwire; the structural checks below are what hold when a paraphrase slips past it.</div></li>
-            <li><div><strong>Existence check.</strong> If the question names a project or a place that is not in the data, the answer says so and attaches no cards or sources, instead of showing nearby real projects that would read as confirmation.</div></li>
+            <li><div><strong>Existence check.</strong> If the question names a project or a place that is not in the data, the answer opens with a plain sentence saying it is not in the data. It then pivots to a real DarGlobal spotlight project (closest by city, country or brand) with that project&apos;s own card and source, and ends with a link to the official DarGlobal contact page for an advisor. No number or price is given for the name that does not exist.</div></li>
             <li><div><strong>Plan.</strong> A code planner names the intent (a project, a city, a comparison, a calculation, contact, out of scope) and pulls out entities such as city, budget and bedrooms.</div></li>
-            <li><div><strong>Fetch.</strong> Clear intents call a read-only tool directly. On this deployment the planner also decides the ambiguous ones, so a message never spends a model call on choosing a tool.</div></li>
+            <li><div><strong>Understand (only if needed).</strong> Clear questions skip this step. A low-confidence or messy question (a vague message, an unresolved short follow-up) gets one model call that returns JSON filters such as intent, city, budget, bedrooms and project names. Code validates every field and drops values the dataset does not hold; the model never supplies facts. If the call fails, the code plan is used.</div></li>
+            <li><div><strong>Fetch.</strong> The planner, or the validated filters, call a read-only tool directly (project, listing or page search, comparison, calculator). The model does not choose tools on this deployment.</div></li>
             <li><div><strong>Retrieve.</strong> BM25 and multilingual embeddings each rank the passages and reciprocal rank fusion merges them. Measured honestly (experiment E1): on exact project-name lookups BM25 alone did better than the fusion (Arabic hit@1 0.94 vs 0.67, English 1.00 vs 0.92), and city queries scored near zero precision for every method. Those queries were the project names themselves, so E1 shows lexical lookup works; it does not yet show that paraphrases land.</div></li>
-            <li><div><strong>Write.</strong> One model call drafts the prose from the retrieved passages, which are marked as untrusted text: one call per message at most, and none when a cached answer for the same question and dataset version exists.</div></li>
+            <li><div><strong>Write.</strong> A model drafts the prose from the retrieved passages (marked as untrusted text) or from a code-built summary. A message makes at most 2 model calls: understanding plus prose. Greetings, small talk and off-topic requests also use the model for the wording, grounded in a code-built summary, with a fixed code reply as the fallback. If a model sends no first token within 8 seconds, the next free model is tried. No model is called when a cached answer for the same question and dataset version exists, or when the daily cap is reached.</div></li>
             <li><div><strong>Check.</strong> Every price in the prose must appear in the retrieved context; otherwise it becomes &ldquo;not published&rdquo;. URLs and system-prompt fragments are removed.</div></li>
-            <li><div><strong>Assemble.</strong> Cards, comparison tables, calculations, sources and the date of the data are built in code and streamed after the prose.</div></li>
+            <li><div><strong>Assemble.</strong> Cards, comparison tables, calculations and sources are built in code and streamed before the prose, so real content appears while the sentences are still being written. Chips and the trace follow.</div></li>
           </ol>
         </section>
 
         <section>
           <h2>Reading the trace</h2>
-          <p>Each answer has a &ldquo;How I found this&rdquo; panel. It shows exactly what ran.</p>
+          <p>Answers that use sources have a &ldquo;How I found this&rdquo; panel, collapsed to a line with the number of sources and the time taken. Opening it lists plain-language steps. It shows no model names, cache flags or scores; those diagnostics are kept for the evaluation page.</p>
           <dl className="deflist">
-            <dt>Intent</dt><dd>What the planner decided the question was about.</dd>
-            <dt>Path</dt><dd>Answered in code, model chose a tool, or fixed template.</dd>
-            <dt>Tool</dt><dd>The read-only tool that was called, if any.</dd>
-            <dt>Retrieved passages</dt><dd>The passage IDs and their fused scores, highest first.</dd>
-            <dt>Model and calls</dt><dd>Which free model wrote the prose, and how many calls it took (0 or 1 on this deployment).</dd>
-            <dt>Time and cache</dt><dd>End-to-end time on the server, and whether a cached answer was reused.</dd>
-            <dt>No model used</dt><dd>When the answer was assembled from the dataset alone, the Model line says why: the daily quota, a rate limit, a timeout or maintenance.</dd>
+            <dt>What it matched</dt><dd>The project name or names it recognised (up to four), or otherwise how it understood the question, such as one project or homes for sale or rent.</dd>
+            <dt>Pages read</dt><dd>How many collected pages the answer draws on.</dd>
+            <dt>Tool</dt><dd>The read-only tool used, such as listing search or the comparison table, if any.</dd>
+            <dt>How it was worded</dt><dd>One of: a language model worded it from the pages; it was worded from the dataset because the model was unavailable; a fixed reply; or built in code from the fact table.</dd>
+            <dt>Time</dt><dd>How long the answer took.</dd>
           </dl>
         </section>
 
         <section>
           <h2>Model chain</h2>
-          <p>Only free models on OpenRouter are used. If the first does not answer in time, the next is tried; if none answers, the answer is assembled from the dataset with the same sources and cards.</p>
+          <p>Only free models on OpenRouter are used, in the order below. If one sends no first token within 8 seconds, the next free model is tried; if none answers, the answer is assembled from the dataset with the same sources and cards. The app also caps itself at {fmtNumber(cap, "en")} model requests a day.</p>
           {meta ? (
             <>
-              <p>{LLM_STATE[llmState ?? "off"]}{budget && budget.cap > 0 ? ` ${fmtNumber(budget.used, "en")} of today's ${fmtNumber(budget.cap, "en")} model requests are used.` : ""}</p>
-              {pool.length > 0 ? (
+              <p>
+                {mock ? "Model mocked on this local build. The order below is the configured order when a live key is set." : LLM_STATE[llmState ?? "off"]}
+                {!mock && budget && budget.cap > 0 ? ` ${fmtNumber(budget.used, "en")} of the app's ${fmtNumber(budget.cap, "en")} daily model requests are used today.` : ""}
+              </p>
+              {pool.length > 0 && !mock ? (
                 <div className="table-wrap">
                   <table className="data-table">
                     <thead><tr><th>Order</th><th>Model</th><th>State now</th></tr></thead>
@@ -220,6 +227,16 @@ export default function HowItWorks() {
               ) : null}
             </>
           ) : <p className="muted">Model details load from the server.</p>}
+        </section>
+
+        <section>
+          <h2>Calculations</h2>
+          <p>
+            The calculator shows its formula and is an estimate, not financial advice. Currency conversion uses the official US dollar pegs for
+            AED, SAR, QAR, OMR and BHD, and the European Central Bank daily reference rates for EUR, GBP and INR, shown with the ECB date. If no
+            reference rate has been fetched, the answer says so and never guesses one. A USD budget in a search is converted to SAR at the
+            official peg of 3.75, and the answer says that it did.
+          </p>
         </section>
 
         <section>
@@ -256,7 +273,7 @@ export default function HowItWorks() {
           ) : (
             <p className="muted">Corpus details load from the server.</p>
           )}
-          <p><Link href="/evals/">See the evaluation results</Link></p>
+          <p><Link href="/evals/">See the evaluation results and the Stress-tested showcase</Link></p>
         </section>
       </div>
     </PageShell>

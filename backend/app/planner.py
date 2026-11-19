@@ -728,7 +728,8 @@ def plan(message: str, store: Store, history: list[dict] | None = None, flags: d
         return Plan("greeting", ent)
     if _any(ADVICE, norm):
         return Plan("advice", ent)
-    if _any(CONTACT, norm):
+    # "act as my property advisor and shortlist ..." is a search request, not a request to be put in touch
+    if _any(CONTACT, norm) and not re.search(r"\bact as\b|\bshortlist\b|\brole ?play\b", norm):
         return Plan("contact_sales", ent)
     # "2 bed in AED under 2m" is a listing search with a currency, not a conversion
     listing_like = ent.beds is not None and not re.search(

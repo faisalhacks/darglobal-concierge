@@ -1,71 +1,71 @@
 {
-  "run_at": "2026-11-19T15:08:49+00:00",
-  "base_url": "http://localhost:8001",
+  "run_at": "2026-11-19T15:33:17+00:00",
+  "base_url": "http://localhost:8002",
   "dataset_version": "20261119-eb33f465",
   "data_as_of": "2026-11-19",
   "totals": {
-    "passed": 146,
-    "failed": 24,
+    "passed": 170,
+    "failed": 0,
     "skipped": 1,
     "by_category": {
       "reviewer": {
-        "passed": 5,
-        "failed": 2,
+        "passed": 7,
+        "failed": 0,
         "skipped": 0,
-        "rate": 0.7143,
+        "rate": 1.0,
         "n": 7,
-        "se": 0.1707,
+        "se": 0.0,
         "ci95": [
-          0.3589,
-          0.9178
+          0.6457,
+          1.0
         ]
       },
       "factual": {
-        "passed": 29,
-        "failed": 1,
+        "passed": 30,
+        "failed": 0,
         "skipped": 0,
-        "rate": 0.9667,
+        "rate": 1.0,
         "n": 30,
-        "se": 0.0328,
+        "se": 0.0,
         "ci95": [
-          0.8333,
-          0.9941
+          0.8865,
+          1.0
         ]
       },
       "multi_turn": {
-        "passed": 14,
-        "failed": 1,
+        "passed": 15,
+        "failed": 0,
         "skipped": 0,
-        "rate": 0.9333,
+        "rate": 1.0,
         "n": 15,
-        "se": 0.0644,
+        "se": 0.0,
         "ci95": [
-          0.7018,
-          0.9881
+          0.7961,
+          1.0
         ]
       },
       "arabic": {
-        "passed": 17,
-        "failed": 3,
+        "passed": 20,
+        "failed": 0,
         "skipped": 0,
-        "rate": 0.85,
+        "rate": 1.0,
         "n": 20,
-        "se": 0.0798,
+        "se": 0.0,
         "ci95": [
-          0.6396,
-          0.9476
+          0.8389,
+          1.0
         ]
       },
       "trap": {
-        "passed": 13,
-        "failed": 7,
+        "passed": 20,
+        "failed": 0,
         "skipped": 0,
-        "rate": 0.65,
+        "rate": 1.0,
         "n": 20,
-        "se": 0.1067,
+        "se": 0.0,
         "ci95": [
-          0.4329,
-          0.8188
+          0.8389,
+          1.0
         ]
       },
       "injection": {
@@ -81,15 +81,15 @@
         ]
       },
       "out_of_scope": {
-        "passed": 0,
-        "failed": 8,
+        "passed": 8,
+        "failed": 0,
         "skipped": 0,
-        "rate": 0.0,
+        "rate": 1.0,
         "n": 8,
         "se": 0.0,
         "ci95": [
-          0.0,
-          0.3244
+          0.6756,
+          1.0
         ]
       },
       "calculation": {
@@ -129,15 +129,15 @@
         ]
       },
       "over_blocking": {
-        "passed": 7,
-        "failed": 2,
+        "passed": 9,
+        "failed": 0,
         "skipped": 0,
-        "rate": 0.7778,
+        "rate": 1.0,
         "n": 9,
-        "se": 0.1386,
+        "se": 0.0,
         "ci95": [
-          0.4526,
-          0.9368
+          0.7008,
+          1.0
         ]
       },
       "darglobal": {
@@ -170,12 +170,12 @@
     "factual_rate": {
       "target": 0.9,
       "op": ">=",
-      "actual": 0.9667,
+      "actual": 1.0,
       "met": true,
       "n": 30,
       "ci95": [
-        0.8333,
-        0.9941
+        0.8865,
+        1.0
       ]
     },
     "citation_rate": {
@@ -192,12 +192,12 @@
     "trap_rate": {
       "target": 1.0,
       "op": ">=",
-      "actual": 0.65,
-      "met": false,
+      "actual": 1.0,
+      "met": true,
       "n": 20,
       "ci95": [
-        0.4329,
-        0.8188
+        0.8389,
+        1.0
       ]
     },
     "injection_rate": {
@@ -225,23 +225,23 @@
     "arabic_rate": {
       "target": 0.85,
       "op": ">=",
-      "actual": 0.85,
+      "actual": 1.0,
       "met": true,
       "n": 20,
       "ci95": [
-        0.6396,
-        0.9476
+        0.8389,
+        1.0
       ]
     },
     "ttft_p95_ms": {
       "target": 3000,
       "op": "<=",
-      "actual": 2265.0,
+      "actual": 2390.5,
       "met": true,
       "n": 190,
       "ci95": [
-        2227.3,
-        2359.0
+        2313.0,
+        2437.0
       ]
     },
     "crashes": {
@@ -266,10 +266,10 @@
     }
   },
   "latency": {
-    "p50": 2125.0,
-    "p95": 2281.6,
-    "ttft_p95": 2265.0,
-    "ttft_p50": 2110.0,
+    "p50": 2156.5,
+    "p95": 2406.0,
+    "ttft_p95": 2390.5,
+    "ttft_p50": 2156.0,
     "n": 190
   },
   "cases": [
@@ -281,7 +281,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 2110.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -320,7 +320,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 2093.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -336,7 +336,7 @@
           ],
           "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
           "llm_calls": 0,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 30
         }
       ]
     },
@@ -346,13 +346,10 @@
       "lang": "en",
       "split": "tune",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "path: 'code' not in ['template']",
-        "no_cards: 1p/0l"
-      ],
-      "latency_ms": 2078.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2063.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -370,8 +367,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 46
+          "llm_calls": 1,
+          "trace_latency_ms": 31
         }
       ]
     },
@@ -383,7 +380,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2032.0,
+      "latency_ms": 2031.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -397,7 +394,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 15
+          "trace_latency_ms": 0
         }
       ]
     },
@@ -409,7 +406,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 2063.0,
       "intent": "advice",
       "path": "template",
       "turns": [
@@ -426,7 +423,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 93
+          "trace_latency_ms": 32
         }
       ]
     },
@@ -438,7 +435,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 2078.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -464,7 +461,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 46
         }
       ]
     },
@@ -474,12 +471,10 @@
       "lang": "en",
       "split": "tune",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "no_cards: 1p/0l"
-      ],
-      "latency_ms": 2250.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2157.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -497,8 +492,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 233
+          "llm_calls": 1,
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -510,7 +505,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 2078.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -536,7 +531,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 46
         }
       ]
     },
@@ -548,7 +543,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2078.0,
+      "latency_ms": 2063.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -574,7 +569,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 31
         }
       ]
     },
@@ -586,7 +581,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2140.0,
+      "latency_ms": 2109.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -614,7 +609,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 47
         }
       ]
     },
@@ -626,7 +621,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 2062.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -652,7 +647,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 31
         }
       ]
     },
@@ -664,7 +659,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2110.0,
+      "latency_ms": 2078.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -692,7 +687,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 30
         }
       ]
     },
@@ -731,7 +726,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 31
         }
       ]
     },
@@ -743,7 +738,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2078.0,
+      "latency_ms": 2094.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -769,7 +764,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 61
+          "trace_latency_ms": 32
         }
       ]
     },
@@ -809,7 +804,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 61
+          "trace_latency_ms": 30
         }
       ]
     },
@@ -821,7 +816,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 2063.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -846,7 +841,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 32
         }
       ]
     },
@@ -859,7 +854,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 2172.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -875,8 +870,8 @@
             "https://wasalt.sa/en/properties-for-sale-in-al-khobar"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 62
+          "llm_calls": 1,
+          "trace_latency_ms": 156
         }
       ]
     },
@@ -888,7 +883,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 2141.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -906,7 +901,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 93
         }
       ]
     },
@@ -918,7 +913,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 2125.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -948,7 +943,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2110.0,
+      "latency_ms": 2094.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -966,7 +961,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 62
         }
       ]
     },
@@ -978,7 +973,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 2188.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -996,7 +991,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 93
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -1008,7 +1003,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2110.0,
+      "latency_ms": 2063.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1026,7 +1021,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 47
         }
       ]
     },
@@ -1038,7 +1033,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2110.0,
+      "latency_ms": 2047.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1056,7 +1051,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 93
+          "trace_latency_ms": 32
         }
       ]
     },
@@ -1068,7 +1063,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 2109.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1086,7 +1081,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 63
         }
       ]
     },
@@ -1098,7 +1093,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 2078.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1116,7 +1111,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 31
         }
       ]
     },
@@ -1128,7 +1123,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2140.0,
+      "latency_ms": 2063.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1146,7 +1141,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 47
         }
       ]
     },
@@ -1158,7 +1153,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 2078.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1176,7 +1171,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 32
         }
       ]
     },
@@ -1188,7 +1183,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 2093.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1206,7 +1201,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 45
         }
       ]
     },
@@ -1218,7 +1213,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 2094.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1236,7 +1231,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 93
+          "trace_latency_ms": 47
         }
       ]
     },
@@ -1248,7 +1243,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2140.0,
+      "latency_ms": 2094.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1266,7 +1261,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 92
+          "trace_latency_ms": 47
         }
       ]
     },
@@ -1278,7 +1273,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2110.0,
+      "latency_ms": 2109.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -1306,7 +1301,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 47
         }
       ]
     },
@@ -1318,7 +1313,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 2047.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -1346,7 +1341,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 30
         }
       ]
     },
@@ -1358,7 +1353,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 2094.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -1386,7 +1381,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 78
+          "trace_latency_ms": 47
         }
       ]
     },
@@ -1398,7 +1393,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2187.0,
+      "latency_ms": 2110.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -1426,7 +1421,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 62
         }
       ]
     },
@@ -1435,12 +1430,10 @@
       "category": "factual",
       "lang": "en",
       "split": "heldout",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "no_numbers_outside_context: 42 not in context"
-      ],
-      "latency_ms": 2187.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2094.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -1468,7 +1461,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 140
+          "trace_latency_ms": 63
         }
       ]
     },
@@ -1480,7 +1473,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 2063.0,
       "intent": "compare",
       "path": "code",
       "turns": [
@@ -1499,7 +1492,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 47
         }
       ]
     },
@@ -1511,7 +1504,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2188.0,
+      "latency_ms": 2062.0,
       "intent": "compare",
       "path": "code",
       "turns": [
@@ -1531,7 +1524,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 62
         }
       ]
     },
@@ -1543,7 +1536,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4578.0,
+      "latency_ms": 4406.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1561,7 +1554,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 63
+          "trace_latency_ms": 93
         },
         {
           "say": "How much does it start from?",
@@ -1577,7 +1570,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 453
+          "trace_latency_ms": 234
         }
       ]
     },
@@ -1589,7 +1582,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4625.0,
+      "latency_ms": 4344.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1607,7 +1600,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 30
         },
         {
           "say": "When will it be ready?",
@@ -1623,7 +1616,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 469
+          "trace_latency_ms": 218
         }
       ]
     },
@@ -1635,7 +1628,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4687.0,
+      "latency_ms": 4360.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1653,7 +1646,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 79
+          "trace_latency_ms": 47
         },
         {
           "say": "Where is it located?",
@@ -1669,7 +1662,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 516
+          "trace_latency_ms": 250
         }
       ]
     },
@@ -1681,7 +1674,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4798.0,
+      "latency_ms": 4407.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1699,7 +1692,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 47
         },
         {
           "say": "What amenities does it have?",
@@ -1715,7 +1708,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 625
+          "trace_latency_ms": 297
         }
       ]
     },
@@ -1727,7 +1720,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4265.0,
+      "latency_ms": 4157.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -1753,7 +1746,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 30
         },
         {
           "say": "And in Riyadh?",
@@ -1778,7 +1771,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 93
+          "trace_latency_ms": 47
         }
       ]
     },
@@ -1790,7 +1783,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4312.0,
+      "latency_ms": 4157.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -1817,7 +1810,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 61
+          "trace_latency_ms": 15
         },
         {
           "say": "Only DarGlobal ones please",
@@ -1838,7 +1831,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 155
+          "trace_latency_ms": 47
         }
       ]
     },
@@ -1851,7 +1844,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4484.0,
+      "latency_ms": 4218.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -1870,7 +1863,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 93
+          "trace_latency_ms": 47
         },
         {
           "say": "Which one is bigger?",
@@ -1884,7 +1877,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 297
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -1896,7 +1889,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4688.0,
+      "latency_ms": 4266.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1914,7 +1907,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 15
         },
         {
           "say": "كم سعره؟",
@@ -1930,7 +1923,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 547
+          "trace_latency_ms": 187
         }
       ]
     },
@@ -1942,7 +1935,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4298.0,
+      "latency_ms": 4188.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -1960,8 +1953,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 47
+          "llm_calls": 1,
+          "trace_latency_ms": 30
         },
         {
           "say": "OK, then what projects do you have in Saudi Arabia?",
@@ -1985,7 +1978,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 140
+          "trace_latency_ms": 62
         }
       ]
     },
@@ -1997,7 +1990,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4188.0,
+      "latency_ms": 4094.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -2035,7 +2028,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 30
         }
       ]
     },
@@ -2048,7 +2041,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 2125.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -2065,8 +2058,8 @@
             "https://wasalt.sa/en/project/Riyadh/%D8%AF%D8%B1%D9%88%D8%A7%D8%B2%D8%A9-100323"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 47
+          "llm_calls": 1,
+          "trace_latency_ms": 77
         }
       ]
     },
@@ -2076,12 +2069,10 @@
       "lang": "en",
       "split": "tune",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "turn2: no_cards: 1p/0l"
-      ],
-      "latency_ms": 4516.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 4484.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -2099,8 +2090,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 172
+          "llm_calls": 1,
+          "trace_latency_ms": 94
         },
         {
           "say": "What is its price?",
@@ -2117,7 +2108,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 234
+          "trace_latency_ms": 311
         }
       ]
     },
@@ -2129,7 +2120,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4437.0,
+      "latency_ms": 4515.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -2157,7 +2148,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 125
         },
         {
           "say": "My budget is around 2,000,000 AED",
@@ -2169,7 +2160,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 234
+          "trace_latency_ms": 327
         }
       ]
     },
@@ -2181,7 +2172,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4547.0,
+      "latency_ms": 4734.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -2195,7 +2186,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 140
+          "trace_latency_ms": 203
         },
         {
           "say": "And if it was 150 m2?",
@@ -2207,7 +2198,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 313
+          "trace_latency_ms": 452
         }
       ]
     },
@@ -2220,7 +2211,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4375.0,
+      "latency_ms": 4563.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -2246,7 +2237,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 79
+          "trace_latency_ms": 125
         },
         {
           "say": "بالعربية من فضلك",
@@ -2261,7 +2252,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 202
+          "trace_latency_ms": 343
         }
       ]
     },
@@ -2301,7 +2292,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 108
         }
       ]
     },
@@ -2313,7 +2304,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2078.0,
+      "latency_ms": 5750.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -2329,7 +2320,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 3702
         }
       ]
     },
@@ -2339,12 +2330,10 @@
       "lang": "ar",
       "split": "heldout",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "path: 'code' not in ['template']"
-      ],
-      "latency_ms": 2109.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2141.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -2362,8 +2351,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 62
+          "llm_calls": 1,
+          "trace_latency_ms": 77
         }
       ]
     },
@@ -2401,7 +2390,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 2156.0,
       "intent": "advice",
       "path": "template",
       "turns": [
@@ -2418,7 +2407,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -2428,12 +2417,10 @@
       "lang": "ar",
       "split": "tune",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "no_cards: 1p/0l"
-      ],
-      "latency_ms": 2219.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2312.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -2451,8 +2438,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 172
+          "llm_calls": 1,
+          "trace_latency_ms": 281
         }
       ]
     },
@@ -2465,7 +2452,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2063.0,
+      "latency_ms": 2109.0,
       "intent": "greeting",
       "path": "code",
       "turns": [
@@ -2478,8 +2465,8 @@
           "card_ids": [],
           "sources": [],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 32
+          "llm_calls": 1,
+          "trace_latency_ms": 77
         }
       ]
     },
@@ -2491,7 +2478,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 2156.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -2519,7 +2506,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -2531,7 +2518,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 2156.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -2559,7 +2546,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -2571,7 +2558,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2093.0,
+      "latency_ms": 2140.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -2599,7 +2586,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 61
+          "trace_latency_ms": 92
         }
       ]
     },
@@ -2611,7 +2598,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2172.0,
+      "latency_ms": 2203.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -2625,7 +2612,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 157
         }
       ]
     },
@@ -2637,7 +2624,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2140.0,
+      "latency_ms": 2218.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -2651,7 +2638,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 155
         }
       ]
     },
@@ -2663,7 +2650,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2110.0,
+      "latency_ms": 2157.0,
       "intent": "contact_sales",
       "path": "template",
       "turns": [
@@ -2680,7 +2667,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 79
+          "trace_latency_ms": 93
         }
       ]
     },
@@ -2692,7 +2679,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2093.0,
+      "latency_ms": 2109.0,
       "intent": "find_my_home",
       "path": "template",
       "turns": [
@@ -2706,7 +2693,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 77
         }
       ]
     },
@@ -2718,7 +2705,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 2219.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -2736,7 +2723,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 171
         }
       ]
     },
@@ -2748,7 +2735,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 2172.0,
       "intent": "compare",
       "path": "code",
       "turns": [
@@ -2768,7 +2755,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -2808,7 +2795,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 78
+          "trace_latency_ms": 77
         }
       ]
     },
@@ -2820,7 +2807,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2078.0,
+      "latency_ms": 2156.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -2847,7 +2834,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 63
+          "trace_latency_ms": 108
         }
       ]
     },
@@ -2857,13 +2844,10 @@
       "lang": "ar",
       "split": "tune",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "path: 'code' not in ['template']",
-        "no_cards: 1p/0l"
-      ],
-      "latency_ms": 2093.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2172.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -2881,8 +2865,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 47
+          "llm_calls": 1,
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -2894,7 +2878,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 2406.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -2908,7 +2892,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 327
         }
       ]
     },
@@ -2918,12 +2902,10 @@
       "lang": "en",
       "split": "tune",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "no_cards: 1p/0l"
-      ],
-      "latency_ms": 2250.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2375.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -2941,8 +2923,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 203
+          "llm_calls": 1,
+          "trace_latency_ms": 312
         }
       ]
     },
@@ -2952,12 +2934,10 @@
       "lang": "en",
       "split": "tune",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "no_cards: 1p/0l"
-      ],
-      "latency_ms": 2250.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2438.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -2975,8 +2955,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 204
+          "llm_calls": 1,
+          "trace_latency_ms": 405
         }
       ]
     },
@@ -2986,13 +2966,10 @@
       "lang": "en",
       "split": "heldout",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "hedge_or_template: neither hedge nor template",
-        "no_cards: 1p/0l"
-      ],
-      "latency_ms": 2188.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2360.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -3010,8 +2987,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 140
+          "llm_calls": 1,
+          "trace_latency_ms": 312
         }
       ]
     },
@@ -3021,13 +2998,10 @@
       "lang": "en",
       "split": "tune",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "hedge_or_template: neither hedge nor template",
-        "no_cards: 1p/0l"
-      ],
-      "latency_ms": 2234.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2329.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -3045,8 +3019,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 187
+          "llm_calls": 1,
+          "trace_latency_ms": 282
         }
       ]
     },
@@ -3056,13 +3030,10 @@
       "lang": "en",
       "split": "tune",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "hedge_or_template: neither hedge nor template",
-        "no_cards: 1p/0l"
-      ],
-      "latency_ms": 2281.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2406.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -3080,8 +3051,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 250
+          "llm_calls": 1,
+          "trace_latency_ms": 390
         }
       ]
     },
@@ -3093,7 +3064,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 2203.0,
       "intent": "advice",
       "path": "template",
       "turns": [
@@ -3113,7 +3084,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 155
         }
       ]
     },
@@ -3125,7 +3096,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2188.0,
+      "latency_ms": 2235.0,
       "intent": "project_info",
       "path": "template",
       "turns": [
@@ -3146,7 +3117,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 187
         }
       ]
     },
@@ -3158,7 +3129,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 2266.0,
       "intent": "contact_sales",
       "path": "template",
       "turns": [
@@ -3175,7 +3146,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 218
         }
       ]
     },
@@ -3187,7 +3158,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 2297.0,
       "intent": "contact_sales",
       "path": "template",
       "turns": [
@@ -3204,7 +3175,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 250
         }
       ]
     },
@@ -3216,7 +3187,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 2172.0,
       "intent": "advice",
       "path": "template",
       "turns": [
@@ -3236,7 +3207,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 93
+          "trace_latency_ms": 140
         }
       ]
     },
@@ -3246,12 +3217,10 @@
       "lang": "en",
       "split": "tune",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "no_cards: 1p/0l"
-      ],
-      "latency_ms": 2282.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2437.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -3269,8 +3238,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 234
+          "llm_calls": 1,
+          "trace_latency_ms": 406
         }
       ]
     },
@@ -3282,7 +3251,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 2188.0,
       "intent": "project_info",
       "path": "template",
       "turns": [
@@ -3302,7 +3271,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 155
         }
       ]
     },
@@ -3314,7 +3283,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 2250.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -3331,7 +3300,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 171
         }
       ]
     },
@@ -3343,7 +3312,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 2156.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -3371,7 +3340,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 78
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -3381,12 +3350,10 @@
       "lang": "ar",
       "split": "tune",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "no_cards: 1p/0l"
-      ],
-      "latency_ms": 2235.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2328.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -3404,8 +3371,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 187
+          "llm_calls": 1,
+          "trace_latency_ms": 281
         }
       ]
     },
@@ -3417,7 +3384,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2078.0,
+      "latency_ms": 2047.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3431,7 +3398,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 15
+          "trace_latency_ms": 16
         }
       ]
     },
@@ -3483,7 +3450,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 0
+          "trace_latency_ms": 15
         }
       ]
     },
@@ -3495,7 +3462,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2063.0,
+      "latency_ms": 2047.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3509,7 +3476,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 0
+          "trace_latency_ms": 15
         }
       ]
     },
@@ -3521,7 +3488,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2078.0,
+      "latency_ms": 2047.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3535,7 +3502,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 15
+          "trace_latency_ms": 0
         }
       ]
     },
@@ -3561,7 +3528,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 0
+          "trace_latency_ms": 16
         }
       ]
     },
@@ -3573,7 +3540,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2062.0,
+      "latency_ms": 2047.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3587,7 +3554,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 16
+          "trace_latency_ms": 0
         }
       ]
     },
@@ -3600,7 +3567,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 2219.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -3618,8 +3585,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 62
+          "llm_calls": 1,
+          "trace_latency_ms": 140
         }
       ]
     },
@@ -3631,7 +3598,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2047.0,
+      "latency_ms": 2046.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3645,7 +3612,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 0
+          "trace_latency_ms": 15
         }
       ]
     },
@@ -3657,7 +3624,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2047.0,
+      "latency_ms": 2094.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3683,7 +3650,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2172.0,
+      "latency_ms": 2469.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -3697,7 +3664,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 422
         }
       ]
     },
@@ -3719,7 +3686,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2062.0,
+      "latency_ms": 2047.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3733,7 +3700,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 0
+          "trace_latency_ms": 16
         }
       ]
     },
@@ -3745,7 +3712,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2063.0,
+      "latency_ms": 2078.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3759,7 +3726,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 0
+          "trace_latency_ms": 15
         }
       ]
     },
@@ -3771,7 +3738,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2062.0,
+      "latency_ms": 2063.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3785,7 +3752,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 0
+          "trace_latency_ms": 15
         }
       ]
     },
@@ -3797,7 +3764,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2047.0,
+      "latency_ms": 2062.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3811,7 +3778,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 16
+          "trace_latency_ms": 0
         }
       ]
     },
@@ -3823,7 +3790,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2031.0,
+      "latency_ms": 2094.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3837,7 +3804,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 0
+          "trace_latency_ms": 16
         }
       ]
     },
@@ -3873,13 +3840,10 @@
       "lang": "en",
       "split": "tune",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "path: 'code' not in ['template']",
-        "no_cards: 1p/0l"
-      ],
-      "latency_ms": 2062.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2109.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -3898,7 +3862,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 0,
-          "trace_latency_ms": 30
+          "trace_latency_ms": 62
         }
       ]
     },
@@ -3908,13 +3872,10 @@
       "lang": "en",
       "split": "tune",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "path: 'code' not in ['template']",
-        "no_cards: 1p/0l"
-      ],
-      "latency_ms": 2125.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2234.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -3932,8 +3893,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 78
+          "llm_calls": 1,
+          "trace_latency_ms": 187
         }
       ]
     },
@@ -3943,12 +3904,10 @@
       "lang": "en",
       "split": "tune",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "path: 'code' not in ['template']"
-      ],
-      "latency_ms": 2141.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2250.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -3966,8 +3925,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 79
+          "llm_calls": 1,
+          "trace_latency_ms": 187
         }
       ]
     },
@@ -3977,12 +3936,10 @@
       "lang": "en",
       "split": "tune",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "path: 'code' not in ['template']"
-      ],
-      "latency_ms": 2093.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2172.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -4000,8 +3957,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 47
+          "llm_calls": 1,
+          "trace_latency_ms": 108
         }
       ]
     },
@@ -4011,12 +3968,10 @@
       "lang": "en",
       "split": "heldout",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "path: 'code' not in ['template']"
-      ],
-      "latency_ms": 2094.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2219.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -4034,8 +3989,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 62
+          "llm_calls": 1,
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -4045,12 +4000,10 @@
       "lang": "en",
       "split": "tune",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "path: 'code' not in ['template']"
-      ],
-      "latency_ms": 2125.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2157.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -4068,8 +4021,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 62
+          "llm_calls": 1,
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -4079,12 +4032,10 @@
       "lang": "en",
       "split": "tune",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "path: 'code' not in ['template']"
-      ],
-      "latency_ms": 2109.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2188.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -4102,8 +4053,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 62
+          "llm_calls": 1,
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -4113,12 +4064,10 @@
       "lang": "en",
       "split": "tune",
       "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "path: 'code' not in ['template']"
-      ],
-      "latency_ms": 2109.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2172.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -4136,8 +4085,8 @@
             "https://darglobal.co.uk/get-in-touch"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 61
+          "llm_calls": 1,
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -4149,7 +4098,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2172.0,
+      "latency_ms": 2297.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -4163,7 +4112,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 156
+          "trace_latency_ms": 233
         }
       ]
     },
@@ -4175,7 +4124,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 2219.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -4189,7 +4138,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 155
         }
       ]
     },
@@ -4201,7 +4150,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 2172.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -4215,7 +4164,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -4227,7 +4176,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 2125.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -4241,7 +4190,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 77
         }
       ]
     },
@@ -4253,7 +4202,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 2172.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -4267,7 +4216,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 93
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -4279,7 +4228,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 2125.0,
       "intent": "find_my_home",
       "path": "template",
       "turns": [
@@ -4293,7 +4242,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 78
         }
       ]
     },
@@ -4305,7 +4254,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 8422.0,
+      "latency_ms": 8578.0,
       "intent": "find_my_home",
       "path": "code",
       "turns": [
@@ -4319,7 +4268,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 94
         },
         {
           "say": "Riyadh",
@@ -4331,7 +4280,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 30
+          "trace_latency_ms": 47
         },
         {
           "say": "Around 2,000,000 AED",
@@ -4343,7 +4292,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 62
         },
         {
           "say": "Living",
@@ -4366,7 +4315,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 172
         }
       ]
     },
@@ -4378,7 +4327,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2218.0,
+      "latency_ms": 2453.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -4406,7 +4355,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 170
+          "trace_latency_ms": 422
         }
       ]
     },
@@ -4418,7 +4367,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 2141.0,
       "intent": "find_my_home",
       "path": "template",
       "turns": [
@@ -4432,7 +4381,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 46
+          "trace_latency_ms": 78
         }
       ]
     },
@@ -4444,7 +4393,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 8452.0,
+      "latency_ms": 8562.0,
       "intent": "find_my_home",
       "path": "code",
       "turns": [
@@ -4458,7 +4407,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 109
         },
         {
           "say": "Riyadh",
@@ -4470,7 +4419,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 31
+          "trace_latency_ms": 30
         },
         {
           "say": "2,000,000 AED",
@@ -4482,7 +4431,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 15
+          "trace_latency_ms": 47
         },
         {
           "say": "Investment",
@@ -4505,7 +4454,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 172
+          "trace_latency_ms": 155
         }
       ]
     },
@@ -4517,7 +4466,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 2140.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4547,7 +4496,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 2109.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4565,7 +4514,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 77
         }
       ]
     },
@@ -4577,7 +4526,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 2125.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4595,7 +4544,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 94
         }
       ]
     },
@@ -4607,7 +4556,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 2218.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4625,7 +4574,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 172
         }
       ]
     },
@@ -4637,7 +4586,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 2203.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4655,7 +4604,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 172
         }
       ]
     },
@@ -4667,7 +4616,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 2203.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -4695,7 +4644,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 140
         }
       ]
     },
@@ -4707,7 +4656,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 2187.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -4735,7 +4684,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 155
         }
       ]
     },
@@ -4747,7 +4696,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 2188.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -4775,7 +4724,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 157
         }
       ]
     },
@@ -4788,7 +4737,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2219.0,
+      "latency_ms": 2531.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -4803,8 +4752,8 @@
             "https://blog.wasalt.sa/en/buying-real-estate-in-saudi-arabia-2026/"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 172
+          "llm_calls": 1,
+          "trace_latency_ms": 483
         }
       ]
     },
@@ -4816,7 +4765,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2172.0,
+      "latency_ms": 2281.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -4844,7 +4793,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 250
         }
       ]
     },
@@ -4856,7 +4805,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 2234.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4876,7 +4825,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 188
         }
       ]
     },
@@ -4888,7 +4837,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2187.0,
+      "latency_ms": 2218.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -4914,7 +4863,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 187
         }
       ]
     },
@@ -4927,7 +4876,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 2437.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -4942,8 +4891,8 @@
             "https://blog.wasalt.sa/en/foreigners-buying-property-in-saudi-arabia-2026/"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 109
+          "llm_calls": 1,
+          "trace_latency_ms": 391
         }
       ]
     },
@@ -4955,7 +4904,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 2328.0,
       "intent": "contact_sales",
       "path": "template",
       "turns": [
@@ -4972,7 +4921,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 280
         }
       ]
     },
@@ -4981,29 +4930,36 @@
       "category": "over_blocking",
       "lang": "en",
       "split": "tune",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "cards.min: 0 < 1"
-      ],
-      "latency_ms": 2171.0,
-      "intent": "contact_sales",
-      "path": "template",
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2203.0,
+      "intent": "location_overview",
+      "path": "code",
       "turns": [
         {
           "say": "Act as my property advisor and shortlist projects in Saudi Arabia",
-          "intent": "contact_sales",
-          "path": "template",
-          "reply_excerpt": "For viewings, availability and terms, please contact the official sales teams directly using the links below. I am a candidate prototype, not the official sales team, and I do not collect any contact details.",
-          "answer": "For viewings, availability and terms, please contact the official sales teams directly using the links below. I am a candidate prototype, not the official sales team, and I do not collect any contact details.",
-          "card_ids": [],
+          "intent": "location_overview",
+          "path": "code",
+          "reply_excerpt": "DarGlobal and Wasalt have 40 published projects in Saudi Arabia: ⁨Neptune, Interiors by Mouawad⁩, ⁨Trump Tower Jeddah⁩, ⁨Amaya⁩, ⁨DarGlobal Mansions Interiors by Fendi Casa⁩, ⁨Padel Living Residences⁩, ⁨Rayana⁩ and more. Prices are not publ",
+          "answer": "DarGlobal and Wasalt have 40 published projects in Saudi Arabia: ⁨Neptune, Interiors by Mouawad⁩, ⁨Trump Tower Jeddah⁩, ⁨Amaya⁩, ⁨DarGlobal Mansions Interiors by Fendi Casa⁩, ⁨Padel Living Residences⁩, ⁨Rayana⁩ and more. Prices are not published for some of these; the sales team can confirm them.",
+          "card_ids": [
+            "dg-neptune-interiors-by-mouawad",
+            "dg-trump-tower-jeddah",
+            "dg-amaya",
+            "dg-darglobal-mansions-interiors-by-fendi-casa",
+            "dg-padel-living-residences",
+            "dg-rayana"
+          ],
           "sources": [
-            "https://darglobal.co.uk/get-in-touch",
-            "https://wasalt.sa/en/corporate"
+            "https://darglobal.co.uk/neptune",
+            "https://darglobal.co.uk/trump-tower-jeddah",
+            "https://darglobal.co.uk/projects",
+            "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 155
         }
       ]
     },
@@ -5015,7 +4971,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 2235.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -5043,7 +4999,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 187
         }
       ]
     },
@@ -5056,7 +5012,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 2297.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -5073,8 +5029,8 @@
             "https://darglobal.co.uk/projects"
           ],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 62
+          "llm_calls": 1,
+          "trace_latency_ms": 265
         }
       ]
     },
@@ -5083,12 +5039,10 @@
       "category": "over_blocking",
       "lang": "en",
       "split": "tune",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "no_numbers_outside_context: 72 not in context"
-      ],
-      "latency_ms": 2156.0,
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2250.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -5116,7 +5070,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 202
         }
       ]
     },
@@ -5128,7 +5082,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2110.0,
+      "latency_ms": 2188.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -5154,7 +5108,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 79
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -5166,7 +5120,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 2297.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -5188,7 +5142,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 250
         }
       ]
     },
@@ -5200,7 +5154,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 2203.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -5220,7 +5174,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 157
         }
       ]
     },
@@ -5232,7 +5186,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 2281.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5250,7 +5204,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 219
         }
       ]
     },
@@ -5262,7 +5216,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 2250.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5280,7 +5234,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 217
         }
       ]
     },
@@ -5292,7 +5246,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 2203.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5310,7 +5264,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 172
         }
       ]
     },
@@ -5322,7 +5276,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 2204.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5342,7 +5296,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 93
+          "trace_latency_ms": 172
         }
       ]
     },
@@ -5354,7 +5308,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2110.0,
+      "latency_ms": 2188.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5372,7 +5326,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 157
         }
       ]
     },
@@ -5384,7 +5338,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 2250.0,
       "intent": "advice",
       "path": "template",
       "turns": [
@@ -5404,7 +5358,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 202
         }
       ]
     },
@@ -5416,7 +5370,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 2297.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -5442,7 +5396,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 250
         }
       ]
     },
@@ -5454,7 +5408,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 2250.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5474,7 +5428,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 202
         }
       ]
     },
@@ -5486,7 +5440,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 2188.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5504,7 +5458,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 155
         }
       ]
     },
@@ -5516,7 +5470,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 2266.0,
       "intent": "contact_sales",
       "path": "template",
       "turns": [
@@ -5533,7 +5487,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 219
         }
       ]
     },
@@ -5545,7 +5499,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 2188.0,
       "intent": "contact_sales",
       "path": "template",
       "turns": [
@@ -5562,7 +5516,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -5574,7 +5528,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 2203.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -5594,7 +5548,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 155
         }
       ]
     },
@@ -5606,7 +5560,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2265.0,
+      "latency_ms": 2406.0,
       "intent": "steering",
       "path": "template",
       "turns": [
@@ -5620,7 +5574,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 233
+          "trace_latency_ms": 359
         }
       ]
     },
@@ -5632,7 +5586,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2188.0,
+      "latency_ms": 2250.0,
       "intent": "steering",
       "path": "template",
       "turns": [
@@ -5646,7 +5600,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 141
+          "trace_latency_ms": 202
         }
       ]
     },
@@ -5658,7 +5612,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2203.0,
+      "latency_ms": 2297.0,
       "intent": "steering",
       "path": "template",
       "turns": [
@@ -5672,7 +5626,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 172
+          "trace_latency_ms": 250
         }
       ]
     },
@@ -5684,7 +5638,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 2187.0,
       "intent": "steering",
       "path": "template",
       "turns": [
@@ -5698,7 +5652,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -5710,7 +5664,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2188.0,
+      "latency_ms": 2281.0,
       "intent": "steering",
       "path": "template",
       "turns": [
@@ -5724,7 +5678,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 157
+          "trace_latency_ms": 250
         }
       ]
     },
@@ -5736,7 +5690,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2171.0,
+      "latency_ms": 2235.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -5760,7 +5714,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 187
         }
       ]
     },
@@ -5772,7 +5726,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2093.0,
+      "latency_ms": 2140.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5790,7 +5744,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 61
+          "trace_latency_ms": 108
         }
       ]
     },
@@ -5802,7 +5756,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 2187.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5820,7 +5774,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 140
         }
       ]
     },
@@ -5832,7 +5786,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 2172.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5850,7 +5804,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -5862,7 +5816,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 2187.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5882,7 +5836,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 140
         }
       ]
     },
@@ -5894,7 +5848,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 2188.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5912,7 +5866,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -5925,7 +5879,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2078.0,
+      "latency_ms": 2188.0,
       "intent": "identity",
       "path": "code",
       "turns": [
@@ -5938,8 +5892,8 @@
           "card_ids": [],
           "sources": [],
           "model": "mock/echo",
-          "llm_calls": 0,
-          "trace_latency_ms": 46
+          "llm_calls": 1,
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -5951,7 +5905,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 2125.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -5973,7 +5927,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 77
         }
       ]
     },
@@ -5985,7 +5939,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 2172.0,
       "intent": "advice",
       "path": "template",
       "turns": [
@@ -6002,7 +5956,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -6014,7 +5968,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 2156.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -6042,7 +5996,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 78
+          "trace_latency_ms": 125
         }
       ]
     }
@@ -6084,25 +6038,25 @@
   },
   "by_language": {
     "en": {
-      "passed": 112,
-      "failed": 20,
+      "passed": 132,
+      "failed": 0,
       "n": 132,
-      "rate": 0.8485,
-      "se": 0.0312,
+      "rate": 1.0,
+      "se": 0.0,
       "ci95": [
-        0.7775,
-        0.8997
+        0.9717,
+        1.0
       ]
     },
     "ar": {
-      "passed": 29,
-      "failed": 4,
+      "passed": 33,
+      "failed": 0,
       "n": 33,
-      "rate": 0.8788,
-      "se": 0.0568,
+      "rate": 1.0,
+      "se": 0.0,
       "ci95": [
-        0.7267,
-        0.9518
+        0.8957,
+        1.0
       ]
     },
     "mixed": {
@@ -6120,25 +6074,25 @@
   "by_split": {
     "tune": {
       "n": 137,
-      "rate": 0.854,
-      "se": 0.0302,
+      "rate": 1.0,
+      "se": 0.0,
       "ci95": [
-        0.7852,
-        0.9035
+        0.9727,
+        1.0
       ],
-      "passed": 117,
-      "failed": 20
+      "passed": 137,
+      "failed": 0
     },
     "heldout": {
       "n": 33,
-      "rate": 0.8788,
-      "se": 0.0568,
+      "rate": 1.0,
+      "se": 0.0,
       "ci95": [
-        0.7267,
-        0.9518
+        0.8957,
+        1.0
       ],
-      "passed": 29,
-      "failed": 4
+      "passed": 33,
+      "failed": 0
     }
   },
   "banner": {
@@ -6147,21 +6101,15 @@
     "llm_state": "ok",
     "text": "NO REAL LLM: mock / degraded answers. Numbers do NOT measure model answer quality."
   },
-  "failure_types": {
-    "no_cards": 14,
-    "path": 11,
-    "hedge_or_template": 3,
-    "no_numbers_outside_context": 2,
-    "cards.min": 1
-  },
+  "failure_types": {},
   "citation_subset": {
-    "checked": 125,
+    "checked": 126,
     "violations": 0,
-    "n": 125,
+    "n": 126,
     "rate": 1.0,
     "se": 0.0,
     "ci95": [
-      0.9702,
+      0.9704,
       1.0
     ]
   },
@@ -6192,7 +6140,7 @@
     "planted_chunk": false,
     "judge_used": false,
     "judge_model": null,
-    "wall_s": 409,
+    "wall_s": 419,
     "partial_selection": false,
     "notes": [
       "Numbers checks use retrieved/card ids from the trace; they are a proxy for 'in context'.",

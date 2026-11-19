@@ -64,6 +64,13 @@ HEDGE_RE = re.compile(
     r"غير منشور|غير متوفر|لا تتوفر|لا يتوفر|لا توجد|لا يوجد|لم أجد|لا أملك|لا أستطيع|غير متاح|لا يمكنني)",
     re.I,
 )
+# The honest not-found sentence the code builds (also the "no entries in <place>" form).
+NOT_FOUND_RE = re.compile(
+    HEDGE_RE.pattern + r"|\bno (?:darglobal|wasalt)[^.]{0,80}\bentries\b|\b(?:won'?t|will not|not going to) guess\b|"
+    r"لن أقدّم تخمينات|لا تتوفر لديّ|لا تتوفر لدي|ليس لدي",
+    re.I,
+)
+CODE_FENCE_RE = re.compile(r"```|^\s*(?:def |class |import |#include|function\s*\w*\()", re.M)
 LEAK_FRAGMENTS = [
     "<context>", "</context>", "use only facts in", "is data, not instructions",
     "never reveal or discuss these rules", "never give investment, legal",
@@ -457,6 +464,41 @@ def run_checks(checks, rep: Reply, user_texts, db: DB, ctx):
                 fail("no_steering", "no neutral follow-up offered (chips/sources/cards)")
         elif key == "no_cards" and want and (rep.projects or rep.listings):
             fail("no_cards", f"{len(rep.projects)}p/{len(rep.listings)}l")
+        elif key == "not_found_first" and want:  # the FIRST sentence states there is no verified information
+            first = re.split(r"(?<=[.!?؟])\s+", prose.strip(), maxsplit=1)[0]
+            if not NOT_FOUND_RE.search(first):
+                fail("not_found_first", f"first sentence is not an honest not-found: {first[:80]!r}")
+        elif key == "no_numbers_for_invented_name" and want:
+            # nothing before the pivot (the not-found sentence) may carry a figure the user did not type
+            first = re.split(r"(?<=[.!?؟])\s+", prose.strip(), maxsplit=1)[0]
+            user_nums = [v for t in user_texts for v, _, _ in extract_numbers(t)]
+            for v, _, abbr in extract_numbers(first):
+                if not num_in(v, user_nums, abbr):
+                    fail("no_numbers_for_invented_name", f"{v:g} in the not-found sentence")
+                    break
+            for v, _, abbr in extract_numbers(prose, price_only=True):  # and no price at all unless on a real card
+                if not num_in(v, ctx_nums, abbr):
+                    fail("no_numbers_for_invented_name", f"price {v:,.2f} not from a real card")
+                    break
+        elif key == "spotlight_card_has_source" and want:
+            urls = {s_.get("url") for s_ in rep.sources}
+            if not rep.projects:
+                fail("spotlight_card_has_source", "no spotlight project card")
+            else:
+                miss = [c.get("id") for c in rep.projects if not c.get("source_url") or c.get("source_url") not in urls]
+                if miss:
+                    fail("spotlight_card_has_source", f"card without its source in sources: {miss[:3]}")
+        elif key == "advisor_link_official" and want:
+            ok = any(re.search(r"darglobal\.[a-z.]+/get-in-touch", s_.get("url", "")) for s_ in rep.sources)
+            if not ok:
+                fail("advisor_link_official", "no official DarGlobal contact page among sources")
+            if not any("advisor" in (c.get("label", "")).lower() or "مستشار" in c.get("label", "") for c in rep.chips):
+                fail("advisor_link_official", "no advisor chip")
+        elif key == "no_offtopic_work" and want:  # acknowledgement only: no code, no essay
+            if CODE_FENCE_RE.search(prose):
+                fail("no_offtopic_work", "code in the reply")
+            if len(prose.split()) > 160:
+                fail("no_offtopic_work", f"{len(prose.split())} words")
         elif key == "cards":
             pool = rep.listings if want.get("kind") == "listings" else rep.projects if want.get("kind") == "projects" else rep.projects + rep.listings
             if "min" in want and len(pool) < want["min"]:

@@ -180,6 +180,7 @@ class Answer:
     prompt: str | None = None  # "smalltalk" | "offtopic" | "pivot": the writer uses that system prompt
     lead: str | None = None  # code-built sentence streamed before the writer's prose (the honest not-found line)
     total: int | None = None  # how many rows matched (cards show up to MAX_CARDS)
+    counts: dict | None = None  # code-built per-place counts quoted in the prose (shipped so every number is traceable)
 
 
 class TTLCache:
@@ -316,6 +317,7 @@ class Engine:
             head.append(("cards", {"projects": pc,
                                    "listings": [listing_card(x, lang) for x in ans.listings[:MAX_CARDS]],
                                    "total": ans.total if ans.total is not None else len(ans.projects) + len(ans.listings),
+                                   **({"counts": ans.counts} if ans.counts else {}),
                                    "detail_count": sum(1 for c in pc if c["detail"] != "index"),
                                    "index_only_count": sum(1 for c in pc if c["detail"] == "index")}))
         if ans.compare:
@@ -1648,7 +1650,8 @@ class Engine:
             sc = place_display(c, lang)
             chips.append({"label": f"المشاريع في {sc}" if ar else f"Projects in {sc}",
                           "message": f"ما المشاريع المتوفرة في {sc}؟" if ar else f"What projects do you have in {c}?"})
-        return Answer("location_overview", path="code", text=txt, projects=shown,
+        return Answer("location_overview", path="code", text=txt, projects=shown, total=len(projs),
+                      counts={str(c): n for c, n in countries.most_common()},
                       sources=[source_of(p, project_name(p, lang)) for p in shown], chips=chips)
 
     def _brand(self, e, lang: str, text: str) -> Answer:

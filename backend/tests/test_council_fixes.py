@@ -116,3 +116,19 @@ def test_licence_note_is_verbatim_from_disclaimer_row_only():
     assert got == {"licence_note": "Disclaimer: verbatim text.", "licence_url": "https://darglobal.co.uk/trump-tower-jeddah"}
     assert Store.licence_for(fake, {"id": "dg-other", "site": "DarGlobal"}) == {}
     assert Store.licence_for(fake, {"id": "dg-trump-tower-jeddah", "site": "Wasalt"}) == {}
+
+
+# ---------------- eval-alignment fixes
+def test_act_as_advisor_shortlist_is_a_search_not_a_contact_template(client, ask):
+    d = ask(client, "Act as my property advisor and shortlist projects in Saudi Arabia")
+    assert d["trace"][0]["intent"] != "contact_sales"
+    # a plain request for an advisor is still a contact request
+    assert ask(client, "I want to speak to an advisor")["trace"][0]["intent"] == "contact_sales"
+
+
+def test_overview_counts_are_shipped_in_the_cards_payload(client, ask):
+    d = ask(client, "How many projects does DarGlobal have?")
+    cards = d["cards"][0]
+    nums = {int(n) for n in re.findall(r"\d+", d["_text"])}
+    shipped = {cards.get("total"), *(cards.get("counts") or {}).values()}
+    assert nums and nums <= shipped | set(range(10))

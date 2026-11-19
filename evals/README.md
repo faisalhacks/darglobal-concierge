@@ -17,3 +17,6 @@ for bound cases; without it they are reported as skipped, never passed.
 - `make_report.py` regenerates `REPORT.md` and the README numbers block from result files only (`--check` for staleness).
 - Runner flags added: `--max-llm-calls N` (hard stop; required when the target reports llm.mode=live; judge is off in live runs), `--split tune|heldout`, `--llm-mode`. Result file adds `targets.*.ci95/n`, `by_language`, `by_split`, `run_context.llm_mode`; `live_subset.json` and `E1.json` are attached to `latest.json` by the next full mock run.
 - `results/INVALID_db_swapped_mid_run_*.json`: a run whose database was replaced by the data lane mid-run; kept for transparency, never used.
+
+## One source of truth
+`results/latest.json` feeds `/api/evals` (baked into the image), REPORT.md and the README blocks (`make_report.py`). `python evals/make_report.py --check [--url https://APP] [--final]` fails on stale output, mismatched dataset ids, "all ... pass" claims the run contradicts, and (with `--final`) unfilled deploy placeholders. E1 now runs through `evals/e1_adapter.py` (`backend/.venv/Scripts/python evals/experiments.py --only E1`; no model calls) and records the dataset id it was measured on. See docs/DEPLOY.md for the order of steps.

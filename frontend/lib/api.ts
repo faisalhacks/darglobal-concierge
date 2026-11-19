@@ -12,7 +12,15 @@ export const getMeta = (signal?: AbortSignal) => getJSON<ApiMeta>("/api/meta", s
 
 /** Only official domains, plus the two named third-party sources the dataset cites (always labelled as such, never as
  * DarGlobal), become clickable links (SPEC §18). */
-const ALLOWED = ["darglobal.co.uk", "darglobal.com", "wasalt.sa", "wasalt.com", "ticker.app", "thenationalnews.com"];
+const OFFICIAL = ["darglobal.co.uk", "darglobal.com", "wasalt.sa", "wasalt.com"];
+// The third-party public sources the dataset actually cites (filings and press), each shown with its own label.
+const THIRD_PARTY = [
+  "ticker.app", "thenationalnews.com", "zawya.com", "gulfconstructiononline.com", "prnewswire.com", "omanobserver.om",
+  "gulfnews.com", "aap.com.au", "meconstructionnews.com", "arabnews.pk", "arabnews.com", "hospitalitynet.org",
+  "khaleejtimes.com", "english.aawsat.com", "londonlovesproperty.com", "idealista.com", "clydeco.com", "qna.org.qa",
+  "thepeninsulaqatar.com",
+];
+const ALLOWED = [...OFFICIAL, ...THIRD_PARTY];
 export function safeUrl(url: string | null | undefined): string | null {
   if (!url) return null;
   try {

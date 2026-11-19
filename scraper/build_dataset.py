@@ -478,12 +478,13 @@ def dg_fact_text(p: Project, x: dict) -> tuple[str, str]:
         ar = (f"المشروع: {name}. المطور: دار جلوبال. الموقع حسب مصادر خارجية: {p.city or 'غير منشور'}، {country_ar}. "
               + tp_ar + "السعر: غير منشور من دار جلوبال.")
         return en, ar
+    city_en = (f"City: {p.city} ({x['city_note']}). " if x.get("city_note") else "")
     if x.get("dg_source_url", p.source_url) == dgm.INDEX_URL:
         if x.get("country_note"):
             cn = f" ({x['country_note']})"
         else:
             cn = "" if p.country else " (country not stated)"
-        en = (f"Project: {name}. Developer: DarGlobal. Location (as published): {loc_pub}{cn}. "
+        en = (f"Project: {name}. Developer: DarGlobal. Location (as published): {loc_pub}{cn}. " + city_en
               + (f"Brand partner: {p.brand_partner}. " if p.brand_partner else "")
               + (f"Card text: {x['card_caption']}. " if x.get("card_caption") else "")
               + "Listed on the DarGlobal projects page (darglobal.co.uk/projects); detail page not collected. "
@@ -497,13 +498,16 @@ def dg_fact_text(p: Project, x: dict) -> tuple[str, str]:
         area = (area + "; " if area else "") + f"text: {x['area_text_sqm']}"
     en = (f"Project: {name}. Developer: DarGlobal. "
           + (f"Brand partner: {p.brand_partner}. " if p.brand_partner else "")
-          + f"Location: {loc_pub}. "
-          f"Property type: {', '.join(p.property_types) or 'Not published'}. "
+          + f"Location: {loc_pub}. " + city_en
+          + (f"Location on the page: {x['location_label']}. " if x.get("location_label") else "")
+          + f"Property type: {', '.join(p.property_types) or 'Not published'}. "
           f"Status: {p.status or 'Not published'}. "
           f"Units: {', '.join(p.unit_types) or 'Not published'}. "
           f"Area as published: {area or 'Not published'}"
           + (f" (unit areas {p.area_min_m2:g}-{p.area_max_m2:g} m2)" if p.area_min_m2 else "") + ". "
-          + (f"Handover year: {p.handover_year} (as stated on the page). " if p.handover_year else "")
+          + (f"Completion: {x['handover_text']} (as stated on the page). " if x.get("handover_text") else
+             f"Handover year: {p.handover_year} (as stated on the page). " if p.handover_year else "")
+          + (f"Map position published on the page: {p.lat:g}, {p.lng:g}. " if x.get("geo_note") and p.lat else "")
           + (f"Featuring: {x['featuring']}. " if x.get("featuring") else "")
           + "Price: not published by DarGlobal.")
     ar = (f"المشروع: {name}. المطور: دار جلوبال. الموقع: {p.city or 'غير منشور'}، {country_ar}. "
@@ -691,7 +695,18 @@ def build():
         dg_extra[pid] = {"location_published": r.get("location_published"), "card_caption": r.get("card_caption"),
                          "area_published": r.get("area_published"), "area_text_sqm": r.get("area_text_sqm"),
                          "featuring": r.get("featuring"), "dg_source_url": r.get("dg_source_url", r["source_url"]),
-                         "sections": [(sec, strip_pii(t)) for sec, t in r.get("sections") or [] if strip_pii(t)]}
+                         "city_note": r.get("city_note"), "handover_text": r.get("handover_text"),
+                         "location_label": r.get("location_label") if r.get("disclaimers") is not None else None,
+                         "geo_note": r.get("lat") is not None and r.get("disclaimers") is not None,
+                         "disclaimers": r.get("disclaimers") or [],
+                         "sections": [(sec, strip_pii(t)) for sec, t in r.get("sections") or [] if strip_pii(t)]
+                         + [("Disclaimer (verbatim from the DarGlobal page)", t) for t in r.get("disclaimers") or []]}
+        page_url = r.get("dg_source_url", r["source_url"])
+        for i, t in enumerate(r.get("disclaimers") or []):
+            gid = f"darglobal-pg-disclaimer-{r['slug']}" + (f"-{i}" if i else "")
+            pages[gid] = Page(id=gid, site="DarGlobal", page_type="disclaimer",
+                              title=f"{r['name_en']} - disclaimer (verbatim from the DarGlobal page)",
+                              text=f"Disclaimer: {t}", lang="en", source_url=page_url, scraped_at=r["scraped_at"])
         if pid in tp_extra:
             tpx = tp_extra[pid]
             dg_extra[pid]["thirdparty"] = tpx
@@ -762,7 +777,8 @@ def write_db(path: Path, projects, listings, rent_freq, pages, version_tag: str 
         if tp:  # third-party facts: one chunk group per source, each citing that source's own URL
             for i, sc in enumerate(tp["source_chunks"]):
                 hdr = chunk_header(p.name_en, p.name_ar, p.city, p.country, p.site,
-                                   f"Third-party source - {sc['short']}, {dgt.human_date(sc['source_date'])}")
+                                   f"Third-party source - {sc.get('label') or sc['short']}, "
+                                   f"{dgt.human_date(sc['source_date'])}")
                 for j, c in enumerate(window_chunks(sc["text"], 300, 0.0)):
                     chunks.append(dict(id=f"{p.id}#tp-en-{i}-{j}", entity_type="project", entity_id=p.id, site=p.site,
                                        lang="en", text=hdr + c, city=p.city, country=p.country,
@@ -1025,6 +1041,22 @@ def main():
                                 "format": "{name_en} | {name_ar} | {city}, {country} | {site} | {section}: "},
               "contact_pages": [g.source_url for g in G if g.page_type == "contact"],
               "srp_site_counts": srp_counts, "gaps": gaps}
+    labels = {}
+    for pid in sorted(dg_extra):
+        tpx = dg_extra[pid].get("thirdparty")
+        if tpx:
+            labels.update(tpx["source_labels"])
+    for p in P:
+        if p.site == "DarGlobal" and p.source_url.startswith("https://darglobal.co.uk/"):
+            labels.setdefault(p.source_url, "DarGlobal")
+    (DATA / "source_labels.json").write_text(json.dumps(
+        {"dataset_version": version,
+         "note": "Origin label per source URL cited by DarGlobal rows/chunks. Third-party pages are labelled by their "
+                 "real publisher; Dar Global company releases hosted elsewhere are 'DarGlobal (via <publisher>)'; the "
+                 "Dar Global PLC results announcement is 'LSE filing (...)'. Only darglobal.co.uk pages are 'DarGlobal'.",
+         "labels": dict(sorted(labels.items()))}, indent=1, ensure_ascii=False), encoding="utf-8")
+    report["source_labels_n"] = len(labels)
+    report["disclaimer_pages"] = sorted(g.id for g in G if g.page_type == "disclaimer")
     (DATA / "build_report.json").write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding="utf-8")
     print(json.dumps({k: v for k, v in report.items() if k not in ("srp_site_counts",)}, indent=1, ensure_ascii=False))
     return 0 if not hits and not mini_hits else 1

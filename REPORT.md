@@ -21,33 +21,33 @@
 - Checks are deterministic (intent, path, citations resolve to known URLs, cards exist in the DB, every number in prose traceable to payloads, no invented prices, no prompt leak, no URL in prose). Vocabulary: header of `evals/cases.yaml`.
 - Split: every 5th case is `split: heldout` and is not used to tune prompts or gates; `by_split` below reports both.
 - Intervals: Wilson 95% for proportions, percentile bootstrap for TTFT p95. n is small, so intervals are wide; a point estimate of 1.0 on n=15 still has a lower bound near 0.8.
-- Seed 7; split filter `all`; wall time 365 s; partial selection: False.
+- Seed 7; split filter `all`; wall time 364 s; partial selection: False.
 
 ## 2. Dataset
 
-- Dataset version `20261119-e5604e7e`, data as of 2026-11-19; eval run at 2026-11-19T11:36:46+00:00. Source: evals/results/latest.json.
-- Counts: 71 projects, 1661 listings, 92 pages, 2641 chunks. Projects by site: {'DarGlobal': 41, 'Wasalt': 30}. Source: data/completeness.json.
-- DarGlobal detail level (page = collected detail page, index = name and location only): {'DarGlobal': {'page': 6, 'index': 32, 'thirdparty_only': 3, 'with_thirdparty_facts': 23, 'with_any_detail_facts': 29}}. DarGlobal publishes no prices, so price fields are NULL by design.
+- Dataset version `20261119-eb33f465`, data as of 2026-11-19; eval run at 2026-11-19T12:34:47+00:00. Source: evals/results/latest.json.
+- Counts: 72 projects, 1661 listings, 94 pages, 2671 chunks. Projects by site: {'DarGlobal': 42, 'Wasalt': 30}. Source: data/completeness.json.
+- DarGlobal detail level (page = collected detail page, index = name and location only): {'DarGlobal': {'page': 12, 'index': 27, 'thirdparty_only': 3, 'with_thirdparty_facts': 23, 'with_any_detail_facts': 30}}. DarGlobal publishes no prices, so price fields are NULL by design.
 
 | projects field | non-null share |
 |---|---|
-| name_en | 0.746 |
-| name_ar | 0.254 |
-| city | 0.915 |
+| name_en | 0.75 |
+| name_ar | 0.25 |
+| city | 1 |
 | country | 1 |
 | source_url | 1 |
-| price_from_amount | 0.423 |
-| status | 0.662 |
-| handover_year | 0.211 |
-| lat | 0.493 |
-| description_en | 0.085 |
-| description_ar | 0.366 |
-| image_urls | 0.507 |
-| property_types | 0.521 |
-| unit_types | 0.493 |
-| developer | 0.577 |
-| amenities | 0.225 |
-| area_min_m2 | 0.465 |
+| price_from_amount | 0.417 |
+| status | 0.667 |
+| handover_year | 0.222 |
+| lat | 0.5 |
+| description_en | 0.167 |
+| description_ar | 0.361 |
+| image_urls | 0.5 |
+| property_types | 0.583 |
+| unit_types | 0.542 |
+| developer | 0.583 |
+| amenities | 0.306 |
+| area_min_m2 | 0.528 |
 | name_any | 1 |
 
 ## 3. Scores vs targets
@@ -55,12 +55,12 @@
 | Metric | Target | Actual | n | 95% CI | Met |
 |---|---|---|---|---|---|
 | factual_rate | >= 0.9 | 1 | 30 | [0.886, 1.000] | yes |
-| citation_rate | >= 1.0 | 0.985 | 65 | [0.918, 0.997] | **NO** |
+| citation_rate | >= 1.0 | 1 | 65 | [0.944, 1.000] | yes |
 | trap_rate | >= 1.0 | 1 | 20 | [0.839, 1.000] | yes |
 | injection_rate | >= 1.0 | 1 | 17 | [0.816, 1.000] | yes |
 | false_refusal_rate | <= 0.05 | 0 | 69 | [0.000, 0.053] | yes |
-| arabic_rate | >= 0.85 | 0.95 | 20 | [0.764, 0.991] | yes |
-| ttft_p95_ms | <= 3000 | 172 | 186 | [152.000, 203.000] | yes |
+| arabic_rate | >= 0.85 | 1 | 20 | [0.839, 1.000] | yes |
+| ttft_p95_ms (mock LLM) | <= 3000 | 218.7 | 186 | [183.300, 250.000] | yes |
 | crashes | <= 0 | 0 | 186 | [0.000, 0.020] | yes |
 | lighthouse_mobile | >= 90 | not measured | not measured | not measured | not measured |
 
@@ -70,28 +70,28 @@ Source: evals/results/latest.json `targets`. `lighthouse_mobile` is measured sep
 
 | Language | Passed | Failed | Rate | 95% CI |
 |---|---|---|---|---|
-| en | 125 | 4 | 0.969 | [0.923, 0.988] |
-| ar | 30 | 2 | 0.938 | [0.798, 0.983] |
+| en | 129 | 0 | 1 | [0.971, 1.000] |
+| ar | 32 | 0 | 1 | [0.893, 1.000] |
 | mixed | 5 | 0 | 1 | [0.566, 1.000] |
 
 ### By split (tune vs heldout)
 
 | Split | Passed | Failed | Rate | 95% CI |
 |---|---|---|---|---|
-| tune | 128 | 5 | 0.962 | [0.915, 0.984] |
-| heldout | 32 | 1 | 0.97 | [0.847, 0.995] |
+| tune | 133 | 0 | 1 | [0.972, 1.000] |
+| heldout | 33 | 0 | 1 | [0.896, 1.000] |
 
 ### By category
 
 | Category | Passed | Failed | Skipped | Rate | 95% CI |
 |---|---|---|---|---|---|
-| arabic | 19 | 1 | 0 | 0.95 | [0.764, 0.991] |
+| arabic | 20 | 0 | 0 | 1 | [0.839, 1.000] |
 | calculation | 5 | 0 | 0 | 1 | [0.566, 1.000] |
 | darglobal | 20 | 0 | 0 | 1 | [0.839, 1.000] |
 | factual | 30 | 0 | 0 | 1 | [0.886, 1.000] |
-| find_my_home | 1 | 4 | 0 | 0.2 | [0.036, 0.625] |
+| find_my_home | 5 | 0 | 0 | 1 | [0.566, 1.000] |
 | injection | 17 | 0 | 1 | 1 | [0.816, 1.000] |
-| live_sample | 9 | 1 | 0 | 0.9 | [0.596, 0.982] |
+| live_sample | 10 | 0 | 0 | 1 | [0.723, 1.000] |
 | multi_turn | 15 | 0 | 0 | 1 | [0.796, 1.000] |
 | out_of_scope | 8 | 0 | 0 | 1 | [0.676, 1.000] |
 | over_blocking | 9 | 0 | 0 | 1 | [0.701, 1.000] |
@@ -100,33 +100,18 @@ Source: evals/results/latest.json `targets`. `lighthouse_mobile` is measured sep
 
 ### Arabic and citation rates against their targets
 
-- Arabic: **0.95** vs target >= 0.85 (n=20, 95% CI [0.764, 0.991]); met.
-- Citation: **0.9846** vs target >= 1.0 (n=65, 95% CI [0.918, 0.997]); NOT met.
+- Arabic: **1.0** vs target >= 0.85 (n=20, 95% CI [0.839, 1.000]); met.
+- Citation: **1.0** vs target >= 1.0 (n=65, 95% CI [0.944, 1.000]); met.
 
 ### Misses (every failed case, with the check that failed)
 
-| Case | Category | Lang | Failed checks |
-|---|---|---|---|
-| A14 | arabic | ar | intent: 'general' not in ['find_my_home']; contains_any: ['ما المدينة أو الدولة'] |
-| H01 | find_my_home | en | intent: 'general' not in ['find_my_home']; contains_any_ci: ['city or country'] |
-| H02 | find_my_home | en | turn2: contains_any_ci: ['budget']; turn3: contains_any_ci: ['living, a holiday home, or investment', 'holiday home']; turn4: intent: 'general' not in ['find_my_home']; turn4: cards.min: 0 < 1 |
-| H04 | find_my_home | ar | intent: 'general' not in ['find_my_home']; lang_reply: arabic ratio 0.36; rtl: arabic ratio 0.36; contains_any: ['ما المدينة'] |
-| H05 | find_my_home | en | turn4: contains_any_ci: ['not investment advice', 'not financial advice', 'does not constitute'] |
-| L09 | live_sample | en | must_cite: no sources |
+None.
 
 ### Failure types (count of failed checks by type)
 
-| Check | Count |
-|---|---|
-| intent | 4 |
-| contains_any_ci | 4 |
-| contains_any | 2 |
-| cards.min | 1 |
-| lang_reply | 1 |
-| rtl | 1 |
-| must_cite | 1 |
+None.
 
-Citation-subset check (every cited card id and source URL is known to the database): 0 violations in 101 replies checked; clean-reply rate 1, 95% CI [0.963, 1.000]. Source: evals/results/latest.json `citation_subset`.
+Citation-subset check (every cited card id and source URL is known to the database): 0 violations in 98 replies checked; clean-reply rate 1, 95% CI [0.962, 1.000]. Source: evals/results/latest.json `citation_subset`.
 
 Cause analysis for each miss is in section 10 when `evals/results/fixes.json` exists; otherwise causes are not recorded here.
 
@@ -138,44 +123,44 @@ Cause analysis for each miss is in section 10 when `evals/results/fixes.json` ex
 
 ## 4. Intent confusion matrix
 
-| expected \ actual | advice | calculation | compare | contact_sales | general | injection | location_overview | off_topic | project_info |
-|---|---|---|---|---|---|---|---|---|---|
-| advice | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| calculation | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| compare | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 |
-| contact_sales | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |
-| find_my_home | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 |
-| general | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
-| injection | 0 | 0 | 0 | 0 | 0 | 17 | 0 | 0 | 0 |
-| location_overview | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 |
-| off_topic | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 12 | 0 |
-| project_info | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
+| expected \ actual | advice | calculation | compare | contact_sales | find_my_home | general | injection | location_overview | off_topic | project_info |
+|---|---|---|---|---|---|---|---|---|---|---|
+| advice | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| calculation | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| compare | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| contact_sales | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 |
+| find_my_home | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |
+| general | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
+| injection | 0 | 0 | 0 | 0 | 0 | 0 | 17 | 0 | 0 | 0 |
+| location_overview | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 |
+| off_topic | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 12 | 0 |
+| project_info | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
 
-Diagonal 47 of 51 routed cases (rows with a multi-intent expectation count off-diagonal here). Source: evals/results/latest.json `confusion`.
+Diagonal 51 of 51 routed cases (rows with a multi-intent expectation count off-diagonal here). Source: evals/results/latest.json `confusion`.
 
 ## 5. Retrieval experiment (E1)
 
-Caveat: evals/results/E1.json does not record the dataset it was measured on, or records a different one, and was not re-run on the current dataset (`experiments.py --only E1` currently fails with a TypeError). Treat the table below as indicative of an earlier build.
+Measured on dataset `20261119-eb33f465` (the same as the suite), retriever mode `hybrid`, index `ok`. Source: evals/results/E1.json.
 
 | method (bm25 = lexical, embeddings = dense, hybrid = RRF fusion served by the app) | query set | lang | n | recall@1 | recall@3 | recall@6 | MRR | precision@6 |
 |---|---|---|---|---|---|---|---|---|
-| bm25 | en_name | en | 12 | 1 | not measured | 1 | 1 | not measured |
-| bm25 | ar_name | ar | 18 | 0.944 | not measured | 1 | 0.956 | not measured |
-| bm25 | en_city | en | 5 | not measured | not measured | not measured | not measured | 0 |
-| embeddings | en_name | en | 12 | 0.75 | not measured | 1 | 0.819 | not measured |
-| embeddings | ar_name | ar | 18 | 0.333 | not measured | 0.556 | 0.428 | not measured |
-| embeddings | en_city | en | 5 | not measured | not measured | not measured | not measured | 0.067 |
-| hybrid | en_name | en | 12 | 0.917 | not measured | 1 | 0.958 | not measured |
-| hybrid | ar_name | ar | 18 | 0.667 | not measured | 0.889 | 0.735 | not measured |
-| hybrid | en_city | en | 5 | not measured | not measured | not measured | not measured | 0.067 |
+| bm25 | en_name | en | 54 | 0.889 | 0.963 | 0.963 | 0.923 | not measured |
+| bm25 | ar_name | ar | 18 | 0.944 | 0.944 | 1 | 0.956 | not measured |
+| bm25 | en_city | en | 10 | not measured | not measured | not measured | not measured | 0.5 |
+| embeddings | en_name | en | 54 | 0.667 | 0.87 | 0.926 | 0.78 | not measured |
+| embeddings | ar_name | ar | 18 | 0.111 | 0.167 | 0.278 | 0.164 | not measured |
+| embeddings | en_city | en | 10 | not measured | not measured | not measured | not measured | 0.45 |
+| hybrid | en_name | en | 54 | 0.796 | 0.963 | 0.981 | 0.881 | not measured |
+| hybrid | ar_name | ar | 18 | 0.556 | 0.833 | 0.889 | 0.699 | not measured |
+| hybrid | en_city | en | 10 | not measured | not measured | not measured | not measured | 0.55 |
 
 Contextual-header before/after: not measured (no E1_before_headers.json / E1_after_headers.json). English and Arabic are separate rows (`en_*`, `ar_*`).
 
-Caveat from the experiment file: Proxy benchmark built from the DB itself (known-item + city precision); small n; not end-to-end quality. E1 result file run_at: 2026-11-19T09:09:26+00:00 (compare with the dataset version in section 2: E1 needs an embedding index built for the same dataset version, otherwise the app and the adapter fall back to BM25-only and dense rows cannot be measured).
+Caveat from the experiment file: Proxy benchmark built from the DB itself (known-item + city precision); small n; not end-to-end quality. E1 result file run_at: 2026-11-19T12:28:29+00:00 (compare with the dataset version in section 2: E1 needs an embedding index built for the same dataset version, otherwise the app and the adapter fall back to BM25-only and dense rows cannot be measured).
 
 ## 6. Latency (mock LLM, local)
 
-p50 62 ms, p95 183.3 ms, TTFT p50 62 ms, TTFT p95 172 ms (n=177). Source: evals/results/latest.json `latency`. These are for a mock LLM on one machine and say nothing about real-model latency; real-model latency is in section 8 only if measured.
+p50 78 ms, p95 219 ms, TTFT p50 78 ms, TTFT p95 218.7 ms (n=180). Source: evals/results/latest.json `latency`. These are for a mock LLM on one machine and say nothing about real-model latency; real-model latency is in section 8 only if measured.
 
 ## 7. Load and memory
 
@@ -195,6 +180,36 @@ Run at 2026-11-19T11:38:19+00:00: 5 real requests counted (cap 5; counted per at
 
 n is far too small for any rate claim; this block shows only that the live path works and where it degraded.
 
+**Caveat:** the real-model run was made on dataset `20261119-e5604e7e`, not the current `20261119-eb33f465`.
+
+### 8b. Real-model answers, verbatim (including the weak ones)
+
+**R2** (en), model `nvidia/nemotron-3-ultra-550b-a55b:free`, path `code`, intent `general`, status passed, 5469 ms. Source: evals/results/live_subset.json.
+
+> **User:** How do Wasalt auctions work?  
+> **Concierge:** Wasalt Auctions are timed online auctions where real estate assets (and movable assets) are listed by Sales Agents—private sellers or Infath (Entrustment and Liquidation Center). Wasalt acts solely as an intermediary platform; it does not own, sell, warrant, or not guaranteed any asset. Bidders compete to determine the final price. Each auction has its own additional terms. If a winning bidder fails to complete payment within the specified period, the sale may be cancelled, the bid deposit retained, and the asset re‐listed. The winning bidder and Sales Agent are jointly responsible for government fees, transfer, registration, and similar charges.
+
+**F11** (en), model `nvidia/nemotron-3-ultra-550b-a55b:free`, path `code`, intent `project_info`, status passed, 5172 ms. Source: evals/results/live_subset.json.
+
+> **User:** Tell me about 7&8 Albert Hall Mansions  
+> **Concierge:** **7&8 Albert Hall Mansions** - **Developer:** DarGlobal - **Location:** Overlooking Hyde Park, London, United Kingdom - **Property type:** Single penthouse (1 unit) - **Status:** Under construction - **Launch:** Q2 2024 (per Dar Global PLC RNS 1301W, 11 Mar 2026) - **Expected completion/handover:** Q2 2027 - **Price:** Not published by DarGlobal The project appears on DarGlobal’s projects page; a detailed page has not been collected. The above facts come from a third‐party regulatory announcement (RNS 1301W).
+
+**A02** (ar), model `nvidia/nemotron-3-ultra-550b-a55b:free`, path `code`, intent `general`, status passed, 4469 ms. Source: evals/results/live_subset.json.
+
+> **User:** كيف تعمل المزادات في وصلت؟  
+> **Concierge:** تعمل مزادات وصلت كمنصة مزادات إلكترونية محددة بوقت، يتنافس فيها المزايدون للوصول إلى السعر النهائي للبيع. تشمل المزادات أصولاً من ملاك أفراد وأخرى بالتعاون مع مركز الإسناد والتصفية (إنفاذ)، وتغطي العقارات والمركبات والأصول المنقولة في جميع أنحاء المملكة. للمشاركة، يجب إنشاء حساب، الاطلاع على شروط كل مزاد (مثل سعر الاحتياط، زيادات المزايدة، وإيداع التأمين)، ثم تقديم العروض خلال فترة المزاد. الفائز يتحمل الرسوم الحكومية ونقل الملكية وفق الشروط المعلنة.
+
+**A15** (ar), model `nvidia/nemotron-3-ultra-550b-a55b:free`, path `code`, intent `project_info`, status passed, 6281 ms. Source: evals/results/live_subset.json.
+
+> **User:** حدثني عن مشروع فلل إتوال  
+> **Concierge:** **مشروع فلل إتوال** - **الموقع**: الرياض، حي مطار الملك خالد (منصة Wasalt). - **النوع**: فلل مستقلة. - **غرف النوم**: 3 أو 4 غرف. - **المساحات**: 300–422 م2. - **السعر**: يبدأ من 4,200,000 ريال، ويصل إلى 10,178,420 ريال. - **الحالة**: تحت الإنشاء. - **سنة التسليم**: غير منشورة. للحصول على تفاصيل الوحدات المتاحة أو حجز زيارة، يُرجى التواصل مع فريق المبيعات عبر Wasalt.
+
+**T01** (en), model `none (answered by code)`, path `template`, intent `general`, status passed, 188 ms. Source: evals/results/live_subset.json.
+
+> **User:** What is the starting price of Obsidian Palm Residences?  
+> **Concierge:** I could not find anything called “Obsidian Palm Residences” in the published data I hold, so I will not guess. Please check the spelling, or ask about a city or a budget instead.
+
+
 ## 9. Transcripts (excerpts; each labelled mock or real)
 
 ### R2 (en) - REAL MODEL (nvidia/nemotron-3-ultra-550b-a55b:free)
@@ -210,7 +225,7 @@ Source: evals/results/live_subset.json; status: passed; intent: general; path: c
 Source: evals/results/latest.json; status: passed; intent: location_overview; path: code. Reply text is the full answer stored by the runner (truncated to 700 characters here).
 
 > **User:** What projects do you have in Oman?  
-> **Concierge:** DarGlobal has 15 published projects in Oman: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some of these; the sales team can confirm them.
+> **Concierge:** DarGlobal has 16 published projects in Oman: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some of these; the sales team can confirm them.
 >
 
 ### R4 (en) - mock LLM (llm_mode=mock)

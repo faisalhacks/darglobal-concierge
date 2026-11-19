@@ -8,10 +8,12 @@ import os
 from dataclasses import dataclass, field
 
 FLAG_NAMES = ("FF_FIND_MY_HOME", "FF_MAP", "FF_VOICE", "FF_HANDOFF_BRIEF", "FF_WIDGET_DEMO")
+# On unless the environment sets the flag to a false value, so local runs, evals and the image behave the same.
+FLAGS_ON_BY_DEFAULT = ("FF_FIND_MY_HOME",)
 
 # Chosen from the public OpenRouter /models list on 2026-11-19 and ordered by the live check of the same day
 # (NVIDIA first: the only model that answered in the 2026-11-19 live check and passed the Arabic gate; see MODELS.md).
-DEFAULT_MODELS = "nvidia/nemotron-3-ultra-550b-a55b:free,google/gemma-4-31b-it:free,google/gemma-4-26b-a4b-it:free"
+DEFAULT_MODELS = "google/gemma-4-31b-it:free,nvidia/nemotron-3-ultra-550b-a55b:free,google/gemma-4-26b-a4b-it:free"  # docs/MODEL_ROUTER.md order; nemotron first spent max_tokens on hidden reasoning (finish=length, 0 chars)
 EMBED_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
 
@@ -130,7 +132,7 @@ def load_settings() -> Settings:
         llm_quota_cooldown_s=max(1.0, _float("LLM_QUOTA_COOLDOWN_S", 1800.0)),
         llm_boot_model_check=_bool("LLM_BOOT_MODEL_CHECK", True),
         answer_cache_path=os.environ.get("ANSWER_CACHE_PATH", "data/answer_cache.json"),
-        flags={f: _bool(f) for f in FLAG_NAMES},
+        flags={f: _bool(f, f in FLAGS_ON_BY_DEFAULT) for f in FLAG_NAMES},
         candidate={
             "name": os.environ.get("CANDIDATE_NAME") or None,
             "github": os.environ.get("CANDIDATE_GITHUB") or None,

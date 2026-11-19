@@ -1,11 +1,11 @@
 {
-  "run_at": "2026-11-19T11:36:46+00:00",
-  "base_url": "http://127.0.0.1:7911",
-  "dataset_version": "20261119-e5604e7e",
+  "run_at": "2026-11-19T12:34:47+00:00",
+  "base_url": "http://127.0.0.1:7940",
+  "dataset_version": "20261119-eb33f465",
   "data_as_of": "2026-11-19",
   "totals": {
-    "passed": 160,
-    "failed": 6,
+    "passed": 166,
+    "failed": 0,
     "skipped": 1,
     "by_category": {
       "reviewer": {
@@ -45,15 +45,15 @@
         ]
       },
       "arabic": {
-        "passed": 19,
-        "failed": 1,
+        "passed": 20,
+        "failed": 0,
         "skipped": 0,
-        "rate": 0.95,
+        "rate": 1.0,
         "n": 20,
-        "se": 0.0487,
+        "se": 0.0,
         "ci95": [
-          0.7639,
-          0.9911
+          0.8389,
+          1.0
         ]
       },
       "trap": {
@@ -105,27 +105,27 @@
         ]
       },
       "find_my_home": {
-        "passed": 1,
-        "failed": 4,
+        "passed": 5,
+        "failed": 0,
         "skipped": 0,
-        "rate": 0.2,
+        "rate": 1.0,
         "n": 5,
-        "se": 0.1789,
+        "se": 0.0,
         "ci95": [
-          0.0362,
-          0.6245
+          0.5655,
+          1.0
         ]
       },
       "live_sample": {
-        "passed": 9,
-        "failed": 1,
+        "passed": 10,
+        "failed": 0,
         "skipped": 0,
-        "rate": 0.9,
+        "rate": 1.0,
         "n": 10,
-        "se": 0.0949,
+        "se": 0.0,
         "ci95": [
-          0.5958,
-          0.9821
+          0.7225,
+          1.0
         ]
       },
       "over_blocking": {
@@ -169,12 +169,12 @@
     "citation_rate": {
       "target": 1.0,
       "op": ">=",
-      "actual": 0.9846,
-      "met": false,
+      "actual": 1.0,
+      "met": true,
       "n": 65,
       "ci95": [
-        0.9179,
-        0.9973
+        0.9442,
+        1.0
       ]
     },
     "trap_rate": {
@@ -213,23 +213,23 @@
     "arabic_rate": {
       "target": 0.85,
       "op": ">=",
-      "actual": 0.95,
+      "actual": 1.0,
       "met": true,
       "n": 20,
       "ci95": [
-        0.7639,
-        0.9911
+        0.8389,
+        1.0
       ]
     },
     "ttft_p95_ms": {
       "target": 3000,
       "op": "<=",
-      "actual": 172.0,
+      "actual": 218.7,
       "met": true,
       "n": 186,
       "ci95": [
-        152.0,
-        203.0
+        183.3,
+        250.0
       ]
     },
     "crashes": {
@@ -254,11 +254,11 @@
     }
   },
   "latency": {
-    "p50": 62.0,
-    "p95": 183.3,
-    "ttft_p95": 172.0,
-    "ttft_p50": 62.0,
-    "n": 177
+    "p50": 78.0,
+    "p95": 219.0,
+    "ttft_p95": 218.7,
+    "ttft_p50": 78.0,
+    "n": 180
   },
   "cases": [
     {
@@ -269,7 +269,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 78.0,
+      "latency_ms": 94.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -277,8 +277,8 @@
           "say": "What projects do you have in Oman?",
           "intent": "location_overview",
           "path": "code",
-          "reply_excerpt": "DarGlobal has 15 published projects in Oman: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some of",
-          "answer": "DarGlobal has 15 published projects in Oman: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some of these; the sales team can confirm them.",
+          "reply_excerpt": "DarGlobal has 16 published projects in Oman: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some of",
+          "answer": "DarGlobal has 16 published projects in Oman: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some of these; the sales team can confirm them.",
           "card_ids": [
             "dg-aida",
             "dg-amour-sans-detour",
@@ -304,7 +304,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 109.0,
+      "latency_ms": 62.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -312,11 +312,10 @@
           "say": "How do Wasalt auctions work?",
           "intent": "general",
           "path": "code",
-          "reply_excerpt": "According to the published information: Terms and Conditions | Saudi Arabia | Wasalt | terms: receive notifications in the event of any major changes to the ongoing Auctions. If there are any questions or problems resulting from a change in",
-          "answer": "According to the published information: Terms and Conditions | Saudi Arabia | Wasalt | terms: receive notifications in the event of any major changes to the ongoing Auctions. If there are any questions or problems resulting from a change in ongoing Auctions, Users should contact customer service to express their concerns or obtain assista",
+          "reply_excerpt": "According to the published information: The Company displays Assets available for Auction and their relevant duration on the Website, and the opportunity for inspection is arranged directly with the Sales Agent. The Company notifies Users -",
+          "answer": "According to the published information: The Company displays Assets available for Auction and their relevant duration on the Website, and the opportunity for inspection is arranged directly with the Sales Agent. The Company notifies Users -who agree to receive notifications through their accounts- about new Assets available for Auction.",
           "card_ids": [],
           "sources": [
-            "https://wasalt.sa/en",
             "https://wasalt.sa/en/s/terms-n-conditions-for-auction"
           ],
           "model": "mock/echo"
@@ -331,7 +330,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 31.0,
+      "latency_ms": 47.0,
       "intent": "off_topic",
       "path": "template",
       "turns": [
@@ -355,7 +354,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 16.0,
+      "latency_ms": 31.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -379,7 +378,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 94.0,
       "intent": "advice",
       "path": "template",
       "turns": [
@@ -406,7 +405,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 62.0,
+      "latency_ms": 78.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -414,8 +413,8 @@
           "say": "ما هي المشاريع التي لديكم في سلطنة عمان؟",
           "intent": "location_overview",
           "path": "code",
-          "reply_excerpt": "لدى دار جلوبال 15 مشروعاً منشوراً في عُمان: ⁨Aida⁩، ⁨Amour Sans Detour⁩، ⁨Amour Sans Detour 2⁩، ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩، ⁨Coastal Investment Villas⁩، ⁨Fairway Villas⁩ وغيرها. تجد أدناه بطاقة لكل مشروع مع رابط صفحته",
-          "answer": "لدى دار جلوبال 15 مشروعاً منشوراً في عُمان: ⁨Aida⁩، ⁨Amour Sans Detour⁩، ⁨Amour Sans Detour 2⁩، ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩، ⁨Coastal Investment Villas⁩، ⁨Fairway Villas⁩ وغيرها. تجد أدناه بطاقة لكل مشروع مع رابط صفحته المنشورة. الأسعار غير منشورة لبعض هذه المشاريع، ويمكن لفريق المبيعات تأكيدها.",
+          "reply_excerpt": "لدى دار جلوبال 16 مشروعاً منشوراً في عُمان: ⁨Aida⁩، ⁨Amour Sans Detour⁩، ⁨Amour Sans Detour 2⁩، ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩، ⁨Coastal Investment Villas⁩، ⁨Fairway Villas⁩ وغيرها. تجد أدناه بطاقة لكل مشروع مع رابط صفحته",
+          "answer": "لدى دار جلوبال 16 مشروعاً منشوراً في عُمان: ⁨Aida⁩، ⁨Amour Sans Detour⁩، ⁨Amour Sans Detour 2⁩، ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩، ⁨Coastal Investment Villas⁩، ⁨Fairway Villas⁩ وغيرها. تجد أدناه بطاقة لكل مشروع مع رابط صفحته المنشورة. الأسعار غير منشورة لبعض هذه المشاريع، ويمكن لفريق المبيعات تأكيدها.",
           "card_ids": [
             "dg-aida",
             "dg-amour-sans-detour",
@@ -440,7 +439,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 125.0,
+      "latency_ms": 218.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -464,7 +463,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 94.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -501,7 +500,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 79.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -509,8 +508,8 @@
           "say": "Show me your projects in Oman",
           "intent": "location_overview",
           "path": "code",
-          "reply_excerpt": "DarGlobal has 15 published projects in Oman: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some of",
-          "answer": "DarGlobal has 15 published projects in Oman: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some of these; the sales team can confirm them.",
+          "reply_excerpt": "DarGlobal has 16 published projects in Oman: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some of",
+          "answer": "DarGlobal has 16 published projects in Oman: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some of these; the sales team can confirm them.",
           "card_ids": [
             "dg-aida",
             "dg-amour-sans-detour",
@@ -535,7 +534,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 110.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -571,7 +570,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 63.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -579,8 +578,8 @@
           "say": "What does DarGlobal have in Oman?",
           "intent": "location_overview",
           "path": "code",
-          "reply_excerpt": "DarGlobal has 15 published projects in Oman: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some of",
-          "answer": "DarGlobal has 15 published projects in Oman: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some of these; the sales team can confirm them.",
+          "reply_excerpt": "DarGlobal has 16 published projects in Oman: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some of",
+          "answer": "DarGlobal has 16 published projects in Oman: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some of these; the sales team can confirm them.",
           "card_ids": [
             "dg-aida",
             "dg-amour-sans-detour",
@@ -605,7 +604,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 94.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -642,7 +641,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 31.0,
+      "latency_ms": 47.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -679,7 +678,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 78.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -687,15 +686,15 @@
           "say": "What can I buy in Muscat?",
           "intent": "location_overview",
           "path": "code",
-          "reply_excerpt": "DarGlobal has 9 published projects in Muscat: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Coastal Investment Villas⁩, ⁨Sunrise Haven⁩, ⁨Trump Cliff Villas⁩ and more. Prices are not published for some of these; the sales team can co",
-          "answer": "DarGlobal has 9 published projects in Muscat: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Coastal Investment Villas⁩, ⁨Sunrise Haven⁩, ⁨Trump Cliff Villas⁩ and more. Prices are not published for some of these; the sales team can confirm them.",
+          "reply_excerpt": "DarGlobal has 16 published projects in Muscat: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some ",
+          "answer": "DarGlobal has 16 published projects in Muscat: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some of these; the sales team can confirm them.",
           "card_ids": [
             "dg-aida",
             "dg-amour-sans-detour",
             "dg-amour-sans-detour-2",
+            "dg-azure-oceanfront-villas-interiors-by-fendi-casa",
             "dg-coastal-investment-villas",
-            "dg-sunrise-haven",
-            "dg-trump-cliff-villas"
+            "dg-fairway-villas"
           ],
           "sources": [
             "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
@@ -713,7 +712,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 31.0,
+      "latency_ms": 93.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -750,7 +749,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 31.0,
+      "latency_ms": 78.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -786,7 +785,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 140.0,
+      "latency_ms": 63.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -794,8 +793,8 @@
           "say": "Give me an overview of Al Khobar",
           "intent": "general",
           "path": "code",
-          "reply_excerpt": "According to the published information: Properties for Sale in Al Khobar — area guide | Saudi Arabia | Wasalt | city_guide: Properties for Sale in Al Khobar: Unveiling Real Estate Khobar Discover Al Khobar's diverse real estate market, from",
-          "answer": "According to the published information: Properties for Sale in Al Khobar — area guide | Saudi Arabia | Wasalt | city_guide: Properties for Sale in Al Khobar: Unveiling Real Estate Khobar Discover Al Khobar's diverse real estate market, from modern apartments to luxurious villas, offering vibrant community living and promising investment o",
+          "reply_excerpt": "According to the published information: Properties for Sale in Al Khobar: Unveiling Real Estate Khobar Discover Al Khobar's diverse real estate market, from modern apartments to luxurious villas, offering vibrant community living and promis",
+          "answer": "According to the published information: Properties for Sale in Al Khobar: Unveiling Real Estate Khobar Discover Al Khobar's diverse real estate market, from modern apartments to luxurious villas, offering vibrant community living and promising investment opportunities. Exploring Real Estate in Al Khobar: A Glimpse into Modern Living The i",
           "card_ids": [],
           "sources": [
             "https://wasalt.sa/en/apartments-for-sale-in-al-khobar",
@@ -814,7 +813,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 125.0,
+      "latency_ms": 94.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -843,7 +842,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 32.0,
+      "latency_ms": 46.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -871,7 +870,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 46.0,
+      "latency_ms": 63.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -900,7 +899,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 141.0,
+      "latency_ms": 109.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -929,7 +928,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 156.0,
+      "latency_ms": 109.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -957,7 +956,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 32.0,
+      "latency_ms": 93.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -985,7 +984,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 78.0,
+      "latency_ms": 141.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1013,7 +1012,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 31.0,
+      "latency_ms": 78.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1041,7 +1040,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 125.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1069,7 +1068,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 32.0,
+      "latency_ms": 78.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1097,7 +1096,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 110.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1125,7 +1124,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 62.0,
+      "latency_ms": 125.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1153,7 +1152,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 109.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1181,7 +1180,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 78.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -1218,7 +1217,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 16.0,
+      "latency_ms": 47.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -1255,7 +1254,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 78.0,
+      "latency_ms": 63.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -1292,7 +1291,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 110.0,
+      "latency_ms": 125.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -1330,7 +1329,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 157.0,
+      "latency_ms": 125.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -1342,7 +1341,7 @@
           "answer": "According to the published information: Project: Aida. Developer: DarGlobal.",
           "card_ids": [],
           "sources": [
-            "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+            "https://www.zawya.com/en/press-release/companies-news/dar-global-and-the-trump-organisation-expand-saudi-portfolio-with-1bln-trump-plaza-jeddah-gjj2s3fy",
             "https://darglobal.co.uk/projects"
           ],
           "model": "mock/echo"
@@ -1357,7 +1356,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 78.0,
       "intent": "compare",
       "path": "code",
       "turns": [
@@ -1386,7 +1385,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 94.0,
+      "latency_ms": 125.0,
       "intent": "compare",
       "path": "code",
       "turns": [
@@ -1416,7 +1415,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 234.0,
+      "latency_ms": 266.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1458,7 +1457,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 282.0,
+      "latency_ms": 313.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1503,7 +1502,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 312.0,
+      "latency_ms": 531.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1545,7 +1544,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 390.0,
+      "latency_ms": 719.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1553,8 +1552,8 @@
           "say": "Tell me about Azure Oceanfront Villas Interiors by Fendi Casa",
           "intent": "project_info",
           "path": "code",
-          "reply_excerpt": "Azure Oceanfront Villas Interiors by Fendi Casa — Location: Oman. Only the name and location of Azure Oceanfront Villas Interiors by Fendi Casa are published in the data I hold; its detail page was not collected, so prices, unit types and h",
-          "answer": "Azure Oceanfront Villas Interiors by Fendi Casa — Location: Oman. Only the name and location of Azure Oceanfront Villas Interiors by Fendi Casa are published in the data I hold; its detail page was not collected, so prices, unit types and handover are not published here. The official page is linked below.",
+          "reply_excerpt": "Azure Oceanfront Villas Interiors by Fendi Casa — Location: Muscat, Oman. Only the name and location of Azure Oceanfront Villas Interiors by Fendi Casa are published in the data I hold; its detail page was not collected, so prices, unit typ",
+          "answer": "Azure Oceanfront Villas Interiors by Fendi Casa — Location: Muscat, Oman. Only the name and location of Azure Oceanfront Villas Interiors by Fendi Casa are published in the data I hold; its detail page was not collected, so prices, unit types and handover are not published here. The official page is linked below.",
           "card_ids": [
             "dg-azure-oceanfront-villas-interiors-by-fendi-casa"
           ],
@@ -1567,8 +1566,8 @@
           "say": "What amenities does it have?",
           "intent": "project_info",
           "path": "code",
-          "reply_excerpt": "Azure Oceanfront Villas Interiors by Fendi Casa — Location: Oman. Only the name and location of Azure Oceanfront Villas Interiors by Fendi Casa are published in the data I hold; its detail page was not collected, so prices, unit types and h",
-          "answer": "Azure Oceanfront Villas Interiors by Fendi Casa — Location: Oman. Only the name and location of Azure Oceanfront Villas Interiors by Fendi Casa are published in the data I hold; its detail page was not collected, so prices, unit types and handover are not published here. The official page is linked below.",
+          "reply_excerpt": "Azure Oceanfront Villas Interiors by Fendi Casa — Location: Muscat, Oman. Only the name and location of Azure Oceanfront Villas Interiors by Fendi Casa are published in the data I hold; its detail page was not collected, so prices, unit typ",
+          "answer": "Azure Oceanfront Villas Interiors by Fendi Casa — Location: Muscat, Oman. Only the name and location of Azure Oceanfront Villas Interiors by Fendi Casa are published in the data I hold; its detail page was not collected, so prices, unit types and handover are not published here. The official page is linked below.",
           "card_ids": [
             "dg-azure-oceanfront-villas-interiors-by-fendi-casa"
           ],
@@ -1587,7 +1586,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 63.0,
+      "latency_ms": 155.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -1647,7 +1646,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 93.0,
+      "latency_ms": 187.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -1681,13 +1680,14 @@
           "reply_excerpt": "DarGlobal has 4 published projects in Riyadh: ⁨DarGlobal Mansions Interiors by Fendi Casa⁩, ⁨Neptune, Interiors by Mouawad⁩, ⁨Rayana⁩, ⁨Trump Mansions⁩. Prices are not published for some of these; the sales team can confirm them.",
           "answer": "DarGlobal has 4 published projects in Riyadh: ⁨DarGlobal Mansions Interiors by Fendi Casa⁩, ⁨Neptune, Interiors by Mouawad⁩, ⁨Rayana⁩, ⁨Trump Mansions⁩. Prices are not published for some of these; the sales team can confirm them.",
           "card_ids": [
-            "dg-darglobal-mansions-interiors-by-fendi-casa",
             "dg-neptune-interiors-by-mouawad",
+            "dg-darglobal-mansions-interiors-by-fendi-casa",
             "dg-rayana",
             "dg-trump-mansions"
           ],
           "sources": [
             "https://darglobal.co.uk/projects",
+            "https://darglobal.co.uk/neptune",
             "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
           ],
           "model": null
@@ -1703,7 +1703,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 141.0,
+      "latency_ms": 312.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -1726,8 +1726,8 @@
           "say": "Which one is bigger?",
           "intent": "general",
           "path": "code",
-          "reply_excerpt": "According to the published information: King Salman Park Riyadh - An Ultimate 2026 Guide | Saudi Arabia | Wasalt | guide: ### How big is King Salman Park Riyadh compared to Central Park? King Salman Park is nearly five times the size of New",
-          "answer": "According to the published information: King Salman Park Riyadh - An Ultimate 2026 Guide | Saudi Arabia | Wasalt | guide: ### How big is King Salman Park Riyadh compared to Central Park? King Salman Park is nearly five times the size of New York’s Central Park, which covers 3.4 square kilometers.",
+          "reply_excerpt": "According to the published information: How big is King Salman Park Riyadh compared to Central Park? King Salman Park is nearly five times the size of New York’s Central Park, which covers 3.4 square kilometers.",
+          "answer": "According to the published information: How big is King Salman Park Riyadh compared to Central Park? King Salman Park is nearly five times the size of New York’s Central Park, which covers 3.4 square kilometers.",
           "card_ids": [],
           "sources": [
             "https://blog.wasalt.sa/en/king-salman-park-riyadh/"
@@ -1744,7 +1744,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 157.0,
+      "latency_ms": 187.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1786,7 +1786,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 125.0,
+      "latency_ms": 172.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -1833,7 +1833,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 93.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -1881,7 +1881,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 63.0,
+      "latency_ms": 47.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -1889,8 +1889,8 @@
           "say": "How much is it?",
           "intent": "general",
           "path": "code",
-          "reply_excerpt": "According to the published information: How to Buy a House in Saudi Arabia - First-Time Buyer’s Guide | Saudi Arabia | Wasalt | guide: ### How much down payment do I need? Saudi first-time buyers: Minimum Expats: Usually",
-          "answer": "According to the published information: How to Buy a House in Saudi Arabia - First-Time Buyer’s Guide | Saudi Arabia | Wasalt | guide: ### How much down payment do I need? Saudi first-time buyers: Minimum Expats: Usually",
+          "reply_excerpt": "According to the published information: How much down payment do I need? Saudi first-time buyers: Minimum Expats: Usually",
+          "answer": "According to the published information: How much down payment do I need? Saudi first-time buyers: Minimum Expats: Usually",
           "card_ids": [],
           "sources": [
             "https://blog.wasalt.sa/en/how-to-buy-a-house-in-saudi-arabia/",
@@ -1909,7 +1909,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 157.0,
+      "latency_ms": 391.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -1943,7 +1943,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 157.0,
+      "latency_ms": 406.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -1990,7 +1990,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 218.0,
+      "latency_ms": 594.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -2025,7 +2025,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 126.0,
+      "latency_ms": 375.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -2075,7 +2075,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 109.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -2109,26 +2109,24 @@
       "category": "arabic",
       "lang": "ar",
       "split": "tune",
-      "model": "mock/echo",
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 94.0,
+      "latency_ms": 62.0,
       "intent": "general",
-      "path": "code",
+      "path": "template",
       "turns": [
         {
           "say": "كيف تعمل المزادات في وصلت؟",
           "intent": "general",
-          "path": "code",
-          "reply_excerpt": "وفقاً للمعلومات المنشورة: موقع وصلت / عقارات للبيع و للايجار في السعودية | Saudi Arabia | Wasalt | home: ### عندك عقار للبيع أو الإيجار؟ أعلن عن عقارك مع وصلت في خطوات بسيطة إضافة إعلان",
-          "answer": "وفقاً للمعلومات المنشورة: موقع وصلت / عقارات للبيع و للايجار في السعودية | Saudi Arabia | Wasalt | home: ### عندك عقار للبيع أو الإيجار؟ أعلن عن عقارك مع وصلت في خطوات بسيطة إضافة إعلان",
+          "path": "template",
+          "reply_excerpt": "لا تشرح الصفحات العربية التي جمعتها آلية عمل مزادات وصلت، ولن أترجم الشروط آلياً؛ صفحة شروط وأحكام المزادات (بالإنجليزية) مرفقة أدناه.",
+          "answer": "لا تشرح الصفحات العربية التي جمعتها آلية عمل مزادات وصلت، ولن أترجم الشروط آلياً؛ صفحة شروط وأحكام المزادات (بالإنجليزية) مرفقة أدناه.",
           "card_ids": [],
           "sources": [
-            "https://wasalt.sa/ar",
             "https://wasalt.sa/en/s/terms-n-conditions-for-auction"
           ],
-          "model": "mock/echo"
+          "model": null
         }
       ]
     },
@@ -2140,7 +2138,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 94.0,
       "intent": "off_topic",
       "path": "template",
       "turns": [
@@ -2164,7 +2162,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 0.0,
+      "latency_ms": 16.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -2188,7 +2186,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 78.0,
       "intent": "advice",
       "path": "template",
       "turns": [
@@ -2215,7 +2213,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 78.0,
+      "latency_ms": 234.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -2239,7 +2237,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 0.0,
+      "latency_ms": 31.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -2263,7 +2261,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 31.0,
+      "latency_ms": 94.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -2301,7 +2299,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 78.0,
+      "latency_ms": 47.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -2309,13 +2307,13 @@
           "say": "عايز apartments في الرياض",
           "intent": "general",
           "path": "code",
-          "reply_excerpt": "وفقاً للمعلومات المنشورة: Vega Residence | Riyadh, Saudi Arabia | Wasalt | Description: شركة المشاريع الأولى للتطوير العقاري . مشروع فيجا ريزيدنس ادوار للبيع ، الرياض ، حي قرطبة .",
-          "answer": "وفقاً للمعلومات المنشورة: Vega Residence | Riyadh, Saudi Arabia | Wasalt | Description: شركة المشاريع الأولى للتطوير العقاري . مشروع فيجا ريزيدنس ادوار للبيع ، الرياض ، حي قرطبة .",
+          "reply_excerpt": "وفقاً للمعلومات المنشورة: العاصي للتطوير العقاري مشروع لورين أدوار و شقق للبيع ، الرياض.",
+          "answer": "وفقاً للمعلومات المنشورة: العاصي للتطوير العقاري مشروع لورين أدوار و شقق للبيع ، الرياض.",
           "card_ids": [],
           "sources": [
-            "https://wasalt.sa/en/project/Riyadh/vega-residence-100569",
             "https://wasalt.sa/en/project/Riyadh/mshrwa-lwryn-100557",
-            "https://wasalt.sa/en/project/Riyadh/sadeem-town-apartment-100320"
+            "https://wasalt.sa/en/project/Riyadh/sadeem-town-apartment-100320",
+            "https://wasalt.sa/ar"
           ],
           "model": "mock/echo"
         }
@@ -2329,7 +2327,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 31.0,
+      "latency_ms": 78.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -2366,7 +2364,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 78.0,
+      "latency_ms": 156.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -2390,7 +2388,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 63.0,
+      "latency_ms": 156.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -2414,7 +2412,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 46.0,
+      "latency_ms": 63.0,
       "intent": "contact_sales",
       "path": "template",
       "turns": [
@@ -2438,30 +2436,22 @@
       "category": "arabic",
       "lang": "ar",
       "split": "tune",
-      "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "intent: 'general' not in ['find_my_home']",
-        "contains_any: ['ما المدينة أو الدولة']"
-      ],
-      "latency_ms": 79.0,
-      "intent": "general",
-      "path": "code",
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 78.0,
+      "intent": "find_my_home",
+      "path": "template",
       "turns": [
         {
           "say": "ساعدني في العثور على منزل",
-          "intent": "general",
-          "path": "code",
-          "reply_excerpt": "وفقاً للمعلومات المنشورة: موقع وصلت / عقارات للبيع و للايجار في السعودية | Saudi Arabia | Wasalt | home: ## الأسئلة الشائعة الأسئلة الشائعة حول وصلت والخدمات المقدمة ما هي منصة وصلت؟ وصلت هي منصة رائدة في المملكة العربية السعودية للخدمات ال",
-          "answer": "وفقاً للمعلومات المنشورة: موقع وصلت / عقارات للبيع و للايجار في السعودية | Saudi Arabia | Wasalt | home: ## الأسئلة الشائعة الأسئلة الشائعة حول وصلت والخدمات المقدمة ما هي منصة وصلت؟ وصلت هي منصة رائدة في المملكة العربية السعودية للخدمات العقارية الإلكترونية، مرخّصة من الهيئة العامة للعقار (REGA).",
+          "intent": "find_my_home",
+          "path": "template",
+          "reply_excerpt": "ما المدينة أو الدولة التي تهتم بها؟",
+          "answer": "ما المدينة أو الدولة التي تهتم بها؟",
           "card_ids": [],
-          "sources": [
-            "https://wasalt.sa/ar",
-            "https://wasalt.sa/en/property/rent/building-4725-sqm-facing-east-5966539",
-            "https://wasalt.sa/en/property/sale/land-106951-sqm-facing-east-on-30m-width-street-5966748"
-          ],
-          "model": "mock/echo"
+          "sources": [],
+          "model": null
         }
       ]
     },
@@ -2474,7 +2464,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 93.0,
+      "latency_ms": 63.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -2502,7 +2492,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 32.0,
+      "latency_ms": 94.0,
       "intent": "compare",
       "path": "code",
       "turns": [
@@ -2532,7 +2522,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 16.0,
+      "latency_ms": 78.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -2569,7 +2559,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 32.0,
+      "latency_ms": 62.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -2606,7 +2596,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 31.0,
+      "latency_ms": 62.0,
       "intent": "off_topic",
       "path": "template",
       "turns": [
@@ -2630,7 +2620,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 62.0,
+      "latency_ms": 47.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -2654,7 +2644,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 109.0,
+      "latency_ms": 188.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -2678,7 +2668,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 79.0,
+      "latency_ms": 203.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -2702,7 +2692,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 62.0,
+      "latency_ms": 141.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -2710,8 +2700,8 @@
           "say": "Does DarGlobal have a project in Antarctica?",
           "intent": "general",
           "path": "template",
-          "reply_excerpt": "I could not find anything called “Antarctica” in the published data I hold, so I will not guess. Please check the spelling, or ask about a city or a budget instead.",
-          "answer": "I could not find anything called “Antarctica” in the published data I hold, so I will not guess. Please check the spelling, or ask about a city or a budget instead.",
+          "reply_excerpt": "No DarGlobal or Wasalt entries in Antarctica in this dataset, so I will not guess. The countries it holds are: Saudi Arabia, Oman, United Arab Emirates, Spain, United Kingdom, Qatar.",
+          "answer": "No DarGlobal or Wasalt entries in Antarctica in this dataset, so I will not guess. The countries it holds are: Saudi Arabia, Oman, United Arab Emirates, Spain, United Kingdom, Qatar.",
           "card_ids": [],
           "sources": [],
           "model": null
@@ -2726,7 +2716,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 78.0,
+      "latency_ms": 171.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -2734,8 +2724,8 @@
           "say": "What is the price of a 5-bedroom villa in your Paris listings?",
           "intent": "general",
           "path": "template",
-          "reply_excerpt": "I could not find anything called “Paris” in the published data I hold, so I will not guess. Please check the spelling, or ask about a city or a budget instead.",
-          "answer": "I could not find anything called “Paris” in the published data I hold, so I will not guess. Please check the spelling, or ask about a city or a budget instead.",
+          "reply_excerpt": "No DarGlobal or Wasalt entries in Paris in this dataset, so I will not guess. The countries it holds are: Saudi Arabia, Oman, United Arab Emirates, Spain, United Kingdom, Qatar.",
+          "answer": "No DarGlobal or Wasalt entries in Paris in this dataset, so I will not guess. The countries it holds are: Saudi Arabia, Oman, United Arab Emirates, Spain, United Kingdom, Qatar.",
           "card_ids": [],
           "sources": [],
           "model": null
@@ -2750,7 +2740,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 172.0,
+      "latency_ms": 234.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -2758,8 +2748,8 @@
           "say": "Is unit 4B at Solaris Vale Villas still available, and for how much?",
           "intent": "general",
           "path": "template",
-          "reply_excerpt": "I could not find anything called “Solaris Vale Villas” in the published data I hold, so I will not guess. Please check the spelling, or ask about a city or a budget instead.",
-          "answer": "I could not find anything called “Solaris Vale Villas” in the published data I hold, so I will not guess. Please check the spelling, or ask about a city or a budget instead.",
+          "reply_excerpt": "No DarGlobal or Wasalt entries in Solaris Vale Villas in this dataset, so I will not guess. The countries it holds are: Saudi Arabia, Oman, United Arab Emirates, Spain, United Kingdom, Qatar.",
+          "answer": "No DarGlobal or Wasalt entries in Solaris Vale Villas in this dataset, so I will not guess. The countries it holds are: Saudi Arabia, Oman, United Arab Emirates, Spain, United Kingdom, Qatar.",
           "card_ids": [],
           "sources": [],
           "model": null
@@ -2804,7 +2794,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 109.0,
+      "latency_ms": 141.0,
       "intent": "project_info",
       "path": "template",
       "turns": [
@@ -2835,7 +2825,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 31.0,
+      "latency_ms": 94.0,
       "intent": "contact_sales",
       "path": "template",
       "turns": [
@@ -2862,7 +2852,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 109.0,
       "intent": "contact_sales",
       "path": "template",
       "turns": [
@@ -2889,7 +2879,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 93.0,
       "intent": "advice",
       "path": "template",
       "turns": [
@@ -2919,7 +2909,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 125.0,
+      "latency_ms": 219.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -2943,7 +2933,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 109.0,
       "intent": "project_info",
       "path": "template",
       "turns": [
@@ -2973,7 +2963,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 31.0,
+      "latency_ms": 79.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -3001,7 +2991,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 109.0,
+      "latency_ms": 78.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -3013,8 +3003,7 @@
           "answer": "According to the published information: Project: Top of the Astera. Developer: DarGlobal.",
           "card_ids": [],
           "sources": [
-            "https://darglobal.co.uk/projects",
-            "https://gulfconstructiononline.com/Article/387509/aida-advances-with-landmark-assets"
+            "https://darglobal.co.uk/projects"
           ],
           "model": "mock/echo"
         }
@@ -3028,7 +3017,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 94.0,
+      "latency_ms": 172.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -3124,7 +3113,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 0.0,
+      "latency_ms": 16.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3172,7 +3161,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 32.0,
+      "latency_ms": 16.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3196,7 +3185,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 15.0,
+      "latency_ms": 0.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3220,7 +3209,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 31.0,
+      "latency_ms": 63.0,
       "intent": "off_topic",
       "path": "template",
       "turns": [
@@ -3244,7 +3233,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 16.0,
+      "latency_ms": 15.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3268,7 +3257,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 16.0,
+      "latency_ms": 0.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3326,7 +3315,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 0.0,
+      "latency_ms": 15.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3422,7 +3411,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 31.0,
+      "latency_ms": 16.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3470,7 +3459,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 15.0,
+      "latency_ms": 47.0,
       "intent": "off_topic",
       "path": "template",
       "turns": [
@@ -3494,7 +3483,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 31.0,
+      "latency_ms": 78.0,
       "intent": "off_topic",
       "path": "template",
       "turns": [
@@ -3518,7 +3507,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 32.0,
+      "latency_ms": 63.0,
       "intent": "off_topic",
       "path": "template",
       "turns": [
@@ -3542,7 +3531,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 31.0,
+      "latency_ms": 47.0,
       "intent": "off_topic",
       "path": "template",
       "turns": [
@@ -3566,7 +3555,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 15.0,
+      "latency_ms": 78.0,
       "intent": "off_topic",
       "path": "template",
       "turns": [
@@ -3590,7 +3579,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 32.0,
+      "latency_ms": 62.0,
       "intent": "off_topic",
       "path": "template",
       "turns": [
@@ -3614,7 +3603,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 32.0,
+      "latency_ms": 63.0,
       "intent": "off_topic",
       "path": "template",
       "turns": [
@@ -3638,7 +3627,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 31.0,
+      "latency_ms": 62.0,
       "intent": "off_topic",
       "path": "template",
       "turns": [
@@ -3662,7 +3651,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 63.0,
+      "latency_ms": 125.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -3686,7 +3675,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 31.0,
+      "latency_ms": 94.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -3710,7 +3699,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 78.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -3734,7 +3723,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 31.0,
+      "latency_ms": 47.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -3758,7 +3747,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 94.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -3779,30 +3768,22 @@
       "category": "find_my_home",
       "lang": "en",
       "split": "tune",
-      "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "intent: 'general' not in ['find_my_home']",
-        "contains_any_ci: ['city or country']"
-      ],
-      "latency_ms": 94.0,
-      "intent": "general",
-      "path": "code",
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 47.0,
+      "intent": "find_my_home",
+      "path": "template",
       "turns": [
         {
           "say": "Help me find a home",
-          "intent": "general",
-          "path": "code",
-          "reply_excerpt": "According to the published information: Floors for Sale in Riyadh — area guide | Saudi Arabia | Wasalt | city_guide: Finding the Right Floor for Sale in Riyadh: A Guide to Your Future Home Find your dream floor for sale in Riyadh. Explore t",
-          "answer": "According to the published information: Floors for Sale in Riyadh — area guide | Saudi Arabia | Wasalt | city_guide: Finding the Right Floor for Sale in Riyadh: A Guide to Your Future Home Find your dream floor for sale in Riyadh. Explore top neighborhoods, real estate tips, and expert buying advice today!",
+          "intent": "find_my_home",
+          "path": "template",
+          "reply_excerpt": "Which city or country interests you?",
+          "answer": "Which city or country interests you?",
           "card_ids": [],
-          "sources": [
-            "https://wasalt.sa/en/floors-for-sale-in-riyadh",
-            "https://wasalt.sa/en/project/Riyadh/qurtubah-residence-17-100329",
-            "https://wasalt.sa/en/project/Khobar/ramz-tharwa-100331"
-          ],
-          "model": "mock/echo"
+          "sources": [],
+          "model": null
         }
       ]
     },
@@ -3811,70 +3792,63 @@
       "category": "find_my_home",
       "lang": "en",
       "split": "heldout",
-      "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "turn2: contains_any_ci: ['budget']",
-        "turn3: contains_any_ci: ['living, a holiday home, or investment', 'holiday home']",
-        "turn4: intent: 'general' not in ['find_my_home']",
-        "turn4: cards.min: 0 < 1"
-      ],
-      "latency_ms": 328.0,
-      "intent": "general",
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 234.0,
+      "intent": "find_my_home",
       "path": "code",
       "turns": [
         {
           "say": "Help me find a home",
-          "intent": "general",
-          "path": "code",
-          "reply_excerpt": "According to the published information: Floors for Sale in Riyadh — area guide | Saudi Arabia | Wasalt | city_guide: Finding the Right Floor for Sale in Riyadh: A Guide to Your Future Home Find your dream floor for sale in Riyadh. Explore t",
-          "answer": "According to the published information: Floors for Sale in Riyadh — area guide | Saudi Arabia | Wasalt | city_guide: Finding the Right Floor for Sale in Riyadh: A Guide to Your Future Home Find your dream floor for sale in Riyadh. Explore top neighborhoods, real estate tips, and expert buying advice today!",
+          "intent": "find_my_home",
+          "path": "template",
+          "reply_excerpt": "Which city or country interests you?",
+          "answer": "Which city or country interests you?",
           "card_ids": [],
-          "sources": [
-            "https://wasalt.sa/en/floors-for-sale-in-riyadh",
-            "https://wasalt.sa/en/project/Riyadh/qurtubah-residence-17-100329",
-            "https://wasalt.sa/en/project/Khobar/ramz-tharwa-100331"
-          ],
-          "model": "mock/echo"
+          "sources": [],
+          "model": null
         },
         {
           "say": "Riyadh",
-          "intent": "general",
-          "path": "code",
-          "reply_excerpt": "According to the published information: المشروع: Shams Al Riyadh. الموقع: Wasalt.",
-          "answer": "According to the published information: المشروع: Shams Al Riyadh. الموقع: Wasalt.",
+          "intent": "find_my_home",
+          "path": "template",
+          "reply_excerpt": "What budget range do you have in mind?",
+          "answer": "What budget range do you have in mind?",
           "card_ids": [],
-          "sources": [
-            "https://blog.wasalt.sa/en/areas-to-buy-property-in-riyadh-2026/",
-            "https://wasalt.sa/en/project/Riyadh/shams-al-riyadh-100325",
-            "https://wasalt.sa/en/properties-for-sale-in-riyadh"
-          ],
-          "model": "mock/echo"
+          "sources": [],
+          "model": null
         },
         {
           "say": "Around 2,000,000 AED",
-          "intent": "general",
+          "intent": "find_my_home",
           "path": "template",
-          "reply_excerpt": "I have no verified information on that in the published DarGlobal or Wasalt data I hold, so I will not guess. You may want to try a different project name, city or budget.",
-          "answer": "I have no verified information on that in the published DarGlobal or Wasalt data I hold, so I will not guess. You may want to try a different project name, city or budget.",
+          "reply_excerpt": "Is this for living, a holiday home, or investment?",
+          "answer": "Is this for living, a holiday home, or investment?",
           "card_ids": [],
           "sources": [],
           "model": null
         },
         {
           "say": "Living",
-          "intent": "general",
+          "intent": "find_my_home",
           "path": "code",
-          "reply_excerpt": "According to the published information: Da Vinci Tower, Interiors By Pagani | Dubai, United Arab Emirates | DarGlobal | Gallery overview: The luxurious residences redefine living standards with 2-to-4-bedroom marble-accented homes, featurin",
-          "answer": "According to the published information: Da Vinci Tower, Interiors By Pagani | Dubai, United Arab Emirates | DarGlobal | Gallery overview: The luxurious residences redefine living standards with 2-to-4-bedroom marble-accented homes, featuring private outdoor areas, light-filled interiors, and panoramic views of the canal and Downtown Dubai",
-          "card_ids": [],
-          "sources": [
-            "https://darglobal.co.uk/davinci-tower-by-pagani",
-            "https://wasalt.sa/en/project/Khobar/mshrwa-alsdfh-ryzydns-34-100564",
-            "https://wasalt.sa/en/project/Riyadh/mshrwa-mshyd-10-100582"
+          "reply_excerpt": "Here is a shortlist from the published data for Riyadh. Projects: ⁨DarGlobal Mansions Interiors by Fendi Casa⁩, ⁨Neptune, Interiors by Mouawad⁩, ⁨Rayana⁩, ⁨Trump Mansions⁩. DarGlobal does not publish prices, so your budget could not be chec",
+          "answer": "Here is a shortlist from the published data for Riyadh. Projects: ⁨DarGlobal Mansions Interiors by Fendi Casa⁩, ⁨Neptune, Interiors by Mouawad⁩, ⁨Rayana⁩, ⁨Trump Mansions⁩. DarGlobal does not publish prices, so your budget could not be checked against its projects; the sales team can confirm prices.",
+          "card_ids": [
+            "dg-neptune-interiors-by-mouawad",
+            "dg-darglobal-mansions-interiors-by-fendi-casa",
+            "dg-rayana",
+            "dg-trump-mansions"
           ],
-          "model": "mock/echo"
+          "sources": [
+            "https://darglobal.co.uk/projects",
+            "https://darglobal.co.uk/neptune",
+            "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+            "https://darglobal.co.uk/get-in-touch",
+            "https://wasalt.sa/en/corporate"
+          ],
+          "model": null
         }
       ]
     },
@@ -3887,7 +3861,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 203.0,
+      "latency_ms": 187.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -3895,8 +3869,8 @@
           "say": "I want a home to live in, in Riyadh, with a budget of 3,000,000 AED. What do you suggest?",
           "intent": "general",
           "path": "code",
-          "reply_excerpt": "According to the published information: Apartments for Rent in Riyadh — area guide | Saudi Arabia | Wasalt | city_guide: or a bit of luxury, villas for rent in Riyadh are an excellent option. These properties often feature gardens, private ",
-          "answer": "According to the published information: Apartments for Rent in Riyadh — area guide | Saudi Arabia | Wasalt | city_guide: or a bit of luxury, villas for rent in Riyadh are an excellent option. These properties often feature gardens, private pools, and multiple bedrooms, providing a premium lifestyle.",
+          "reply_excerpt": "According to the published information: or a bit of luxury, villas for rent in Riyadh are an excellent option. These properties often feature gardens, private pools, and multiple bedrooms, providing a premium lifestyle.",
+          "answer": "According to the published information: or a bit of luxury, villas for rent in Riyadh are an excellent option. These properties often feature gardens, private pools, and multiple bedrooms, providing a premium lifestyle.",
           "card_ids": [],
           "sources": [
             "https://wasalt.sa/en/apartments-for-rent-in-riyadh",
@@ -3912,32 +3886,22 @@
       "category": "find_my_home",
       "lang": "ar",
       "split": "tune",
-      "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "intent: 'general' not in ['find_my_home']",
-        "lang_reply: arabic ratio 0.36",
-        "rtl: arabic ratio 0.36",
-        "contains_any: ['ما المدينة']"
-      ],
-      "latency_ms": 78.0,
-      "intent": "general",
-      "path": "code",
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 47.0,
+      "intent": "find_my_home",
+      "path": "template",
       "turns": [
         {
           "say": "ساعدني في إيجاد منزل",
-          "intent": "general",
-          "path": "code",
-          "reply_excerpt": "وفقاً للمعلومات المنشورة: Listing: Building 472.5 SQM Facing East. Site: Wasalt.",
-          "answer": "وفقاً للمعلومات المنشورة: Listing: Building 472.5 SQM Facing East. Site: Wasalt.",
+          "intent": "find_my_home",
+          "path": "template",
+          "reply_excerpt": "ما المدينة أو الدولة التي تهتم بها؟",
+          "answer": "ما المدينة أو الدولة التي تهتم بها؟",
           "card_ids": [],
-          "sources": [
-            "https://wasalt.sa/ar",
-            "https://wasalt.sa/en/property/rent/building-4725-sqm-facing-east-5966539",
-            "https://wasalt.sa/en/property/sale/land-64254-sqm-facing-east-on-30m-width-street-5949453"
-          ],
-          "model": "mock/echo"
+          "sources": [],
+          "model": null
         }
       ]
     },
@@ -3946,66 +3910,63 @@
       "category": "find_my_home",
       "lang": "en",
       "split": "tune",
-      "model": "mock/echo",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "turn4: contains_any_ci: ['not investment advice', 'not financial advice', 'does not constitute']"
-      ],
-      "latency_ms": 282.0,
-      "intent": "general",
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 234.0,
+      "intent": "find_my_home",
       "path": "code",
       "turns": [
         {
           "say": "Help me find a home",
-          "intent": "general",
-          "path": "code",
-          "reply_excerpt": "According to the published information: Floors for Sale in Riyadh — area guide | Saudi Arabia | Wasalt | city_guide: Finding the Right Floor for Sale in Riyadh: A Guide to Your Future Home Find your dream floor for sale in Riyadh. Explore t",
-          "answer": "According to the published information: Floors for Sale in Riyadh — area guide | Saudi Arabia | Wasalt | city_guide: Finding the Right Floor for Sale in Riyadh: A Guide to Your Future Home Find your dream floor for sale in Riyadh. Explore top neighborhoods, real estate tips, and expert buying advice today!",
+          "intent": "find_my_home",
+          "path": "template",
+          "reply_excerpt": "Which city or country interests you?",
+          "answer": "Which city or country interests you?",
           "card_ids": [],
-          "sources": [
-            "https://wasalt.sa/en/floors-for-sale-in-riyadh",
-            "https://wasalt.sa/en/project/Riyadh/qurtubah-residence-17-100329",
-            "https://wasalt.sa/en/project/Khobar/ramz-tharwa-100331"
-          ],
-          "model": "mock/echo"
+          "sources": [],
+          "model": null
         },
         {
           "say": "Riyadh",
-          "intent": "general",
-          "path": "code",
-          "reply_excerpt": "According to the published information: المشروع: Shams Al Riyadh. الموقع: Wasalt.",
-          "answer": "According to the published information: المشروع: Shams Al Riyadh. الموقع: Wasalt.",
+          "intent": "find_my_home",
+          "path": "template",
+          "reply_excerpt": "What budget range do you have in mind?",
+          "answer": "What budget range do you have in mind?",
           "card_ids": [],
-          "sources": [
-            "https://blog.wasalt.sa/en/areas-to-buy-property-in-riyadh-2026/",
-            "https://wasalt.sa/en/project/Riyadh/shams-al-riyadh-100325",
-            "https://wasalt.sa/en/properties-for-sale-in-riyadh"
-          ],
-          "model": "mock/echo"
+          "sources": [],
+          "model": null
         },
         {
           "say": "2,000,000 AED",
-          "intent": "general",
+          "intent": "find_my_home",
           "path": "template",
-          "reply_excerpt": "I have no verified information on that in the published DarGlobal or Wasalt data I hold, so I will not guess. You may want to try a different project name, city or budget.",
-          "answer": "I have no verified information on that in the published DarGlobal or Wasalt data I hold, so I will not guess. You may want to try a different project name, city or budget.",
+          "reply_excerpt": "Is this for living, a holiday home, or investment?",
+          "answer": "Is this for living, a holiday home, or investment?",
           "card_ids": [],
           "sources": [],
           "model": null
         },
         {
           "say": "Investment",
-          "intent": "general",
+          "intent": "find_my_home",
           "path": "code",
-          "reply_excerpt": "According to the published information: Buying Real Estate in Saudi Arabia 2026 - Trends & Forecast | Saudi Arabia | Wasalt | guide: ## Investment Trends Shaping the Market Investment participation is expanding beyond institutional players,",
-          "answer": "According to the published information: Buying Real Estate in Saudi Arabia 2026 - Trends & Forecast | Saudi Arabia | Wasalt | guide: ## Investment Trends Shaping the Market Investment participation is expanding beyond institutional players, with individuals entering cautiously but strategically. Key investment trends include: Rising inter",
-          "card_ids": [],
-          "sources": [
-            "https://blog.wasalt.sa/en/buying-real-estate-in-saudi-arabia-2026/",
-            "https://darglobal.co.uk/projects"
+          "reply_excerpt": "Here is a shortlist from the published data for Riyadh. Projects: ⁨DarGlobal Mansions Interiors by Fendi Casa⁩, ⁨Neptune, Interiors by Mouawad⁩, ⁨Rayana⁩, ⁨Trump Mansions⁩. DarGlobal does not publish prices, so your budget could not be chec",
+          "answer": "Here is a shortlist from the published data for Riyadh. Projects: ⁨DarGlobal Mansions Interiors by Fendi Casa⁩, ⁨Neptune, Interiors by Mouawad⁩, ⁨Rayana⁩, ⁨Trump Mansions⁩. DarGlobal does not publish prices, so your budget could not be checked against its projects; the sales team can confirm prices. This is not investment advice: these are published facts only, and no return can be promised.",
+          "card_ids": [
+            "dg-neptune-interiors-by-mouawad",
+            "dg-darglobal-mansions-interiors-by-fendi-casa",
+            "dg-rayana",
+            "dg-trump-mansions"
           ],
-          "model": "mock/echo"
+          "sources": [
+            "https://darglobal.co.uk/projects",
+            "https://darglobal.co.uk/neptune",
+            "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+            "https://darglobal.co.uk/get-in-touch",
+            "https://wasalt.sa/en/corporate"
+          ],
+          "model": null
         }
       ]
     },
@@ -4018,21 +3979,21 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 93.0,
+      "latency_ms": 47.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
         {
-          "say": "Tell me about دار المشاعر",
+          "say": "Tell me about W Residences",
           "intent": "project_info",
           "path": "code",
-          "reply_excerpt": "According to the published information: دار المشاعر. Location: Makkah, Saudi Arabia.",
-          "answer": "According to the published information: دار المشاعر. Location: Makkah, Saudi Arabia.",
+          "reply_excerpt": "According to the published information: W Residences. Location: Dubai, United Arab Emirates.",
+          "answer": "According to the published information: W Residences. Location: Dubai, United Arab Emirates.",
           "card_ids": [
-            "wasalt-p-100098"
+            "dg-w-residences"
           ],
           "sources": [
-            "https://wasalt.sa/en/project/Makkah%20Al%20Mukarramah/dar-almshaar-100098"
+            "https://darglobal.co.uk/w-residences"
           ],
           "model": "mock/echo"
         }
@@ -4047,7 +4008,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 94.0,
+      "latency_ms": 32.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4078,21 +4039,21 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 63.0,
+      "latency_ms": 47.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
         {
-          "say": "Tell me about Rafia",
+          "say": "Tell me about دروازة",
           "intent": "project_info",
           "path": "code",
-          "reply_excerpt": "According to the published information: Rafia. Location: Riyadh, Saudi Arabia.",
-          "answer": "According to the published information: Rafia. Location: Riyadh, Saudi Arabia.",
+          "reply_excerpt": "According to the published information: دروازة. Location: Riyadh, Saudi Arabia.",
+          "answer": "According to the published information: دروازة. Location: Riyadh, Saudi Arabia.",
           "card_ids": [
-            "wasalt-p-100324"
+            "wasalt-p-100323"
           ],
           "sources": [
-            "https://wasalt.sa/en/project/Riyadh/rafia-100324"
+            "https://wasalt.sa/en/project/Riyadh/%D8%AF%D8%B1%D9%88%D8%A7%D8%B2%D8%A9-100323"
           ],
           "model": "mock/echo"
         }
@@ -4106,7 +4067,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 78.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4134,7 +4095,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 79.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4162,7 +4123,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 62.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -4199,7 +4160,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 63.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -4236,7 +4197,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 62.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -4270,24 +4231,25 @@
       "category": "live_sample",
       "lang": "en",
       "split": "tune",
-      "status": "failed",
-      "passed": false,
-      "failures": [
-        "must_cite: no sources"
-      ],
-      "latency_ms": 265.0,
+      "model": "mock/echo",
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 157.0,
       "intent": "general",
-      "path": "template",
+      "path": "code",
       "turns": [
         {
           "say": "What does Wasalt say about Buying Real Estate in Saudi Arabia 2026: Trends & Forecast?",
           "intent": "general",
-          "path": "template",
-          "reply_excerpt": "I could not find anything called “Buying Real Estate” in the published data I hold, so I will not guess. Please check the spelling, or ask about a city or a budget instead.",
-          "answer": "I could not find anything called “Buying Real Estate” in the published data I hold, so I will not guess. Please check the spelling, or ask about a city or a budget instead.",
+          "path": "code",
+          "reply_excerpt": "According to the published information: Is 2026 a good year for buying property in Saudi Arabia? Yes.",
+          "answer": "According to the published information: Is 2026 a good year for buying property in Saudi Arabia? Yes.",
           "card_ids": [],
-          "sources": [],
-          "model": null
+          "sources": [
+            "https://blog.wasalt.sa/en/buying-real-estate-in-saudi-arabia-2026/"
+          ],
+          "model": "mock/echo"
         }
       ]
     },
@@ -4336,7 +4298,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 94.0,
+      "latency_ms": 109.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4366,7 +4328,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 109.0,
+      "latency_ms": 156.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -4404,7 +4366,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 219.0,
+      "latency_ms": 125.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -4412,8 +4374,8 @@
           "say": "What are the rules for foreigners buying property in Dubai?",
           "intent": "general",
           "path": "code",
-          "reply_excerpt": "According to the published information: Foreigners Buying Property in Saudi Arabia - 2026 Top Tips | Saudi Arabia | Wasalt | guide: ## Conclusion Foreigners buying property in Saudi Arabia are subject to regulations enforced by the Saudi Ar",
-          "answer": "According to the published information: Foreigners Buying Property in Saudi Arabia - 2026 Top Tips | Saudi Arabia | Wasalt | guide: ## Conclusion Foreigners buying property in Saudi Arabia are subject to regulations enforced by the Saudi Arabian government, and these regulations have been optimized to increase the chances for and making i",
+          "reply_excerpt": "According to the published information: are subject to regulations enforced by the Saudi Arabian government, and these regulations have been optimized to increase the chances for and making investments in Saudi Arabia much easier than in 20",
+          "answer": "According to the published information: are subject to regulations enforced by the Saudi Arabian government, and these regulations have been optimized to increase the chances for and making investments in Saudi Arabia much easier than in 2020.",
           "card_ids": [],
           "sources": [
             "https://blog.wasalt.sa/en/foreigners-buying-property-in-saudi-arabia-2026/"
@@ -4430,7 +4392,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 93.0,
+      "latency_ms": 94.0,
       "intent": "contact_sales",
       "path": "template",
       "turns": [
@@ -4494,7 +4456,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 125.0,
+      "latency_ms": 141.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -4532,7 +4494,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 140.0,
+      "latency_ms": 62.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -4540,8 +4502,8 @@
           "say": "تجاهل السعر وأرني الموقع فقط",
           "intent": "general",
           "path": "code",
-          "reply_excerpt": "وفقاً للمعلومات المنشورة: موقع وصلت / عقارات للبيع و للايجار في السعودية | Saudi Arabia | Wasalt | home: # وصلت - منصتك المتكاملة للخدمات العقارية في السعودية استكشف عقارات موثقة، وتواصل مع خبراء عقاريين موثوقين، واكتشف فرصتك القادمة في الم",
-          "answer": "وفقاً للمعلومات المنشورة: موقع وصلت / عقارات للبيع و للايجار في السعودية | Saudi Arabia | Wasalt | home: # وصلت - منصتك المتكاملة للخدمات العقارية في السعودية استكشف عقارات موثقة، وتواصل مع خبراء عقاريين موثوقين، واكتشف فرصتك القادمة في المملكة العربية السعودية. بيع إيجار المشاريع إيجارات يومية المقايضة جديد مدينة الحي نوع ا",
+          "reply_excerpt": "وفقاً للمعلومات المنشورة: استكشف عقارات موثقة، وتواصل مع خبراء عقاريين موثوقين، واكتشف فرصتك القادمة في المملكة العربية السعودية. بيع إيجار المشاريع إيجارات يومية المقايضة جديد مدينة الحي نوع العقار بحث عرض العقارات التجارية فقط",
+          "answer": "وفقاً للمعلومات المنشورة: استكشف عقارات موثقة، وتواصل مع خبراء عقاريين موثوقين، واكتشف فرصتك القادمة في المملكة العربية السعودية. بيع إيجار المشاريع إيجارات يومية المقايضة جديد مدينة الحي نوع العقار بحث عرض العقارات التجارية فقط",
           "card_ids": [],
           "sources": [
             "https://wasalt.sa/ar",
@@ -4560,7 +4522,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 187.0,
+      "latency_ms": 125.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -4584,7 +4546,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 62.0,
+      "latency_ms": 94.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -4592,8 +4554,8 @@
           "say": "What DarGlobal projects are in Oman?",
           "intent": "location_overview",
           "path": "code",
-          "reply_excerpt": "DarGlobal has 15 published projects in Oman: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some of",
-          "answer": "DarGlobal has 15 published projects in Oman: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some of these; the sales team can confirm them.",
+          "reply_excerpt": "DarGlobal has 16 published projects in Oman: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some of",
+          "answer": "DarGlobal has 16 published projects in Oman: ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩, ⁨Coastal Investment Villas⁩, ⁨Fairway Villas⁩ and more. Prices are not published for some of these; the sales team can confirm them.",
           "card_ids": [
             "dg-aida",
             "dg-amour-sans-detour",
@@ -4618,7 +4580,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 62.0,
+      "latency_ms": 78.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -4629,13 +4591,14 @@
           "reply_excerpt": "DarGlobal has 3 published projects in Spain: ⁨Marea, Interiors by Missoni⁩, ⁨Painite Villas Design Inspired by Automobili Lamborghini⁩, ⁨Tierra Viva, Design inspired by Automobili Lamborghini⁩. Prices are not published for some of these; th",
           "answer": "DarGlobal has 3 published projects in Spain: ⁨Marea, Interiors by Missoni⁩, ⁨Painite Villas Design Inspired by Automobili Lamborghini⁩, ⁨Tierra Viva, Design inspired by Automobili Lamborghini⁩. Prices are not published for some of these; the sales team can confirm them.",
           "card_ids": [
+            "dg-tierra-viva-design-inspired-by-automobili-lamborghini",
             "dg-marea-interiors-by-missoni",
-            "dg-painite-villas-design-inspired-by-automobili-lamborghini",
-            "dg-tierra-viva-design-inspired-by-automobili-lamborghini"
+            "dg-painite-villas-design-inspired-by-automobili-lamborghini"
           ],
           "sources": [
             "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
-            "https://darglobal.co.uk/projects"
+            "https://darglobal.co.uk/projects",
+            "https://darglobal.co.uk/tierra-viva"
           ],
           "model": null
         }
@@ -4649,7 +4612,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 63.0,
+      "latency_ms": 109.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -4679,7 +4642,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 125.0,
+      "latency_ms": 140.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4707,7 +4670,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 110.0,
+      "latency_ms": 141.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4735,7 +4698,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 109.0,
+      "latency_ms": 140.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4763,7 +4726,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 93.0,
+      "latency_ms": 110.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4793,7 +4756,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 47.0,
+      "latency_ms": 63.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4821,7 +4784,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 94.0,
+      "latency_ms": 109.0,
       "intent": "advice",
       "path": "template",
       "turns": [
@@ -4851,7 +4814,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 78.0,
+      "latency_ms": 93.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -4859,8 +4822,8 @@
           "say": "ما هي مشاريع دار جلوبال في سلطنة عمان؟",
           "intent": "location_overview",
           "path": "code",
-          "reply_excerpt": "لدى دار جلوبال 15 مشروعاً منشوراً في عُمان: ⁨Aida⁩، ⁨Amour Sans Detour⁩، ⁨Amour Sans Detour 2⁩، ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩، ⁨Coastal Investment Villas⁩، ⁨Fairway Villas⁩ وغيرها. تجد أدناه بطاقة لكل مشروع مع رابط صفحته",
-          "answer": "لدى دار جلوبال 15 مشروعاً منشوراً في عُمان: ⁨Aida⁩، ⁨Amour Sans Detour⁩، ⁨Amour Sans Detour 2⁩، ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩، ⁨Coastal Investment Villas⁩، ⁨Fairway Villas⁩ وغيرها. تجد أدناه بطاقة لكل مشروع مع رابط صفحته المنشورة. الأسعار غير منشورة لبعض هذه المشاريع، ويمكن لفريق المبيعات تأكيدها.",
+          "reply_excerpt": "لدى دار جلوبال 16 مشروعاً منشوراً في عُمان: ⁨Aida⁩، ⁨Amour Sans Detour⁩، ⁨Amour Sans Detour 2⁩، ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩، ⁨Coastal Investment Villas⁩، ⁨Fairway Villas⁩ وغيرها. تجد أدناه بطاقة لكل مشروع مع رابط صفحته",
+          "answer": "لدى دار جلوبال 16 مشروعاً منشوراً في عُمان: ⁨Aida⁩، ⁨Amour Sans Detour⁩، ⁨Amour Sans Detour 2⁩، ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩، ⁨Coastal Investment Villas⁩، ⁨Fairway Villas⁩ وغيرها. تجد أدناه بطاقة لكل مشروع مع رابط صفحته المنشورة. الأسعار غير منشورة لبعض هذه المشاريع، ويمكن لفريق المبيعات تأكيدها.",
           "card_ids": [
             "dg-aida",
             "dg-amour-sans-detour",
@@ -4885,7 +4848,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 78.0,
+      "latency_ms": 94.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4943,7 +4906,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 78.0,
+      "latency_ms": 47.0,
       "intent": "contact_sales",
       "path": "template",
       "turns": [
@@ -4997,7 +4960,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 94.0,
+      "latency_ms": 78.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -5008,11 +4971,12 @@
           "reply_excerpt": "DarGlobal has 2 published projects in United Kingdom: ⁨7&8 Albert Hall Mansions⁩, ⁨The Mulliner⁩. Prices are not published for some of these; the sales team can confirm them.",
           "answer": "DarGlobal has 2 published projects in United Kingdom: ⁨7&8 Albert Hall Mansions⁩, ⁨The Mulliner⁩. Prices are not published for some of these; the sales team can confirm them.",
           "card_ids": [
-            "dg-7and8-albert-hall-mansions",
-            "dg-the-mulliner"
+            "dg-the-mulliner",
+            "dg-7and8-albert-hall-mansions"
           ],
           "sources": [
-            "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+            "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+            "https://darglobal.co.uk/the-mulliner"
           ],
           "model": null
         }
@@ -5026,7 +4990,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 187.0,
+      "latency_ms": 172.0,
       "intent": "steering",
       "path": "template",
       "turns": [
@@ -5050,7 +5014,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 125.0,
+      "latency_ms": 141.0,
       "intent": "steering",
       "path": "template",
       "turns": [
@@ -5074,7 +5038,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 156.0,
+      "latency_ms": 171.0,
       "intent": "steering",
       "path": "template",
       "turns": [
@@ -5122,7 +5086,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 156.0,
+      "latency_ms": 172.0,
       "intent": "steering",
       "path": "template",
       "turns": [
@@ -5146,7 +5110,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 171.0,
+      "latency_ms": 109.0,
       "intent": "search",
       "path": "template",
       "turns": [
@@ -5171,7 +5135,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 188.0,
+      "latency_ms": 63.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5203,7 +5167,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 140.0,
+      "latency_ms": 78.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5211,13 +5175,13 @@
           "say": "Where is Trump Tower Jeddah and what is its status?",
           "intent": "project_info",
           "path": "code",
-          "reply_excerpt": "The published status of Trump Tower Jeddah is: Under construction; main construction contract awarded.",
-          "answer": "The published status of Trump Tower Jeddah is: Under construction; main construction contract awarded.",
+          "reply_excerpt": "The published status of Trump Tower Jeddah is: Under Development.",
+          "answer": "The published status of Trump Tower Jeddah is: Under Development.",
           "card_ids": [
             "dg-trump-tower-jeddah"
           ],
           "sources": [
-            "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+            "https://darglobal.co.uk/trump-tower-jeddah"
           ],
           "model": null
         }
@@ -5232,7 +5196,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 203.0,
+      "latency_ms": 47.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5260,7 +5224,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 109.0,
+      "latency_ms": 78.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5274,7 +5238,7 @@
             "dg-trump-tower-jeddah"
           ],
           "sources": [
-            "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+            "https://darglobal.co.uk/trump-tower-jeddah",
             "https://darglobal.co.uk/get-in-touch",
             "https://wasalt.sa/en/corporate"
           ],
@@ -5291,7 +5255,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 203.0,
+      "latency_ms": 46.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5338,7 +5302,7 @@
       "contact_sales": 3
     },
     "find_my_home": {
-      "general": 4
+      "find_my_home": 4
     },
     "calculation": {
       "calculation": 5
@@ -5346,25 +5310,25 @@
   },
   "by_language": {
     "en": {
-      "passed": 125,
-      "failed": 4,
+      "passed": 129,
+      "failed": 0,
       "n": 129,
-      "rate": 0.969,
-      "se": 0.0153,
+      "rate": 1.0,
+      "se": 0.0,
       "ci95": [
-        0.923,
-        0.9879
+        0.9711,
+        1.0
       ]
     },
     "ar": {
-      "passed": 30,
-      "failed": 2,
+      "passed": 32,
+      "failed": 0,
       "n": 32,
-      "rate": 0.9375,
-      "se": 0.0428,
+      "rate": 1.0,
+      "se": 0.0,
       "ci95": [
-        0.7985,
-        0.9827
+        0.8928,
+        1.0
       ]
     },
     "mixed": {
@@ -5382,25 +5346,25 @@
   "by_split": {
     "tune": {
       "n": 133,
-      "rate": 0.9624,
-      "se": 0.0165,
+      "rate": 1.0,
+      "se": 0.0,
       "ci95": [
-        0.915,
-        0.9838
+        0.9719,
+        1.0
       ],
-      "passed": 128,
-      "failed": 5
+      "passed": 133,
+      "failed": 0
     },
     "heldout": {
       "n": 33,
-      "rate": 0.9697,
-      "se": 0.0298,
+      "rate": 1.0,
+      "se": 0.0,
       "ci95": [
-        0.8468,
-        0.9946
+        0.8957,
+        1.0
       ],
-      "passed": 32,
-      "failed": 1
+      "passed": 33,
+      "failed": 0
     }
   },
   "banner": {
@@ -5409,23 +5373,15 @@
     "llm_state": "ok",
     "text": "NO REAL LLM: mock / degraded answers. Numbers do NOT measure model answer quality."
   },
-  "failure_types": {
-    "intent": 4,
-    "contains_any_ci": 4,
-    "contains_any": 2,
-    "cards.min": 1,
-    "lang_reply": 1,
-    "rtl": 1,
-    "must_cite": 1
-  },
+  "failure_types": {},
   "citation_subset": {
-    "checked": 101,
+    "checked": 98,
     "violations": 0,
-    "n": 101,
+    "n": 98,
     "rate": 1.0,
     "se": 0.0,
     "ci95": [
-      0.9634,
+      0.9623,
       1.0
     ]
   },
@@ -5444,7 +5400,7 @@
       "google/gemma-4-26b-a4b-it:free"
     ],
     "flags": {
-      "FF_FIND_MY_HOME": false,
+      "FF_FIND_MY_HOME": true,
       "FF_MAP": false,
       "FF_VOICE": false,
       "FF_HANDOFF_BRIEF": false,
@@ -5456,7 +5412,7 @@
     "planted_chunk": false,
     "judge_used": false,
     "judge_model": null,
-    "wall_s": 365,
+    "wall_s": 364,
     "partial_selection": false,
     "notes": [
       "Numbers checks use retrieved/card ids from the trace; they are a proxy for 'in context'.",
@@ -5465,5 +5421,318 @@
       "CIs: Wilson 95% for proportions, percentile bootstrap for TTFT p95. n is small, so intervals are wide.",
       "llm_calls_counted counts every attempt (retries included) as one request: a ceiling, not a measurement."
     ]
+  },
+  "live_subset": {
+    "run_at": "2026-11-19T11:38:19+00:00",
+    "dataset_version": "20261119-e5604e7e",
+    "llm_calls": 5,
+    "max_llm_calls": 5,
+    "n": 5,
+    "passed": 5,
+    "failed": 0,
+    "models_answered": {
+      "nvidia/nemotron-3-ultra-550b-a55b:free": 4
+    },
+    "app_budget_used_before": 0,
+    "app_budget_used_after": 4,
+    "judge_used": false,
+    "cases": [
+      {
+        "id": "R2",
+        "category": "reviewer",
+        "lang": "en",
+        "split": "tune",
+        "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "status": "passed",
+        "passed": true,
+        "failures": [],
+        "latency_ms": 5469.0,
+        "intent": "general",
+        "path": "code",
+        "turns": [
+          {
+            "say": "How do Wasalt auctions work?",
+            "intent": "general",
+            "path": "code",
+            "reply_excerpt": "Wasalt Auctions are timed online auctions where real estate assets (and movable assets) are listed by Sales Agents—private sellers or Infath (Entrustment and Liquidation Center). Wasalt acts solely as an intermediary platform; it does not o",
+            "answer": "Wasalt Auctions are timed online auctions where real estate assets (and movable assets) are listed by Sales Agents—private sellers or Infath (Entrustment and Liquidation Center). Wasalt acts solely as an intermediary platform; it does not own, sell, warrant, or not guaranteed any asset. Bidders compete to determine the final price. Each auction has its own additional terms. If a winning bidder fails to complete payment within the specified period, the sale may be cancelled, the bid deposit retained, and the asset re‐listed. The winning bidder and Sales Agent are jointly responsible for government fees, transfer, registration, and similar charges.",
+            "card_ids": [],
+            "sources": [
+              "https://wasalt.sa/en",
+              "https://wasalt.sa/en/s/terms-n-conditions-for-auction"
+            ],
+            "model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+          }
+        ]
+      },
+      {
+        "id": "F11",
+        "category": "factual",
+        "lang": "en",
+        "split": "tune",
+        "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "status": "passed",
+        "passed": true,
+        "failures": [],
+        "latency_ms": 5172.0,
+        "intent": "project_info",
+        "path": "code",
+        "turns": [
+          {
+            "say": "Tell me about 7&8 Albert Hall Mansions",
+            "intent": "project_info",
+            "path": "code",
+            "reply_excerpt": "**7&8 Albert Hall Mansions** \n- **Developer:** DarGlobal \n- **Location:** Overlooking Hyde Park, London, United Kingdom \n- **Property type:** Single penthouse (1 unit) \n- **Status:** Under construction \n- **Launch:** Q2 2024 (per Dar Global",
+            "answer": "**7&8 Albert Hall Mansions** \n- **Developer:** DarGlobal \n- **Location:** Overlooking Hyde Park, London, United Kingdom \n- **Property type:** Single penthouse (1 unit) \n- **Status:** Under construction \n- **Launch:** Q2 2024 (per Dar Global PLC RNS 1301W, 11 Mar 2026) \n- **Expected completion/handover:** Q2 2027 \n- **Price:** Not published by DarGlobal \n\nThe project appears on DarGlobal’s projects page; a detailed page has not been collected. The above facts come from a third‐party regulatory announcement (RNS 1301W).",
+            "card_ids": [
+              "dg-7and8-albert-hall-mansions"
+            ],
+            "sources": [
+              "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W",
+              "https://darglobal.co.uk/projects"
+            ],
+            "model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+          }
+        ]
+      },
+      {
+        "id": "A02",
+        "category": "arabic",
+        "lang": "ar",
+        "split": "tune",
+        "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "status": "passed",
+        "passed": true,
+        "failures": [],
+        "latency_ms": 4469.0,
+        "intent": "general",
+        "path": "code",
+        "turns": [
+          {
+            "say": "كيف تعمل المزادات في وصلت؟",
+            "intent": "general",
+            "path": "code",
+            "reply_excerpt": "تعمل مزادات وصلت كمنصة مزادات إلكترونية محددة بوقت، يتنافس فيها المزايدون للوصول إلى السعر النهائي للبيع. تشمل المزادات أصولاً من ملاك أفراد وأخرى بالتعاون مع مركز الإسناد والتصفية (إنفاذ)، وتغطي العقارات والمركبات والأصول المنقولة في جميع ",
+            "answer": "تعمل مزادات وصلت كمنصة مزادات إلكترونية محددة بوقت، يتنافس فيها المزايدون للوصول إلى السعر النهائي للبيع. تشمل المزادات أصولاً من ملاك أفراد وأخرى بالتعاون مع مركز الإسناد والتصفية (إنفاذ)، وتغطي العقارات والمركبات والأصول المنقولة في جميع أنحاء المملكة. للمشاركة، يجب إنشاء حساب، الاطلاع على شروط كل مزاد (مثل سعر الاحتياط، زيادات المزايدة، وإيداع التأمين)، ثم تقديم العروض خلال فترة المزاد. الفائز يتحمل الرسوم الحكومية ونقل الملكية وفق الشروط المعلنة.",
+            "card_ids": [],
+            "sources": [
+              "https://wasalt.sa/ar",
+              "https://wasalt.sa/en/s/terms-n-conditions-for-auction"
+            ],
+            "model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+          }
+        ]
+      },
+      {
+        "id": "A15",
+        "category": "arabic",
+        "lang": "ar",
+        "split": "tune",
+        "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "status": "passed",
+        "passed": true,
+        "failures": [],
+        "latency_ms": 6281.0,
+        "intent": "project_info",
+        "path": "code",
+        "turns": [
+          {
+            "say": "حدثني عن مشروع فلل إتوال",
+            "intent": "project_info",
+            "path": "code",
+            "reply_excerpt": "**مشروع فلل إتوال** \n- **الموقع**: الرياض، حي مطار الملك خالد (منصة Wasalt).  \n- **النوع**: فلل مستقلة.  \n- **غرف النوم**: 3 أو 4 غرف.  \n- **المساحات**: 300–422 م2.  \n- **السعر**: يبدأ من 4,200,000 ريال، ويصل إلى 10,178,420 ريال.  \n- **الحا",
+            "answer": "**مشروع فلل إتوال** \n- **الموقع**: الرياض، حي مطار الملك خالد (منصة Wasalt).  \n- **النوع**: فلل مستقلة.  \n- **غرف النوم**: 3 أو 4 غرف.  \n- **المساحات**: 300–422 م2.  \n- **السعر**: يبدأ من 4,200,000 ريال، ويصل إلى 10,178,420 ريال.  \n- **الحالة**: تحت الإنشاء.  \n- **سنة التسليم**: غير منشورة. للحصول على تفاصيل الوحدات المتاحة أو حجز زيارة، يُرجى التواصل مع فريق المبيعات عبر Wasalt.",
+            "card_ids": [
+              "wasalt-p-100159"
+            ],
+            "sources": [
+              "https://wasalt.sa/en/project/Riyadh/mshrwa-fll-itwal-100159"
+            ],
+            "model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+          }
+        ]
+      },
+      {
+        "id": "T01",
+        "category": "trap",
+        "lang": "en",
+        "split": "tune",
+        "status": "passed",
+        "passed": true,
+        "failures": [],
+        "latency_ms": 188.0,
+        "intent": "general",
+        "path": "template",
+        "turns": [
+          {
+            "say": "What is the starting price of Obsidian Palm Residences?",
+            "intent": "general",
+            "path": "template",
+            "reply_excerpt": "I could not find anything called “Obsidian Palm Residences” in the published data I hold, so I will not guess. Please check the spelling, or ask about a city or a budget instead.",
+            "answer": "I could not find anything called “Obsidian Palm Residences” in the published data I hold, so I will not guess. Please check the spelling, or ask about a city or a budget instead.",
+            "card_ids": [],
+            "sources": [],
+            "model": null
+          }
+        ]
+      }
+    ]
+  },
+  "retrieval": {
+    "experiment": "E1",
+    "dataset_version": "20261119-eb33f465",
+    "retriever_mode": "hybrid",
+    "index_state": "ok",
+    "functions": {
+      "bm25": "bm25_search",
+      "embeddings": "vector_search",
+      "hybrid": "hybrid_search"
+    },
+    "results": {
+      "bm25": {
+        "en_name": {
+          "n": 54,
+          "hit@1": 0.889,
+          "recall@1": 0.889,
+          "recall@3": 0.963,
+          "recall@6": 0.963,
+          "hit@6": 0.963,
+          "mrr": 0.923,
+          "ms_per_query": 27.8
+        },
+        "ar_name": {
+          "n": 18,
+          "hit@1": 0.944,
+          "recall@1": 0.944,
+          "recall@3": 0.944,
+          "recall@6": 1.0,
+          "hit@6": 1.0,
+          "mrr": 0.956,
+          "ms_per_query": 2.6
+        },
+        "en_city": {
+          "n": 10,
+          "precision@6": 0.5,
+          "ms_per_query": 1.5
+        }
+      },
+      "embeddings": {
+        "en_name": {
+          "n": 54,
+          "hit@1": 0.667,
+          "recall@1": 0.667,
+          "recall@3": 0.87,
+          "recall@6": 0.926,
+          "hit@6": 0.926,
+          "mrr": 0.78,
+          "ms_per_query": 60.2
+        },
+        "ar_name": {
+          "n": 18,
+          "hit@1": 0.111,
+          "recall@1": 0.111,
+          "recall@3": 0.167,
+          "recall@6": 0.278,
+          "hit@6": 0.278,
+          "mrr": 0.164,
+          "ms_per_query": 85.1
+        },
+        "en_city": {
+          "n": 10,
+          "precision@6": 0.45,
+          "ms_per_query": 90.7
+        }
+      },
+      "hybrid": {
+        "en_name": {
+          "n": 54,
+          "hit@1": 0.796,
+          "recall@1": 0.796,
+          "recall@3": 0.963,
+          "recall@6": 0.981,
+          "hit@6": 0.981,
+          "mrr": 0.881,
+          "ms_per_query": 95.8
+        },
+        "ar_name": {
+          "n": 18,
+          "hit@1": 0.556,
+          "recall@1": 0.556,
+          "recall@3": 0.833,
+          "recall@6": 0.889,
+          "hit@6": 0.889,
+          "mrr": 0.699,
+          "ms_per_query": 90.3
+        },
+        "en_city": {
+          "n": 10,
+          "precision@6": 0.55,
+          "ms_per_query": 95.3
+        }
+      }
+    },
+    "notes": [],
+    "caveat": "Proxy benchmark built from the DB itself (known-item + city precision); small n; not end-to-end quality.",
+    "run_at": "2026-11-19T12:28:29+00:00",
+    "by_language": {
+      "en": {
+        "bm25": {
+          "n": 54,
+          "hit@1": 0.889,
+          "recall@1": 0.889,
+          "recall@3": 0.963,
+          "recall@6": 0.963,
+          "hit@6": 0.963,
+          "mrr": 0.923
+        },
+        "embeddings": {
+          "n": 54,
+          "hit@1": 0.667,
+          "recall@1": 0.667,
+          "recall@3": 0.87,
+          "recall@6": 0.926,
+          "hit@6": 0.926,
+          "mrr": 0.78
+        },
+        "hybrid": {
+          "n": 54,
+          "hit@1": 0.796,
+          "recall@1": 0.796,
+          "recall@3": 0.963,
+          "recall@6": 0.981,
+          "hit@6": 0.981,
+          "mrr": 0.881
+        }
+      },
+      "ar": {
+        "bm25": {
+          "n": 18,
+          "hit@1": 0.944,
+          "recall@1": 0.944,
+          "recall@3": 0.944,
+          "recall@6": 1.0,
+          "hit@6": 1.0,
+          "mrr": 0.956
+        },
+        "embeddings": {
+          "n": 18,
+          "hit@1": 0.111,
+          "recall@1": 0.111,
+          "recall@3": 0.167,
+          "recall@6": 0.278,
+          "hit@6": 0.278,
+          "mrr": 0.164
+        },
+        "hybrid": {
+          "n": 18,
+          "hit@1": 0.556,
+          "recall@1": 0.556,
+          "recall@3": 0.833,
+          "recall@6": 0.889,
+          "hit@6": 0.889,
+          "mrr": 0.699
+        }
+      }
+    }
   }
 }

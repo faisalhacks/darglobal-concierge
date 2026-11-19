@@ -6,11 +6,20 @@ loadtest/results/ or data/, and every table names its source file. A missing sou
 as 'not measured'. Re-run after the final eval run:
 
     python evals/make_report.py            # writes REPORT.md and updates README.md between the AUTOGEN markers
-    python evals/make_report.py --check    # exits 1 if REPORT.md/README.md are stale vs the result files
+    python evals/make_report.py --check    # exits 1 if REPORT.md/README.md are stale vs the result files, if the
+                                           # dataset ids disagree between result files, or if a doc claims "all ... pass"
+                                           # while the latest run has failures
+    python evals/make_report.py --check --url https://APP_URL   # also compares the live /api/evals with latest.json
+    python evals/make_report.py --check --final                 # also fails while deploy-time {PLACEHOLDERS} remain
+
+One source of truth: evals/results/latest.json. /evals (served from the baked copy of that file), REPORT.md and the README
+blocks between the AUTOGEN markers are all derived from it (plus data/completeness.json and the E1/live files that
+runner.py attaches to it), so the dataset id and the passed/failed/skipped counts cannot differ between them.
 
 Optional inputs (all optional):
   evals/results/latest.json            full-suite run (mock LLM unless run_context.llm_mode says otherwise)
-  evals/results/live_subset.json       the real-model subset (written by runner.py --max-llm-calls N)
+  evals/results/live_subset.json       the real-model run (runner.py --max-llm-calls N; e.g. --only R1,R2,R3,R4,R5,R6,R7
+                                       against the public URL). Every case with an answer is printed verbatim in section 8b.
   evals/results/E1.json                retrieval experiment; E1_before_headers.json / E1_after_headers.json for the A/B
   evals/results/baseline_before.json   the run used as 'before' in the failures table
   evals/results/fixes.json             [{"case": id, "cause": str, "fix": str}] written by whoever fixed it
@@ -28,6 +37,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 RES = ROOT / "evals" / "results"
 NM = "not measured"
+# Filled by the deploy step, never by this script. --final fails while any of these is still in README.md.
+LABELS = {"ttft_p95_ms": "ttft_p95_ms (mock LLM)"}
 
 
 def load(p: Path):
@@ -91,6 +102,88 @@ def pick_transcripts(latest, live):
     return picked[:5]
 
 
+def real_cases(live):
+    return [c for c in (live or {}).get("cases", []) if c.get("status") != "skipped" and c.get("turns")]
+
+
+def facts(latest, comp, live, e1):
+    """Every number the README quotes, read from result files. Unknown -> 'not measured'."""
+    c = (comp or {}).get("counts", {})
+    dg = (c.get("projects_by_site") or {}).get("DarGlobal")
+    full = ((c.get("projects_detail_by_site") or {}).get("DarGlobal") or {}).get("page")
+    T = latest["targets"]
+    return {
+        "DATASET_VERSION": latest.get("dataset_version"),
+        "DG_PROJECTS": dg if dg is not None else NM,
+        "DG_FULL_PAGES": full if full is not None else NM,
+        "DG_OTHER_PROJECTS": (dg - full) if isinstance(dg, int) and isinstance(full, int) else NM,
+        "WASALT_LISTINGS": c.get("listings") if c.get("listings") is not None else NM,
+        "CITATION_RATE": f(T.get("citation_rate", {}).get("actual")),
+        "N_REAL": len(real_cases(live)),
+        "N_REAL_MODEL": sum(1 for c in real_cases(live) if c.get("model")),
+    }
+
+
+def e1_pair(e1, qs):
+    r = (e1 or {}).get("results") or {}
+    try:
+        return r["bm25"][qs]["recall@1"], r["hybrid"][qs]["recall@1"], r["bm25"][qs]["n"]
+    except (KeyError, TypeError):
+        return None
+
+
+def limitations(F, latest, e1, live):
+    """README 'Known limitations': the chair's disclosure sentences with every number filled from a result file."""
+    T, rc = latest["targets"], latest.get("run_context") or {}
+    cases = latest["cases"]
+    out = []
+    A = out.append
+    A('DarGlobal\'s public pages publish no prices, so the concierge says "Price on request", links the official enquiry page and never estimates one; the trap question in "Try these" shows this.')
+    A(f"DarGlobal's bot protection challenged my fetcher's first HTML request, so it stopped and never retried or bypassed it; I read {F['DG_FULL_PAGES']} project pages in my own browser at human pace and filled the other {F['DG_OTHER_PROJECTS']} projects from named public sources, each labelled with its real origin.")
+    A("The free model tier allows 50 requests a day in total, so the starter questions are served from prepared answers and, when the cap is reached, the app shows a notice and keeps answering from the dataset with cards and sources.")
+    if F["N_REAL"]:
+        A(f"The eval suite runs with the model mocked, so its scores measure routing, retrieval, citations and guardrails and not prose quality; real-model evidence is the {F['N_REAL']} answers of the live run ({F['N_REAL_MODEL']} written by a model, the rest built by code) printed verbatim in [REPORT.md](REPORT.md) section 8b, including the weak ones, and a larger real-model run is the first next step.")
+    else:
+        A("The eval suite runs with the model mocked, so its scores measure routing, retrieval, citations and guardrails and not prose quality; no real-model run is on file, and a real-model run is the first next step.")
+    ar, en = e1_pair(e1, "ar_name"), e1_pair(e1, "en_name")
+    if ar and en:
+        same = (e1 or {}).get("dataset_version") == latest.get("dataset_version")
+        when = "" if same else f" (measured on an earlier dataset, `{(e1 or {}).get('dataset_version') or 'unrecorded'}`)"
+        verdict = "beat" if ar[0] > ar[1] else ("matched" if ar[0] == ar[1] else "did not beat")
+        A(f"On my own known-item benchmark{when} BM25 alone {verdict} hybrid on Arabic project names (recall@1 {f(ar[0])} vs {f(ar[1])}, n={ar[2]}) and scored {f(en[0])} vs {f(en[1])} on English names (n={en[2]}), so the case for hybrid rests on paraphrase and cross-lingual queries I have not yet measured; the app runs BM25-only with one environment variable (`EMBEDDINGS=off`), and that is the mode the backup host uses.")
+    else:
+        A("The BM25-versus-hybrid benchmark (E1) is not on file, so the choice of hybrid is not backed by a measurement here; the app runs BM25-only with one environment variable (`EMBEDDINGS=off`), and that is the mode the backup host uses.")
+    A("The primary URL runs on a Railway trial that ends on {TRIAL_END_DATE} because hybrid retrieval peaked at 0.86 GB and was out-of-memory killed at 512 MB; the free backup host runs keyword-only retrieval.")
+    A("Wasalt's llms.txt allows non-commercial extraction of public listings with attribution while its Terms of Use restrict copying, and I could not read DarGlobal's terms pages, so I kept a small attributed sample with no contact data, claim no legal clearance, and will remove the data and the hot-linked images on {TAKEDOWN_DATE} or sooner on request.")
+    A('Arabic is only partly verified: 2 of 3 Arabic prompts passed on the real model, one answer wrongly said "not published", and project names without a recorded Arabic name stay in Latin script; a native-speaker evaluation is not done.')
+    dg = ((load(ROOT / "data" / "completeness.json") or {}).get("by_site") or {}).get("DarGlobal") or {}
+    dg_n, dg_img = dg.get("projects_n"), (dg.get("projects") or {}).get("image_urls")
+    if dg_n and dg_img is not None:
+        A(f"DarGlobal cards show a photo only for the {round(dg_n * dg_img)} of {dg_n} DarGlobal projects whose hand-read page gave an image URL; the rest use a typographic card, because I chose not to fetch more from a site that blocks automated clients.")
+    else:
+        A("DarGlobal cards show a photo only where a hand-read page gave an image URL; the rest use a typographic card, because I chose not to fetch more from a site that blocks automated clients.")
+    A("The licence notice is shown verbatim, linked to its page, for the two projects whose disclaimer I copied from the official page (Trump Tower Jeddah and Marriott Residences Aida); for other licensed-brand projects I did not collect the notice and did not write one, so the official project page is the authority.")
+    fmh = [c for c in cases if c.get("category") == "find_my_home" and c.get("status") in ("passed", "failed")]
+    if fmh:
+        p = sum(c["status"] == "passed" for c in fmh)
+        on = (rc.get("flags") or {}).get("FF_FIND_MY_HOME")
+        if p < len(fmh):
+            A(f"The guided find-my-home flow passes {p} of {len(fmh)} of its eval cases in the latest run (the flag FF_FIND_MY_HOME was {'on' if on else 'off'} during that run), so it must be switched off in the deployed build (`FF_FIND_MY_HOME=false`, one environment variable) and is listed under Next, not presented as working.")
+        else:
+            A(f"The guided find-my-home flow passes all {len(fmh)} of its eval cases in the latest run (mock model).")
+    ct = T.get("citation_rate", {})
+    if ct.get("met") is False:
+        A(f"citation_rate is {F['CITATION_RATE']} against a target of {ct.get('target')} and is reported as not met; each failing case is listed in [REPORT.md](REPORT.md) with its check.")
+    elif ct.get("met"):
+        A(f"citation_rate is {F['CITATION_RATE']} against a target of {ct.get('target')} (met on the mock model).")
+    A('Not built: removable filter chips and an "Ask an advisor" consent-based handoff; they are listed under Next and nowhere described as present.')
+    A("Questions about the corporate relationship between DarGlobal and Wasalt get a fixed reply that says public sources describe them as sister companies, not parent and subsidiary; no collected page documents that link, so the reply says so and attaches no source.")
+    A('Figures sourced from regulatory filings were read from a public mirror and not checked against the LSE original, projects known only from the DarGlobal index cite the general projects page, and possible duplicate entries (for example "Amour Sans Detour" and "Amour Sans Detour 2") were kept as published and not merged.')
+    A("Known rough edges: after a failed send the question must be retyped, the trace panel shows internal ids, the CSP still allows inline scripts, and the image is 882 MB.")
+    A("I built this with Claude Code agents and reviewed the result; the design decisions, thresholds and trade-offs in [docs/DECISIONS.md](docs/DECISIONS.md) are mine and I can explain or change any of them live.")
+    return out
+
+
 def build():
     latest = load(RES / "latest.json")
     live = (latest or {}).get("live_subset") or load(RES / "live_subset.json")
@@ -104,7 +197,7 @@ def build():
     A = L.append
 
     if not latest:
-        return "# REPORT\n\nNo evals/results/latest.json: run `python evals/runner.py` first. Nothing is reported without a result file.\n", ""
+        return "# REPORT\n\nNo evals/results/latest.json: run `python evals/runner.py` first. Nothing is reported without a result file.\n", {}, latest, comp
 
     rc = latest.get("run_context") or {}
     tot = latest["totals"]
@@ -152,7 +245,7 @@ def build():
     A("## 3. Scores vs targets")
     A("")
     A(table(["Metric", "Target", "Actual", "n", "95% CI", "Met"], [
-        [k, f"{v['op']} {v['target']}", f(v.get("actual")), f(v.get("n")), ci(v.get("ci95")), {True: "yes", False: "**NO**", None: NM}[v.get("met")]]
+        [LABELS.get(k, k), f"{v['op']} {v['target']}", f(v.get("actual")), f(v.get("n")), ci(v.get("ci95")), {True: "yes", False: "**NO**", None: NM}[v.get("met")]]
         for k, v in latest["targets"].items()]))
     A("")
     A("Source: evals/results/latest.json `targets`. `lighthouse_mobile` is measured separately: " + ("see section 9b." if False else f"{f(latest['targets'].get('lighthouse_mobile', {}).get('actual'))}."))
@@ -216,9 +309,12 @@ def build():
     A("")
     A("## 5. Retrieval experiment (E1)")
     A("")
+    if (e1 or {}).get("dataset_version") == latest.get("dataset_version"):
+        A(f"Measured on dataset `{e1.get('dataset_version')}` (the same as the suite), retriever mode `{e1.get('retriever_mode')}`, index `{e1.get('index_state')}`. Source: evals/results/E1.json.")
+        A("")
     if (load(RES / "E1.json") or {}).get("dataset_version") != (latest or {}).get("dataset_version"):
         A("Caveat: evals/results/E1.json does not record the dataset it was measured on, or records a different one, and "
-          "was not re-run on the current dataset (`experiments.py --only E1` currently fails with a TypeError). Treat "
+          "was not re-run on the current dataset (`backend/.venv/Scripts/python evals/experiments.py --only E1`). Treat "
           "the table below as indicative of an earlier build.")
         A("")
 
@@ -277,6 +373,19 @@ def build():
         A(table(["Case", "Lang", "Status", "Model", "Degraded reason", "Failed checks"], [[c["id"], c.get("lang"), c.get("status"), c.get("model") or "-", c.get("degraded_reason") or "-", "; ".join(c.get("failures") or [])[:200].replace("|", "/")] for c in live.get("cases", [])]))
         A("")
         A("n is far too small for any rate claim; this block shows only that the live path works and where it degraded.")
+        if live.get("dataset_version") not in (None, latest.get("dataset_version")):
+            A("")
+            A(f"**Caveat:** the real-model run was made on dataset `{live.get('dataset_version')}`, not the current `{latest.get('dataset_version')}`.")
+        A("")
+        A("### 8b. Real-model answers, verbatim (including the weak ones)")
+        A("")
+        for c in real_cases(live):
+            for t in c["turns"]:
+                A(f"**{c['id']}** ({c.get('lang')}), model `{c.get('model') or 'none (answered by code)'}`, path `{t.get('path')}`, intent `{t.get('intent')}`, status {c.get('status')}, {f(c.get('latency_ms'))} ms. Source: evals/results/live_subset.json.")
+                A("")
+                A(f"> **User:** {t['say']}  ")
+                A("> **Concierge:** " + " ".join(str(t.get("answer") or t.get("reply_excerpt", "")).split()))
+                A("")
     else:
         A(f"{NM}: no real-model run is on file.")
     A("")
@@ -333,7 +442,7 @@ def build():
           f"Dataset `{latest.get('dataset_version')}` (as of {latest.get('data_as_of')}). Latest full run {latest.get('run_at')}, LLM mode **{mode}**: "
           f"{tot['passed']} passed, {tot['failed']} failed, {tot['skipped']} skipped.",
           ""]
-    rb.append(table(["Metric", "Target", "Actual", "95% CI"], [[k, f"{v['op']} {v['target']}", f(v.get("actual")), ci(v.get("ci95"))] for k, v in T.items() if k != "lighthouse_mobile"]))
+    rb.append(table(["Metric", "Target", "Actual", "95% CI"], [[LABELS.get(k, k), f"{v['op']} {v['target']}", f(v.get("actual")), ci(v.get("ci95"))] for k, v in T.items() if k != "lighthouse_mobile"]))
     rb.append("")
     rb.append("Mock-LLM numbers measure routing, retrieval, citations and guardrails, not model answer quality. The LLM judge was not used. " +
               (f"Real-model subset: {live.get('passed')}/{live.get('n')} passed using {live.get('llm_calls')} counted requests." if live else "Real-model subset: not measured."))
@@ -342,28 +451,99 @@ def build():
         rb.append(f"Load (mock LLM): {load_r['total_requests']} requests, {load_r['total_crashes']} crashes" + (f", peak {mem['peak']} MiB." if isinstance(mem, dict) else "; memory not measured."))
     rb.append("Full detail: [REPORT.md](REPORT.md).")
     rb.append("<!-- /AUTOGEN:numbers -->")
-    return report, "\n".join(rb)
+    F = facts(latest, comp, live, e1)
+    blocks = {
+        "numbers": "\n".join(rb),
+        "facts": "<!-- AUTOGEN:facts (evals/make_report.py; do not edit by hand) -->\n"
+                 f"Dataset `{F['DATASET_VERSION']}`: {F['DG_PROJECTS']} DarGlobal projects ({F['DG_FULL_PAGES']} with a full project page) and {F['WASALT_LISTINGS']} Wasalt listings.\n"
+                 "<!-- /AUTOGEN:facts -->",
+        "limitations": "<!-- AUTOGEN:limitations (evals/make_report.py; do not edit by hand) -->\n"
+                       + "\n".join(f"- {x}" for x in limitations(F, latest, e1, live)) + "\n<!-- /AUTOGEN:limitations -->",
+    }
+    return report, blocks, latest, comp
+
+
+def apply_blocks(txt, blocks):
+    for name, block in blocks.items():
+        pat = re.compile(r"<!-- AUTOGEN:%s\b.*?<!-- /AUTOGEN:%s -->" % (name, name), re.S)
+        if pat.search(txt):
+            txt = pat.sub(lambda m: block, txt)
+    return txt
+
+
+ALLPASS = re.compile(r"\ball\b[^.\n]{0,40}\bpass(?:es|ed)?\b", re.I)
+
+
+def consistency_problems(latest, comp, a):
+    """What --check enforces beyond staleness. Returns a list of strings; empty means consistent."""
+    P = []
+    if not latest:
+        return ["evals/results/latest.json is missing"]
+    v, tot = latest.get("dataset_version"), latest["totals"]
+    if comp and comp.get("dataset_version") != v:
+        P.append(f"dataset id differs: data/completeness.json {comp.get('dataset_version')} vs latest.json {v}")
+    for nm in ("E1", "live_subset"):
+        d = load(RES / f"{nm}.json")
+        if d and d.get("dataset_version") != v:
+            P.append(f"evals/results/{nm}.json was measured on dataset {d.get('dataset_version')}, latest.json is {v} (re-run it, or REPORT.md carries a caveat)")
+    rd = (ROOT / "README.md").read_text(encoding="utf-8") if (ROOT / "README.md").exists() else ""
+    for pat in ("TODO", "to be tested"):
+        if re.search(pat, rd):
+            P.append(f"README.md still contains '{pat}'")
+    if tot["failed"] > 0:
+        for rel_ in ("README.md", "Dockerfile", "evals/README.md", "docs/DEPLOY.md", "docs/DECISIONS.md", "deploy/README.md"):
+            p = ROOT / rel_
+            if p.exists():
+                for n, line in enumerate(p.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+                    if ALLPASS.search(line):
+                        P.append(f"{rel_}:{n} claims 'all ... pass' but the latest run has {tot['failed']} failed: {line.strip()[:110]}")
+    if a.url:
+        import urllib.request
+        try:
+            with urllib.request.urlopen(a.url.rstrip("/") + "/api/evals", timeout=20) as r:  # the app's own endpoint only
+                live = json.loads(r.read().decode("utf-8"))
+            lt = live.get("totals") or {}
+            if live.get("dataset_version") != v or any(lt.get(k) != tot.get(k) for k in ("passed", "failed", "skipped")):
+                P.append(f"{a.url}/api/evals serves dataset {live.get('dataset_version')} {lt.get('passed')}/{lt.get('failed')}/{lt.get('skipped')} "
+                         f"but latest.json is {v} {tot['passed']}/{tot['failed']}/{tot['skipped']}: rebuild the image with the current latest.json")
+        except Exception as e:  # noqa: BLE001
+            P.append(f"could not read {a.url}/api/evals: {type(e).__name__}")
+    left = sorted(set(re.findall(r"\{([A-Z][A-Z0-9_]+)\}", rd)))
+    if left:
+        msg = "deploy-time placeholders still in README.md: " + ", ".join(left)
+        if a.final:
+            P.append(msg)
+        else:
+            print("info:", msg, "(filled at deploy; --final fails on them)")
+    return P
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--url", default="", help="with --check: also compare this deployment's /api/evals with latest.json")
+    ap.add_argument("--final", action="store_true", help="with --check: deploy-time placeholders left in README.md are errors")
     a = ap.parse_args()
-    report, block = build()
+    report, blocks, latest, comp = build()
     rd = ROOT / "README.md"
     txt = rd.read_text(encoding="utf-8") if rd.exists() else ""
-    new_txt = txt
-    if block and "<!-- AUTOGEN:numbers" in txt:
-        new_txt = re.sub(r"<!-- AUTOGEN:numbers.*?<!-- /AUTOGEN:numbers -->", lambda m: block, txt, flags=re.S)
+    new_txt = apply_blocks(txt, blocks)
     rp = ROOT / "REPORT.md"
     if a.check:
-        stale = (not rp.exists()) or rp.read_text(encoding="utf-8") != report or new_txt != txt
-        print("stale" if stale else "up to date")
-        return 1 if stale else 0
+        problems = []
+        if (not rp.exists()) or rp.read_text(encoding="utf-8") != report:
+            problems.append("REPORT.md is stale vs evals/results/latest.json (run python evals/make_report.py)")
+        if new_txt != txt:
+            problems.append("README.md AUTOGEN blocks are stale vs evals/results/latest.json (run python evals/make_report.py)")
+        problems += consistency_problems(latest, comp, a)
+        for x in problems:
+            print("FAIL:", x)
+        print("stale or inconsistent" if problems else "up to date and consistent")
+        return 1 if problems else 0
     rp.write_text(report, encoding="utf-8")
     if new_txt != txt:
         rd.write_text(new_txt, encoding="utf-8")
-    print(f"wrote {rp}" + (" and updated README numbers block" if new_txt != txt else ""))
+    print(f"wrote {rp}" + (" and updated README AUTOGEN blocks" if new_txt != txt else ""))
     return 0
 
 

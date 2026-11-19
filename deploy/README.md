@@ -13,6 +13,15 @@
 4. `docker build -t darglobal-concierge .` (or `deploy/hf/deploy.ps1 -Space <user>/<space>`, which bundles the DB,
    `data/index`, the optional answer cache and `evals/results/latest.json`, and refuses to upload without the index).
 
+## One Dockerfile, every host
+
+The root `Dockerfile` builds unchanged on Railway, Hugging Face Spaces, Render and a local `docker build .`: it uses no
+cache mounts (Railway refuses a `--mount=type=cache` without its own service-specific `id=`), and the CMD listens on
+`$PORT` when the host injects one (Railway) and on 7860 otherwise. The prebuilt `data/index/` is `COPY`ed (step 2).
+`deploy/railway.json` is the Railway config-as-code file (Dockerfile builder, `/healthz` health check, bounded
+restarts, which also bounds the in-memory LLM budget counter); point the service's config path at it. On Railway set
+`TRUSTED_PROXY_HOPS` from `GET /readyz` -> `xff_hops_seen` as below.
+
 ## Proxy hops (`TRUSTED_PROXY_HOPS`)
 
 The rate limiter takes the client address from the right-most `X-Forwarded-For` hop that **our** edge appended, never
@@ -28,7 +37,7 @@ that is `1` (the image default). If `xff_hops_seen` is `0`, set it to `0`.
 | `LLM_DAILY_BUDGET` | `45` | outbound requests per UTC day; at the cap no call is made and answers are the extractive code path |
 | `LLM_TOOL_ROUTING` | `false` | one LLM call per message; the code planner routes |
 | `LLM_BOOT_MODEL_CHECK` | default `true` | boot does a free `GET /models` (no completion) and drops unlisted / non-free models; boot never spends quota |
-| `FF_FIND_MY_HOME` | `true` | all five find-my-home eval journeys pass in mock EN + AR |
+| `FF_FIND_MY_HOME` | default `true` | same default in `backend/app/config.py` and the image, so evals and prod match; set `false` to turn it off |
 
 State is visible without spending anything: `GET /api/meta` -> `llm.state` (`ok | quota | cooling | off | maintenance`),
 `llm.budget`, `llm.pool`; `GET /readyz` -> `llm`. The budget counter is in memory: a restart resets it to 0, so a
@@ -64,5 +73,5 @@ export through `FileResponse`). Pillow is no longer in the runtime image (it was
 
 ## Needs a human
 
-- Uploading to the Space / Render, setting `OPENROUTER_API_KEY` as a host secret.
+- Deploying to Railway / the Space / Render / Northflank and setting `OPENROUTER_API_KEY` as a host secret.
 - Buying OpenRouter credits (raises the free cap from 50 to 1000/day) is a payment: not done.

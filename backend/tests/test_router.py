@@ -33,13 +33,18 @@ def _settings(**kw):
     return s
 
 
-def _sse(text, model):
+OK_TEXT = "Hello there. Fixture Marina Tower is listed in the published data."
+
+
+def _sse(text, model, finish="stop"):
     chunks = [json.dumps({"model": model, "choices": [{"delta": {"content": w}}]}) for w in re.findall(r"\S+\s*", text)]
+    if finish:
+        chunks.append(json.dumps({"model": model, "choices": [{"delta": {}, "finish_reason": finish}]}))
     return (": OPENROUTER PROCESSING\n\n" + "".join(f"data: {c}\n\n" for c in chunks) + "data: [DONE]\n\n").encode()
 
 
-def _ok(model, text="Hello there."):
-    return httpx.Response(200, content=_sse(text, model), headers={"content-type": "text/event-stream"})
+def _ok(model, text=OK_TEXT, finish="stop"):
+    return httpx.Response(200, content=_sse(text, model, finish), headers={"content-type": "text/event-stream"})
 
 
 def _client(handler, router=None, **kw):
@@ -71,7 +76,7 @@ async def test_429_on_m1_then_m2_answers_and_hops_counted():
     r = Router(M, 45, clock=clock)
     cli = _client(handler, router=r)
     out, rec = await _run(cli)
-    assert out == "Hello there." and rec.calls == 2 and rec.model == "n/two:free" and rec.fallback_hops == 1
+    assert out == OK_TEXT and rec.calls == 2 and rec.model == "n/two:free" and rec.fallback_hops == 1
     assert seen[0]["models"] == M and seen[1]["models"] == ["n/two:free", "g/three:free"]
     # every request carries the cache header + low reasoning effort; the key only in Authorization
     assert seen[0]["reasoning"] == {"effort": "low", "exclude": True}
@@ -347,7 +352,8 @@ def test_e2e_mid_stream_failure_finishes_with_code_facts(ask):
 
 def test_baked_answer_cache_hit(tmp_path, ask):
     q = "Tell me about Fixture Marina Tower"
-    entry = {"model": "g/one:free", "events": [["token", {"t": "Baked answer."}], ["sources", []], ["chips", []]],
+    baked = "Baked answer: Fixture Marina Tower is in Dubai, per its page."
+    entry = {"model": "g/one:free", "events": [["token", {"t": baked}], ["sources", []], ["chips", []]],
              "trace": {"intent": "project_info", "path": "code", "tool": None, "retrieved": []}}
     path = tmp_path / "answer_cache.json"
     path.write_text(json.dumps({"dataset_version": "fixture-v1",
@@ -361,7 +367,7 @@ def test_baked_answer_cache_hit(tmp_path, ask):
     c, _ = _app(handler, answer_cache_path=str(path))
     d = ask(c, q)
     t = d["trace"][0]
-    assert d["_text"] == "Baked answer." and t["cache_hit"] and t["model"] == "g/one:free" and t["llm_calls"] == 0
+    assert d["_text"] == baked and t["cache_hit"] and t["model"] == "g/one:free" and t["llm_calls"] == 0
     assert not n and " ".join(d["_order"]) == "meta token sources chips trace done"
     # a cache baked for another dataset version is ignored as a whole
     path.write_text(json.dumps({"dataset_version": "other", "entries": {baked_key(q, "en", "other"): entry}}),
@@ -394,3 +400,39 @@ def test_meta_off_mode(make_client):
     m = make_client(env={"LLM_MODE": "off"}).get("/api/meta").json()
     assert m["llm"] == {"mode": "off", "state": "off", "budget": {"used": 0, "cap": 45}, "pool": []}
     assert m["llm_available"] is False
+
+
+def test_baked_cache_ignores_short_or_cut_off_entries(tmp_path, ask):
+    """B5: a one-word baked answer ("Was", from a cut-off stream) is never replayed."""
+    q = "Tell me about Fixture Marina Tower"
+    entry = {"model": "g/one:free", "events": [["token", {"t": "Was"}], ["sources", []], ["chips", []]],
+             "trace": {"intent": "project_info", "path": "code", "tool": None, "retrieved": []}}
+    path = tmp_path / "answer_cache.json"
+    path.write_text(json.dumps({"dataset_version": "fixture-v1",
+                                "entries": {baked_key(q, "en", "fixture-v1"): entry}}), encoding="utf-8")
+    c, _ = _app(lambda req: _ok(M[0]), answer_cache_path=str(path))
+    d = ask(c, q)
+    assert not d["trace"][0]["cache_hit"] and d["_text"] != "Was"
+
+
+def test_cut_off_stream_is_not_cached_and_falls_back(ask):
+    """B5: finish_reason "length" with a one-word reply -> code-built facts, degraded, and not cached."""
+    n = []
+
+    def handler(req):
+        n.append(1)
+        return _ok(M[0], text="Was", finish="length")
+
+    c, _ = _app(handler)
+    for _ in range(2):
+        d = ask(c, "Tell me about Fixture Marina Tower")
+        t = d["trace"][0]
+        assert d["_text"].strip() != "Was" and len(d["_text"]) >= 40 and "Fixture Marina Tower" in d["_text"]
+        assert t["degraded"] and not t["cache_hit"]
+    assert len(n) >= 2  # the second ask was not served from the cache
+
+
+def test_short_complete_reply_is_not_shown(ask):
+    c, _ = _app(lambda req: _ok(M[0], text="Hello there."))
+    d = ask(c, "Tell me about Fixture Marina Tower")
+    assert "Hello there." not in d["_text"] and d["trace"][0]["degraded"]

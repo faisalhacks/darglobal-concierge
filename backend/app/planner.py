@@ -101,6 +101,7 @@ class Plan:
     ambiguous: bool = False
     follow_up: bool = False
     unknown: str | None = None  # a named project/place the user asked about that is not in the dataset
+    unknown_place: bool = False  # `unknown` was named as a place ("projects in Tokyo"), not as a project
     text: str | None = None  # rewritten message for a follow-up ("And if it was 150 m2?" -> full calculation)
     step: int = 0  # find-my-home step (1 = ask place, 2 = ask budget, 3 = ask purpose, 4 = shortlist)
 
@@ -145,6 +146,10 @@ def _known_name(name: str, store: Store) -> bool:
     for x in store.listings:
         if n and n in normalize_text(x.get("title") or ""):
             return True
+    # A collected page's own title ("Buying Real Estate in Saudi Arabia 2026") is in the data, not an unknown name.
+    for pg in getattr(store, "pages", None) or []:
+        if n and n in normalize_text(pg.get("title") or ""):
+            return True
     return False
 
 
@@ -166,6 +171,18 @@ def _known_place(word: str, store: Store) -> bool:
 def unknown_entity(message: str, norm: str, ent: Entities, store: Store) -> str | None:
     """A project or place the user names explicitly that the dataset does not contain. Answering such a question
     with nearby real data reads as confirmation, so the planner routes it to a not-found template instead."""
+    return unknown_entity_kind(message, norm, ent, store)[0]
+
+
+def unknown_entity_kind(message: str, norm: str, ent: Entities, store: Store) -> tuple[str | None, bool]:
+    """(name, is_place) for `unknown_entity`; is_place is True when the name was given as a place ("in Tokyo")."""
+    name = _unknown_name(message, norm, ent, store)
+    if name is None:
+        return None, False
+    return name, any(m.group(1).strip() == name for m in _PLACE_EN.finditer(message or ""))
+
+
+def _unknown_name(message: str, norm: str, ent: Entities, store: Store) -> str | None:
     raw = re.sub(r"\s+", " ", message or "").strip()  # keep the user's casing for the reply
     for rx, src in ((_NAMED_EN, raw), (_NAMED_AR, norm)):
         m = rx.search(src)
@@ -530,16 +547,17 @@ def plan(message: str, store: Store, history: list[dict] | None = None, flags: d
         if merged:
             return Plan("calculation", extract_entities(merged, store), follow_up=True, text=merged)
 
-    unknown = unknown_entity(message, norm, ent, store)
+    unknown, is_place = unknown_entity_kind(message, norm, ent, store)
     if unknown:
-        return Plan("general", ent, unknown=unknown)
+        return Plan("general", ent, unknown=unknown, unknown_place=is_place)
 
     if history and not ent.project_ids:
         prev = _last_user(history)
         prev_plan = plan(prev, store) if prev else None
         # "What is its price?" after asking about a name that is not in the data: still not in the data.
         if prev_plan and prev_plan.unknown and _any(FOLLOW_UP, norm):
-            return Plan("general", ent, follow_up=True, unknown=prev_plan.unknown)
+            return Plan("general", ent, follow_up=True, unknown=prev_plan.unknown,
+                        unknown_place=prev_plan.unknown_place)
         # "And in Dubai?" / "Only DarGlobal ones please": same question, new place or site filter.
         short = len(norm.split()) <= 6
         if prev_plan and short and prev_plan.intent in ("location_overview", "search", "brand_partner"):

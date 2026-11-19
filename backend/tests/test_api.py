@@ -25,8 +25,11 @@ def assert_contract(d):
     assert isinstance(t["fallback_hops"], int) and (t["degraded_reason"] is None) == (not t["degraded"])
     assert "unavailable" not in d["_text"]  # no per-message apology sentence (contract C2)
     assert t["path"] in ("code", "llm_tool", "template") and t["llm_calls"] <= 2
-    for s in d["sources"][0]:
-        assert set(s) - {"brand"} == {"site", "title", "url", "scraped_at"} and s["site"] in ("DarGlobal", "Wasalt")
+    for i, s in enumerate(d["sources"][0], 1):
+        assert set(s) - {"brand"} == {"site", "title", "url", "scraped_at", "n"} and s["site"] in ("DarGlobal", "Wasalt")
+        assert s["n"] == i  # stable 1-based index: a prose marker [n] names sources[n-1]
+    for m in re.findall(r"\[(\d{1,2})\]", d["_text"]):
+        assert 1 <= int(m) <= len(d["sources"][0])
     for c in d["chips"][0]:
         assert set(c) == {"label", "message"}
     assert d["done"] == [{}]

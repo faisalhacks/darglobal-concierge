@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -43,6 +44,22 @@ CITY_ALIASES = {"rak": "Ras Al Khaimah", "jeddha": "Jeddah"}
 # master-development names that appear in location strings but are not cities ('AIDA | Oman', 'AIDA, Muscat, Oman'):
 # never stored as a city; the raw published location string is kept verbatim in location_published.
 NOT_CITIES = {"aida"}
+# A master development whose city DarGlobal itself publishes: AIDA is listed as 'AIDA, Muscat, Oman' on the projects
+# index (Amour Sans Detour, Sunrise Haven) and as 'at AIDA, Muscat' / 'MUSCAT | OMAN' on the collected AIDA pages.
+# Rows published only as 'Aida, Oman' / 'AIDA | Oman' get that city, and the evidence is logged in the report.
+MASTER_DEV_CITY = {"aida": ("Muscat", "Oman",
+                            "DarGlobal publishes AIDA as 'AIDA, Muscat, Oman' (darglobal.co.uk/projects) and "
+                            "'a branded residential complex at AIDA, Muscat' (darglobal.co.uk/marriott-residences-aida-oman)")}
+# get_page_text extracts (no 'H1:' heading prefixes): page URL path -> existing index row, reviewed by hand.
+# None = the page's project is not on the projects index under any name; it becomes its own row.
+V2_MATCH = {
+    "aida-trump-international-apartments": None,       # 'Trump Furnished Residences'; no index card by that name
+    "marriott-residences-aida-oman": "dg-marriott-residences",
+    "trump-tower-jeddah": "dg-trump-tower-jeddah",
+    "neptune": "dg-neptune-interiors-by-mouawad",
+    "the-mulliner": "dg-the-mulliner",
+    "tierra-viva": "dg-tierra-viva-design-inspired-by-automobili-lamborghini",
+}
 
 # brand partner only when the published name contains it
 BRANDS = [("aston martin", "Aston Martin"), ("pagani", "Pagani"), ("missoni", "Missoni"), ("elie saab", "Elie Saab"),
@@ -101,15 +118,21 @@ def iso(ts: str) -> str:
         return ts
 
 
-def parse_location(loc: str) -> tuple[str | None, str | None, bool]:
-    """'Al Marjan Island, RAK, UAE' -> ('Ras Al Khaimah', 'United Arab Emirates', True). Country via token map only."""
+def parse_location(loc: str, resolve_dev: bool = False) -> tuple[str | None, str | None, bool]:
+    """'Al Marjan Island, RAK, UAE' -> ('Ras Al Khaimah', 'United Arab Emirates', True). Country via token map only.
+    resolve_dev=True maps a master development with a DarGlobal-published city ('AIDA | Oman') to that city."""
     parts = [p.strip() for p in re.split(r"\s*[,|]\s*", loc or "") if p.strip()]
     if not parts:
         return None, None, False
     country = COUNTRY_TOKENS.get(parts[-1].lower())
     rest = parts[:-1] if country else parts
+    dev = [p for p in rest if p.lower() in MASTER_DEV_CITY]
     rest = [p for p in rest if p.lower() not in NOT_CITIES]
     city = rest[-1] if rest else None
+    if city is None and dev and resolve_dev:
+        dc, dcountry, _ = MASTER_DEV_CITY[dev[0].lower()]
+        if country in (None, dcountry):
+            city = dc
     if city:
         city = CITY_ALIASES.get(city.lower(), city)
     return city, country, country is not None
@@ -426,6 +449,161 @@ def is_detail(d: dict) -> bool:
     return bool(headings(d, "H1")) and bool(LABEL_RE.search(d.get("text") or ""))
 
 
+
+# ---------------------------------------------------------------- project page, get_page_text extract (v2)
+# Shape: headings are plain strings (H1 text, 'CITY | COUNTRY' line, section titles); text is the page read as
+# sentences with upper-case spec labels ('PROPERTY TYPE: Villa.'); no images or JSON-LD; optional top-level lat/lng
+# read from the page's own map; 'notes' lists known conflicts (kept, never resolved by picking one).
+V2_LABEL_RE = re.compile(r"(?:(?<=^)|(?<=[.!?] ))([A-Z][A-Z0-9&' ]{1,40}[A-Z](?: \([^)]*\))?):\s")
+V2_SPEC = {"PROPERTY TYPE", "STATUS", "UNIT TYPE", "UNITS", "AREA (SQM)", "AREA (SQFT)", "NUMBER OF FLOORS"}
+DISCLAIMER_RE = re.compile(r"Disclaimer:\s*(.+?)(?=\s+[A-Z][A-Z0-9&' ]{1,40}[A-Z](?: \([^)]*\))?:\s|$)", re.S)
+COMPLETION_RE = re.compile(r"(?i:completion)\s+(?:is\s+)?(?:scheduled\s+for|expected\s+in)\s+"
+                           r"(?:(January|February|March|April|May|June|July|August|September|October|November|"
+                           r"December)\s+)?(\d{4})")
+
+
+def is_detail_v2(d: dict) -> bool:
+    hs = d.get("headings") or []
+    return bool(hs) and not any(re.match(r"H[1-6]:", h) for h in hs) and bool(V2_LABEL_RE.search(d.get("text") or ""))
+
+
+def faq_pairs(faq: str) -> list[tuple[str, str]]:
+    qs = list(re.finditer(r"(?:(?<=^)|(?<=[.!?] ))([A-Z][^.?!]*\?)", faq))
+    out = []
+    for i, m in enumerate(qs):
+        end = qs[i + 1].start() if i + 1 < len(qs) else len(faq)
+        out.append((m.group(1).strip(), faq[m.end():end].strip()))
+    return out
+
+
+def parse_detail_v2(d: dict) -> tuple[dict, dict]:
+    text = repair(d.get("text") or "")
+    hs = [repair(h) for h in d.get("headings") or []]
+    h1, loc_line = (hs + ["", ""])[:2]
+    rep = {"url": d["url"], "format": "get_page_text extract (v2)", "excluded_sections": [], "faq_excluded": [],
+           "claim_sentences_dropped": 0, "text_repairs": 0, "notes": d.get("notes")}
+    # verbatim disclaimers first (licence notes), then removed from the running text
+    disclaimers = [m.group(1).strip() for m in DISCLAIMER_RE.finditer(text)]
+    text = DISCLAIMER_RE.sub(" ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    # drop the H1 / location line the text repeats at its start
+    body = text
+    def fold(x: str) -> str:   # accent-insensitive compare ('BENAHAVÍS' heading vs 'BENAHAVIS' in the text)
+        return "".join(c for c in unicodedata.normalize("NFKD", x) if not unicodedata.combining(c)).upper()
+    for h in (h1, loc_line):
+        if h and fold(body).startswith(fold(h)):
+            body = body[len(fold(h)):].lstrip(". ")
+    ms = list(V2_LABEL_RE.finditer(body))
+    intro = body[:ms[0].start()] if ms else body
+    segs = []
+    for i, m in enumerate(ms):
+        end = ms[i + 1].start() if i + 1 < len(ms) else len(body)
+        segs.append((m.group(1).strip(), body[m.end():end].strip()))
+    labels: dict[str, str] = {}
+    prose_tail: list[str] = []
+    kept: list[tuple[str, str]] = []
+    amen: list[str] = []
+    location_label = None
+    faq_text = ""
+    for lab, val in segs:
+        key = re.sub(r"\s*\(.*\)$", "", lab) if lab.startswith(("AMENITIES", "WHY INVEST")) else lab
+        if key.startswith("WHY INVEST"):
+            rep["excluded_sections"].append(f"{lab}: WHY INVEST (investment / residency / tax claims)")
+            continue
+        if key in V2_SPEC:
+            v, _, rest = val.partition(". ")
+            labels[key] = v.rstrip(".").strip()
+            if rest.strip():
+                prose_tail.append(rest.strip())
+            continue
+        if key == "LOCATION" and len(val) < 60 and val.rstrip(".").count(". ") == 0:
+            location_label = val.rstrip(".").strip()
+            continue
+        if key == "FAQ":
+            faq_text = val
+            continue
+        if key in ("AMENITIES", "FEATURES & AMENITIES"):
+            amen = [a.strip().rstrip(".") for a in val.split(";") if a.strip().rstrip(".")]
+            note = re.search(r"\(([^)]*)\)", lab)
+            kept.append(("Amenities", "Amenities" + (f" ({note.group(1)})" if note else "") + ": "
+                         + ", ".join(amen) + "."))
+            continue
+        sec = {"KEY FEATURES": "Key features", "LOCATION": "Location", "PRIME LOCATION": "Location"}.get(key, lab.title())
+        t, nd = drop_claims(clean(val))
+        rep["claim_sentences_dropped"] += nd
+        if t:
+            kept.append((sec, t))
+    for q, a in faq_pairs(faq_text):
+        if FAQ_EXCLUDE.search(q):
+            rep["faq_excluded"].append(q)
+            continue
+        a, nd = drop_claims(clean(a))
+        rep["claim_sentences_dropped"] += nd
+        if a:
+            kept.append(("FAQ", f"{q} {a}"))
+    desc, nd = drop_claims(clean(" ".join([intro] + prose_tail)))
+    rep["claim_sentences_dropped"] += nd
+    # area: published SQM spec label; a different range stated in the prose is kept beside it (both published)
+    amin = amax = None
+    area_src = None
+    if labels.get("AREA (SQM)") and rng(labels["AREA (SQM)"]):
+        amin, amax = rng(labels["AREA (SQM)"])
+        area_src = "label Area (SQM)"
+    alltext = desc + " " + " ".join(t for _, t in kept)
+    sqm_m = re.search(r"(\d[\d,]*(?:\.\d+)?)\s*(?:to|-|–)\s*(\d[\d,]*(?:\.\d+)?)\s*(?:sq\.?\s?m\b|sqm\b)", alltext)
+    sqm_phrase = sqm_m.group(0) if sqm_m else None
+    if amin is None and sqm_m:
+        amin, amax = float(sqm_m.group(1).replace(",", "")), float(sqm_m.group(2).replace(",", ""))
+        area_src = "text sqm"
+    if sqm_phrase and area_src != "text sqm" and rng(sqm_phrase) != (amin, amax):
+        rep["area_note"] = f"text states '{sqm_phrase}', spec box states '{labels.get('AREA (SQM)')}'; both kept"
+    else:
+        sqm_phrase = None
+        if area_src:
+            rep["area_note"] = f"used {area_src}"
+    area_pub = f"Area (SQM): {labels['AREA (SQM)']}" if labels.get("AREA (SQM)") else ""
+    hy = handover_text = None
+    m = COMPLETION_RE.search(alltext)
+    if m:
+        hy = int(m.group(2))
+        handover_text = " ".join(x for x in m.groups() if x)
+    status = labels.get("STATUS")
+    if not status and re.search(r"\bis (?:currently )?under development\b", alltext, re.I):
+        status = "Under Development"
+        rep["status_note"] = "no STATUS label on the page; 'under development' stated in the page FAQ"
+    lat, lng = d.get("lat"), d.get("lng")
+    ok_geo = isinstance(lat, (int, float)) and isinstance(lng, (int, float))
+    featuring = f"{labels['NUMBER OF FLOORS']} floors" if labels.get("NUMBER OF FLOORS") else None
+    name_pub = smart_title(h1) if h1.isupper() else h1
+    unit = labels.get("UNIT TYPE") or labels.get("UNITS")
+    row = dict(name_en=name_pub, h1=h1, title_location=smart_title(loc_line) if loc_line.isupper() else loc_line,
+               lat=lat if ok_geo else None, lng=lng if ok_geo else None,
+               property_types=[labels["PROPERTY TYPE"]] if labels.get("PROPERTY TYPE") else [],
+               unit_types=[unit] if unit else [], status=status, area_min_m2=amin, area_max_m2=amax,
+               amenities=amen, handover_year=hy, handover_text=handover_text, description_en=desc or None,
+               image_urls=[], source_url=d["url"], scraped_at=iso(d["collected_at"]), brand_partner=brand_for(h1),
+               sections=kept, area_published=area_pub, area_text_sqm=sqm_phrase, featuring=featuring,
+               location_label=location_label, method=d.get("method"), disclaimers=disclaimers,
+               extract_notes=d.get("notes"))
+    if ok_geo:
+        rep["geo"] = "lat/lng from the extract (read from the page's own map), not geocoded"
+    return row, rep
+
+
+def smart_title(s: str) -> str:
+    """'TRUMP FURNISHED RESIDENCES' -> 'Trump Furnished Residences'; short words and AIDA kept readable."""
+    small = {"by", "of", "and", "at", "the", "in"}
+    out = []
+    for i, w in enumerate(s.split()):
+        lw = w.lower()
+        if lw.strip(",") == "aida":
+            out.append(w.replace(w.strip(","), "Aida"))
+        elif i and lw in small:
+            out.append(lw)
+        else:
+            out.append(w[:1] + w[1:].lower())
+    return " ".join(out)
+
 # ---------------------------------------------------------------- entry point
 def load(extract_dir: Path = EXTRACTS) -> dict:
     """Parse every extract. Returns {'projects': {id: row}, 'report': {...}}. Deterministic (sorted file order)."""
@@ -469,18 +647,27 @@ def load(extract_dir: Path = EXTRACTS) -> dict:
             counts[u] = counts.get(u, 0) + 1
     sitewide = {u for u, c in counts.items() if c >= 3}
     for p, d in detail_docs:
-        if not is_detail(d):
+        v2 = is_detail_v2(d)
+        if not v2 and not is_detail(d):
             report["skipped"].append({"file": p.name, "reason": "not a project detail page (no H1 + fact labels); "
                                                                 "not ingested"})
             continue
-        row, rep = parse_detail(d, sitewide, index_imgs)
-        pid = by_norm.get(norm_name(row["h1"])) or by_norm.get(norm_name(row["name_en"]))
+        if v2:
+            row, rep = parse_detail_v2(d)
+            path = d["url"].rstrip("/").rsplit("/", 1)[-1]
+            pid = V2_MATCH[path] if path in V2_MATCH else (by_norm.get(norm_name(row["h1"])) or
+                                                           by_norm.get(norm_name(row["name_en"])))
+            if pid is not None and pid not in projects:
+                pid = None
+        else:
+            row, rep = parse_detail(d, sitewide, index_imgs)
+            pid = by_norm.get(norm_name(row["h1"])) or by_norm.get(norm_name(row["name_en"]))
         if pid:
             base = projects[pid]
             rep["matched_index_row"] = pid
         else:
             pid = f"dg-{slugify(row['name_en'])}"
-            city, country, ok = parse_location(row["title_location"] or row["location_label"] or "")
+            city, country, ok = parse_location(row["title_location"] or row["location_label"] or "", resolve_dev=True)
             base = dict(id=pid, slug=slugify(row["name_en"]), name_en=row["name_en"], city=city, country=country,
                         location_published=row["title_location"])
             rep["matched_index_row"] = None
@@ -494,9 +681,28 @@ def load(extract_dir: Path = EXTRACTS) -> dict:
         base["name_en"] = name_keep
         if not base.get("city") and row["location_label"]:
             base["city"], _, _ = parse_location(row["location_label"])
+        if not base.get("city") and row.get("title_location"):
+            c, k, _ = parse_location(row["title_location"])
+            if c and k in (None, base.get("country")):
+                base["city"] = c
         rep["id"] = pid
         report["detail"].append(rep)
         report["detail_slugs"].append(pid)
+    report["city_from_master_development"] = []
+    for pid, r in sorted(projects.items()):
+        if r.get("city"):
+            continue
+        locs = [r.get("location_published") or "", r.get("title_location") or ""]
+        for loc in locs:
+            c, k, _ = parse_location(loc, resolve_dev=True)
+            if c and k in (None, r.get("country")):
+                dev = next(t for t in MASTER_DEV_CITY if t in loc.lower())
+                r["city"] = c
+                r["city_note"] = (f"DarGlobal publishes the location as '{loc}'; city {c} because "
+                                  f"{MASTER_DEV_CITY[dev][2]}")
+                report["city_from_master_development"].append({"id": pid, "location_published": loc, "city": c,
+                                                               "evidence": MASTER_DEV_CITY[dev][2]})
+                break
     report["detail_slugs"].sort()
     return {"projects": projects, "report": report}
 

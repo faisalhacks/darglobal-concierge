@@ -18,7 +18,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
   return (
     <footer className={`site-footer${compact ? " site-footer--compact" : ""}`}>
       <p className="site-footer__disclaimer">
-        <span className="site-footer__long">{t.footerDisclaimer}</span>
+        <span className="site-footer__long">{t.footerInfo} {t.footerDisclaimer}</span>
         <span className="site-footer__short">{t.footerShort}</span>
         {compact && <> <Link className="site-footer__privacy" href="/privacy/">{t.navPrivacy}</Link></>}
       </p>

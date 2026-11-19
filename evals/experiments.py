@@ -3,7 +3,8 @@
 and writes no result file.
 
 E1  BM25 vs embeddings vs hybrid retrieval, English and Arabic separately.
-    Imports retrieval functions from backend.app (module `retrieval` by default). If it is not
+    Imports retrieval functions from evals/e1_adapter.py (wraps backend.app.retrieval.Retriever); run it with backend/.venv.
+    The adapter's meta() puts dataset_version and the retriever mode into E1.json so the report can check it matches latest.json. If it is not
     importable or exposes no recognisable functions, E1 is skipped. Override with
       --retrieval-module backend.app.retrieval --bm25 NAME --vector NAME --hybrid NAME
     Each function is called as fn(query, k=K) (falling back to fn(query)) and must return a list of
@@ -23,6 +24,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import importlib
+import inspect
 import json
 import os
 import re
@@ -47,7 +49,9 @@ def _pick(mod, names, hints):
         if n and hasattr(mod, n):
             return getattr(mod, n), n
     for attr in dir(mod):
-        if callable(getattr(mod, attr)) and all(h in attr.lower() for h in hints) and not attr.startswith("_"):
+        obj = getattr(mod, attr)
+        # functions only: a class such as the imported BM25Okapi matches "bm25" but is not a search function
+        if inspect.isfunction(obj) and all(h in attr.lower() for h in hints) and not attr.startswith("_"):
             return getattr(mod, attr), attr
     return None, None
 
@@ -128,7 +132,13 @@ def e1(args, db):
                 ) | {"ms_per_query": round((time.monotonic() - t0) * 1000 / n, 1)}
     if not table:
         return skip("E1", "no method produced results: " + "; ".join(notes))
-    return {"experiment": "E1", "functions": {k: v[1] for k, v in fns.items()}, "results": table, "notes": notes,
+    meta = {}
+    if callable(getattr(mod, "meta", None)):
+        try:
+            meta = mod.meta()
+        except Exception as e:  # noqa: BLE001
+            notes.append(f"meta(): {type(e).__name__}: {e}")
+    return {"experiment": "E1", **meta, "functions": {k: v[1] for k, v in fns.items()}, "results": table, "notes": notes,
             "caveat": "Proxy benchmark built from the DB itself (known-item + city precision); small n; not end-to-end quality."}
 
 
@@ -209,8 +219,10 @@ def main():
     ap.add_argument("--base-url", default=os.getenv("EVAL_BASE_URL", "http://localhost:7860"))
     ap.add_argument("--db", default=str(ROOT / "data" / "concierge.sqlite"))
     ap.add_argument("--rpm", type=float, default=12)
-    ap.add_argument("--retrieval-module", default="backend.app.retrieval")
-    ap.add_argument("--bm25"), ap.add_argument("--vector"), ap.add_argument("--hybrid")
+    ap.add_argument("--retrieval-module", default="evals.e1_adapter")
+    ap.add_argument("--bm25", default="bm25_search")
+    ap.add_argument("--vector", default="vector_search")
+    ap.add_argument("--hybrid", default="hybrid_search")
     ap.add_argument("--out-dir", default=str(HERE / "results"))
     args = ap.parse_args()
     db = R.DB(Path(args.db))

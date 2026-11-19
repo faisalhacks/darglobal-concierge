@@ -90,7 +90,7 @@ def main(argv=None) -> int:
             existing = {}
 
     from backend.app.arabic import detect_lang
-    from backend.app.chat import baked_key
+    from backend.app.chat import MIN_PROSE_CHARS, baked_key
     baked, skipped = 0, 0
     for qid, q in questions:
         lang = detect_lang(engine._strip_names(q), "auto")
@@ -104,6 +104,11 @@ def main(argv=None) -> int:
             break
         events = asyncio.run(_ask(engine, q))
         trace = next((d for e, d in events if e == "trace"), {})
+        prose = "".join(str(d.get("t") or "") for e, d in events if e == "token")
+        if len(prose.strip()) < MIN_PROSE_CHARS:  # a cut-off or one-word reply is never baked
+            skipped += 1
+            print(f"{qid}: not baked (answer has {len(prose.strip())} characters)")
+            continue
         if not trace.get("llm_calls") or trace.get("degraded") or not trace.get("model"):
             skipped += 1
             print(f"{qid}: not baked (llm_calls={trace.get('llm_calls')}, degraded={trace.get('degraded_reason')})")

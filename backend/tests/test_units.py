@@ -294,7 +294,7 @@ def test_place_browse_question_is_info_word_boundary():
 
 # ---------------- verification fixes (source labels, chips, data sanity) ----------------
 def test_third_party_source_is_labelled_honestly():
-    from app.store import detail_level, source_of, source_site
+    from backend.app.store import detail_level, source_of, source_site
     rns = "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
     assert source_site(rns, "DarGlobal") == "LSE filing via ticker.app"
     assert source_site("https://thenationalnews.com/x", "DarGlobal") == "The National (news)"
@@ -307,7 +307,7 @@ def test_third_party_source_is_labelled_honestly():
 
 
 def test_project_chips_only_from_published_fields(client):
-    from app.chat import Answer
+    from backend.app.chat import Answer
     eng = client.app.state.engine
     p = {"id": "x", "name_en": "No Price Tower", "site": "DarGlobal", "city": None, "price_from_amount": None,
          "unit_types": ["1 BR", "2 BR"], "handover_year": None, "area_min_m2": None, "area_max_m2": None}
@@ -318,14 +318,14 @@ def test_project_chips_only_from_published_fields(client):
 
 
 def test_chips_never_repeat_a_question_already_asked():
-    from app import templates
+    from backend.app import templates
     chips = [{"label": "A", "message": "What are the prices at X?"}, {"label": "B", "message": "When is handover for X?"}]
     out = templates.drop_repeats(chips, "When is handover for X?", "en", asked=["What are the prices at X?"])
     assert all(c["message"] not in ("What are the prices at X?", "When is handover for X?") for c in out)
 
 
 def test_trap_chip_label_equals_message():
-    from app import templates
+    from backend.app import templates
     for lang in ("en", "ar"):
         label, msg = templates.DEFAULT_CHIPS[lang][4]
         assert label == msg

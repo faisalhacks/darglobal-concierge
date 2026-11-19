@@ -48,12 +48,43 @@ TEMPLATES: dict[str, dict[str, str]] = {
         "ar": "أقرب الصفحات المنشورة مرفقة أدناه.",
     },
     "price_on_request": {"en": "Price on request", "ar": "السعر عند الطلب"},
+    # "Is Wasalt a subsidiary of DarGlobal?" No page in the dataset documents the ownership link, so the answer makes
+    # no subsidiary claim and says the relationship is outside what it can cite (chat.py attaches a source only when
+    # a collected page names both brands together with an ownership word).
     "brand_relationship": {
-        "en": "The published pages I hold do not describe a corporate relationship between DarGlobal and Wasalt, so I "
-              "will not state one. This prototype simply covers both brands; their official websites can confirm "
-              "anything about ownership.",
-        "ar": "لا تصف الصفحات المنشورة لديّ أي علاقة مؤسسية بين دار جلوبال ووصلت، لذا لن أذكر أي علاقة. يغطي هذا النموذج "
-              "التجريبي العلامتين معاً فقط، ويمكن لموقعيهما الرسميين تأكيد أي معلومة عن الملكية.",
+        "en": "Public sources describe DarGlobal and Wasalt as sister companies under common ownership, not as parent "
+              "and subsidiary, so I will not call Wasalt a DarGlobal subsidiary. None of the pages in this dataset "
+              "documents that ownership link, so it is outside what I can cite here; the official websites can confirm it.",
+        "ar": "تصف المصادر العامة دار جلوبال ووصلت بأنهما شركتان شقيقتان تحت ملكية مشتركة، لا شركة أم وشركة تابعة، لذا لن "
+              "أصف وصلت بأنها تابعة لدار جلوبال. لا توثّق أي صفحة في هذه البيانات رابط الملكية هذا، فهو خارج ما يمكنني "
+              "الاستشهاد به هنا؛ ويمكن للموقعين الرسميين تأكيده.",
+    },
+    "brand_relationship_sourced": {
+        "en": "Public sources describe DarGlobal and Wasalt as sister companies under common ownership, not as parent "
+              "and subsidiary, so I will not call Wasalt a DarGlobal subsidiary. The collected pages that mention "
+              "both are linked below.",
+        "ar": "تصف المصادر العامة دار جلوبال ووصلت بأنهما شركتان شقيقتان تحت ملكية مشتركة، لا شركة أم وشركة تابعة، لذا لن "
+              "أصف وصلت بأنها تابعة لدار جلوبال. الصفحات المجمّعة التي تذكرهما مرفقة أدناه.",
+    },
+    # A place the user named that no row in the dataset is in ("projects in Tokyo"): name it as a place and list the
+    # countries the dataset does hold (chips for them are added by chat.py).
+    "unknown_place": {
+        "en": "No DarGlobal or Wasalt entries in {place} in this dataset, so I will not guess. "
+              "The countries it holds are: {countries}.",
+        "ar": "لا توجد في هذه البيانات أي مشاريع أو عروض لدار جلوبال أو وصلت في {place}، ولن أقدّم تخمينات. "
+              "الدول المتوفرة فيها هي: {countries}.",
+    },
+    # Auction question where no collected page explains the process (only auction listings were collected).
+    "auctions_unexplained": {
+        "en": "None of the pages I collected explains how Wasalt auctions work, so I will not describe the process; "
+              "the Wasalt auctions site is linked below.",
+        "ar": "لا تشرح أي من الصفحات التي جمعتها آلية عمل مزادات وصلت، لذا لن أصفها؛ موقع مزادات وصلت مرفق أدناه.",
+    },
+    # Arabic question; the only page that explains the auction process was collected in English.
+    "auctions_english_only": {
+        "en": "",
+        "ar": "لا تشرح الصفحات العربية التي جمعتها آلية عمل مزادات وصلت، ولن أترجم الشروط آلياً؛ صفحة شروط وأحكام "
+              "المزادات (بالإنجليزية) مرفقة أدناه.",
     },
     "steering": {
         "en": "I can't recommend or filter homes by nationality, religion, ethnicity, gender or family status; I treat "

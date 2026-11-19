@@ -102,8 +102,10 @@ def test_load_merges_detail_into_index():
     p = out["projects"]
     detail = [r for r in p.values() if r["source_url"] != dgm.INDEX_URL]
     assert len(detail) == len(out["report"]["detail"])
+    no_status_published = {"dg-trump-furnished-residences"}     # the page has no STATUS label and no FAQ status
     for r in detail:
-        assert r["status"] and r["description_en"]
+        assert r["description_en"]
+        assert r["status"] or r["id"] in no_status_published
         assert r["id"] in out["report"]["detail_slugs"]
 
 
@@ -225,10 +227,16 @@ def test_thirdparty_rules(merged):
     ex = {(x["file"], x["field"]) for x in rep["excluded_facts"]}
     assert ("the-mulliner.json", "marketed_price") in ex and ("the-mulliner.json", "sale_price") in ex
     assert ("aida.json", "site_area") in ex                                  # curator: misprint, do not use
+    # an index-only row: structured columns come from the most recent RNS value, the fact chunk cites the index
+    dv = rows["dg-d-villas-at-jumeirah-golf-estates"]
+    assert (dv["status"], dv["handover_year"], dv["source_url"]) == (
+        "Under construction; main construction contracts awarded", 2028, RNS)
+    assert dv["dg_source_url"] == dgm.INDEX_URL
+    # a row with its own collected page keeps the page's values and source; the RNS value stays in the figures
     ttj = rows["dg-trump-tower-jeddah"]
     assert (ttj["status"], ttj["handover_year"], ttj["source_url"]) == (
-        "Under construction; main construction contract awarded", 2029, RNS)  # most recent RNS value
-    assert ttj["dg_source_url"] == dgm.INDEX_URL
+        "Under Development", 2029, "https://darglobal.co.uk/trump-tower-jeddah")
+    assert ttj["dg_source_url"] == "https://darglobal.co.uk/trump-tower-jeddah"
     tm = rows["dg-trump-mansions"]
     assert tm["country"] == "Saudi Arabia" and tm["location_published"] == "Rayana, Wadi Safar, Riyadh"
     assert any(c["id"] == "dg-trump-mansions" for c in rep["corrections"])
@@ -262,3 +270,92 @@ def test_thirdparty_chunks_in_db(con):
         slug = con.execute("SELECT slug FROM projects WHERE id=?", (pid,)).fetchone()[0]
         assert con.execute("SELECT count(*) FROM pages WHERE id=? AND page_type='project_sources'",
                            (f"darglobal-pg-sources-{slug}",)).fetchone()[0] == 1
+
+
+# ---------------------------------------------------------------- get_page_text extracts (v2) + city / label fixes
+V2 = ["aida-trump-international-apartments", "marriott-residences-aida-oman", "trump-tower-jeddah", "neptune",
+      "the-mulliner", "tierra-viva"]
+
+
+def test_v2_extracts_all_ingested():
+    out = dgm.load()
+    assert out["report"]["skipped"] == []
+    urls = {r["source_url"] for r in out["projects"].values()} | {r.get("dg_source_url") for r in out["projects"].values()}
+    for slug in V2:
+        if (EXT / f"{slug}.json").exists():
+            assert f"https://darglobal.co.uk/{slug}" in urls, slug
+
+
+def test_v2_parse_values_and_conflicts():
+    if not (EXT / "neptune.json").exists():
+        pytest.skip()
+    n, rep = dgm.parse_detail_v2(_load("neptune.json"))
+    assert (n["status"], n["handover_year"], n["handover_text"]) == ("Under Development", 2027, "December 2027")
+    assert (n["area_min_m2"], n["area_max_m2"]) == (300.0, 448.0)          # spec box
+    assert n["area_text_sqm"] == "300 to 420 sqm"                           # prose figure kept beside it
+    assert "both kept" in rep["area_note"]
+    t, _ = dgm.parse_detail_v2(_load("tierra-viva.json"))
+    assert (t["area_min_m2"], t["area_max_m2"], t["area_text_sqm"]) == (680.0, 1515.0, "700 to 1,450 sqm")
+    assert t["description_en"].startswith("Tierra Viva is")                 # accented location line stripped
+    a, rep = dgm.parse_detail_v2(_load("aida-trump-international-apartments.json"))
+    assert any("WHY INVEST" in x for x in rep["excluded_sections"])
+    txt = a["description_en"] + " ".join(x for _, x in a["sections"])
+    assert "Capital Gains" not in txt and "Residency Visa" not in txt and "Highest ROI" not in txt
+    assert (a["lat"], a["lng"]) == (23.529569, 58.675125)
+    for slug in V2:
+        r, _ = dgm.parse_detail_v2(_load(f"{slug}.json"))
+        body = r["description_en"] + " ".join(x for _, x in r["sections"])
+        assert not CLAIMS.search(body), slug
+        assert not re.search(r"\bROI\b|tax", body), slug
+
+
+def test_v2_disclaimers_verbatim():
+    for slug, start in (("trump-tower-jeddah", "Trump Tower Jeddah is not owned, developed or sold by The Trump "
+                                               "Organization"),
+                        ("marriott-residences-aida-oman", "Marriott Residences Aida, Oman are not owned, developed or "
+                                                          "sold by Marriott International")):
+        d = _load(f"{slug}.json")
+        r, _ = dgm.parse_detail_v2(d)
+        assert len(r["disclaimers"]) == 1 and r["disclaimers"][0].startswith(start)
+        assert r["disclaimers"][0] in d["text"]                             # verbatim substring of the extract
+        assert "Disclaimer" not in r["description_en"]
+
+
+def test_no_city_aida_and_aida_rows_in_muscat():
+    out = dgm.load()
+    rows = out["projects"]
+    assert not any((r.get("city") or "").lower() == "aida" for r in rows.values())
+    fixed = {x["id"] for x in out["report"]["city_from_master_development"]}
+    assert {"dg-marriott-residences", "dg-fairway-villas", "dg-the-great-escape", "dg-the-great-escape-2",
+            "dg-azure-oceanfront-villas-interiors-by-fendi-casa", "dg-nickelodeon-hotels-and-resorts"} <= fixed
+    for pid in fixed:
+        assert rows[pid]["city"] == "Muscat" and rows[pid]["country"] == "Oman"
+
+
+def test_built_db_cities_and_disclaimer_pages(con):
+    assert con.execute("SELECT count(*) FROM projects WHERE lower(city) = 'aida'").fetchone()[0] == 0
+    if con.execute("SELECT count(*) FROM projects WHERE id='dg-trump-tower-jeddah'").fetchone()[0]:
+        rows = dict(con.execute("SELECT id, text FROM pages WHERE page_type='disclaimer'").fetchall())
+        assert set(rows) >= {"darglobal-pg-disclaimer-trump-tower-jeddah"}
+
+
+def test_page_vs_thirdparty_figures_kept(merged):
+    rows, extras, rep = merged
+    fig = extras["dg-marriott-residences"]["figures"]["text"]
+    assert "September 2029 (DarGlobal project page" in fig and "Q4 2027 (" in fig
+    fig = extras["dg-the-mulliner"]["figures"]["text"]
+    assert "485.22" in fig and "5,222 sq.ft" in fig and "four-bedroom" in fig and "5-Bedroom" in fig
+
+
+def test_source_labels_never_bare_darglobal(merged):
+    rows, extras, rep = merged
+    for e in extras.values():
+        for url, label in e["source_labels"].items():
+            if "darglobal.co.uk" not in url:
+                assert label != "DarGlobal", url
+            if "zawya.com/en/press-release" in url or "prnewswire" in url:
+                assert label.startswith("DarGlobal (via "), url
+    p = REPO / "data" / "source_labels.json"
+    if p.exists():
+        lab = json.loads(p.read_text(encoding="utf-8"))["labels"]
+        assert all(v != "DarGlobal" for u, v in lab.items() if "darglobal.co.uk" not in u)

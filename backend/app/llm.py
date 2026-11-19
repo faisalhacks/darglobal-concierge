@@ -45,6 +45,8 @@ class LLMResult:
         self.model: str | None = None
         self.fallback_hops = 0
         self.error: str | None = None
+        # finish_reason of the last streamed answer ("stop" = complete; "length" etc. = cut off; None = not reported)
+        self.finish_reason: str | None = None
 
 
 def _num(v) -> float | None:
@@ -137,6 +139,7 @@ class OpenRouterClient:
         body = {"models": models, "messages": messages, "stream": True, "temperature": 0.2,
                 "max_tokens": max_tokens, "reasoning": {"effort": "low", "exclude": True}}
         rec.calls += 1
+        rec.finish_reason = None
         self.router.note_call()
         t0 = time.monotonic()
         deadline = t0 + self.s.llm_total_timeout_s
@@ -174,6 +177,8 @@ class OpenRouterClient:
                         if obj.get("model"):
                             rec.model = obj["model"]
                         for ch in choices:
+                            if (ch or {}).get("finish_reason"):
+                                rec.finish_reason = ch["finish_reason"]
                             piece = ((ch or {}).get("delta") or {}).get("content")
                             if piece:
                                 if first:
@@ -284,10 +289,12 @@ class MockLLM:
 
     model_name = "mock/echo"
 
-    def __init__(self, fail_with: str | None = None, leak: bool = False, extra: str = ""):
+    def __init__(self, fail_with: str | None = None, leak: bool = False, extra: str = "",
+                 truncate: str | None = None):
         self.fail_with = fail_with
         self.leak = leak
         self.extra = extra
+        self.truncate = truncate  # e.g. "Was": stream only this text and end with finish_reason "length"
         self._failed_once = False
         self.router = Router([self.model_name], daily_budget=10**9)
 
@@ -314,9 +321,10 @@ class MockLLM:
                 continue
             rec.model = self.model_name
             rec.fallback_hops = i
-            text = self._compose(messages)
+            text = self.truncate if self.truncate is not None else self._compose(messages)
             for tok in re.findall(r"\S+\s*", text):
                 yield tok
+            rec.finish_reason = "length" if self.truncate is not None else "stop"
             return
         raise last
 

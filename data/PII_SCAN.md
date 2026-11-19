@@ -1,6 +1,6 @@
-# PII scan — 2026-11-19T11:15:10+00:00
+# PII scan — 2026-11-19T11:51:51+00:00
 
-Dataset: `data/concierge.sqlite` version `20261119-e5604e7e`
+Dataset: `data/concierge.sqlite` version `20261119-eb33f465`
 
 Patterns: Saudi mobile (05xxxxxxxx / +9665xxxxxxxx), any +international 9-14 digits, 10-digit 0-prefixed numbers, email addresses, wa.me / 'whatsapp <digits>'. Arabic-Indic digits normalised before matching. Also checks that no agent/owner/phone/email/whatsapp column exists in projects/listings.
 

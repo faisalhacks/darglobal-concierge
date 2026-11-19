@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
-import { safeImage, safeUrl } from "@/lib/api";
-import { fmtDate, fmtMoney, fmtNumber } from "@/lib/format";
+import { useEffect, useState } from "react";
+import { getJSON, safeImage, safeUrl } from "@/lib/api";
+import { fmtDate, fmtMoney, fmtNumber, hasArabic, lookup } from "@/lib/format";
 import { STRINGS, type Strings } from "@/lib/i18n";
 import type {
   CalcEvent, Chip, CompareEvent, Lang, ListingCard as LC, ProjectCard as PC, Source, TraceEvent,
@@ -25,13 +25,65 @@ function SiteBadge({ site }: { site: string }) {
   return <span className="badge" lang="en" dir="ltr">{site}</span>;
 }
 
-function SourceLink({ url, site, t }: { url: string; site: string; t: Strings }) {
+/** Optional fields a card may carry; when the card lacks them they are read once from /api/projects/{slug}. */
+type ProjectExtra = { brand_partner?: string | null; scraped_at?: string | null; licence_note?: string | null; licence_url?: string | null };
+const detailCache = new Map<string, Promise<ProjectExtra | null>>();
+function fetchDetail(slug: string): Promise<ProjectExtra | null> {
+  let pr = detailCache.get(slug);
+  if (!pr) {
+    pr = getJSON<Record<string, unknown>>(`/api/projects/${encodeURIComponent(slug)}`)
+      .then((d) => ({
+        brand_partner: (d.brand_partner as string) ?? null,
+        scraped_at: (d.scraped_at as string) ?? null,
+        // Verbatim licence wording, only when the dataset row holds it (data lane). Never written here.
+        licence_note: ((d.licence_note ?? d.license_note) as string) ?? null,
+        licence_url: ((d.licence_url ?? d.license_url) as string) ?? null,
+      }))
+      .catch(() => null);
+    detailCache.set(slug, pr);
+  }
+  return pr;
+}
+function useProjectExtra(p: PC): ProjectExtra {
+  const own = p as PC & ProjectExtra;
+  const complete = "brand_partner" in own && "scraped_at" in own;
+  const [extra, setExtra] = useState<ProjectExtra | null>(null);
+  useEffect(() => {
+    if (complete || !p.slug) return;
+    let live = true;
+    fetchDetail(p.slug).then((d) => { if (live) setExtra(d); });
+    return () => { live = false; };
+  }, [p.slug, complete]);
+  return {
+    brand_partner: own.brand_partner ?? extra?.brand_partner ?? null,
+    scraped_at: own.scraped_at ?? extra?.scraped_at ?? null,
+    licence_note: own.licence_note ?? extra?.licence_note ?? null,
+    licence_url: own.licence_url ?? extra?.licence_url ?? null,
+  };
+}
+
+/** Place and status in the card language: closed-vocabulary lookup only; unmapped values stay as published. */
+function placeText(display: string | null | undefined, raw: string | null | undefined, t: Strings, lang: Lang) {
+  if (lang !== "ar") return display ?? raw ?? null;
+  if (display && display !== raw) return display;
+  return lookup(raw, t.places)?.text ?? null;
+}
+function Status({ v, t, lang }: { v: string | null; t: Strings; lang: Lang }) {
+  if (!v) return null;
+  const hit = lang === "ar" ? lookup(v, t.statusLabels) : null;
+  if (hit?.mapped) return <span className="card__status">{hit.text}</span>;
+  return <span className="card__status" lang="en" dir="auto">{v}</span>;
+}
+
+/** "Source: <origin> · collected <date>", the origin linking to the page it came from. */
+function SourceLine({ url, origin, date, t, lang }: { url: string; origin: string; date?: string | null; t: Strings; lang: Lang }) {
   const href = safeUrl(url);
-  if (!href) return null;
+  const label = <>{t.cardSource("")}<bdi>{origin}</bdi></>;
   return (
-    <a className="card__source" href={href} target="_blank" rel="noopener noreferrer">
-      {t.viewSource} {site}
-    </a>
+    <p className="card__source">
+      {href ? <a href={href} target="_blank" rel="noopener noreferrer">{label}</a> : <span>{label}</span>}
+      {date && <span className="card__collected"><span className="card__sep" aria-hidden="true"> · </span>{t.collected} <time dateTime={date}>{fmtDate(date, lang)}</time></span>}
+    </p>
   );
 }
 
@@ -39,22 +91,37 @@ export function ProjectCard({ p, t, lang }: { p: PC; t: Strings; lang: Lang }) {
   const price = fmtMoney(p.price_from, lang);
   const indexOnly = p.detail === "index";
   const thirdParty = p.detail === "thirdparty";
-  const srcSite = p.source_site || p.site;
+  const srcSite = indexOnly ? t.srcIndex : (p.source_site || p.site);
+  const extra = useProjectExtra(p);
+  const photo = Boolean(safeImage(p.image_url));
+  const place = [placeText(p.city_display, p.city, t, lang), placeText(p.country_display, p.country, t, lang)]
+    .filter(Boolean).join(lang === "ar" ? "، " : ", ");
+  // The note links only to the page it was collected from; never to a different source.
+  const noteHref = safeUrl(extra.licence_url);
   return (
-    <article className={`card${safeImage(p.image_url) ? "" : " card--text"}`}>
+    <article className={`card${photo ? "" : " card--type"}`}>
       <Img src={p.image_url} alt={p.name} />
       <div className="card__body">
-        <div className="card__top"><SiteBadge site={p.site} />{p.status && <span className="card__status">{p.status}</span>}</div>
-        <h3 className="card__title">{p.name}</h3>
-        <p className="card__place">{[p.city_display ?? p.city, p.country_display ?? p.country].filter(Boolean).join(lang === "ar" ? "، " : ", ")}</p>
+        <div className="card__top"><SiteBadge site={p.site} /><Status v={p.status} t={t} lang={lang} /></div>
+        <h3 className="card__title" lang={hasArabic(p.name) ? "ar" : "en"} dir="auto">{p.name}</h3>
+        {place && <p className="card__place">{place}</p>}
+        {extra.brand_partner && (
+          <p className="card__brand"><span className="card__brand-label">{t.brandPartner}</span> <bdi lang="en" dir="ltr">{extra.brand_partner}</bdi></p>
+        )}
         <p className="card__price">
           {price
             ? (<><span className="card__price-label">{t.priceFrom}</span> <bdi>{price}</bdi></>)
-            : <span className="card__price-none">{p.price_label || t.priceOnRequest}</span>}
+            : <span className="card__price-none">{lang === "ar" ? t.priceOnRequest : (p.price_label || t.priceOnRequest)}</span>}
         </p>
         {indexOnly && <p className="card__note">{t.listedOnIndex}</p>}
-        {thirdParty && <p className="card__note">{t.fromThirdParty(srcSite)}</p>}
-        <SourceLink url={p.source_url} site={srcSite} t={t} />
+        {thirdParty && <p className="card__note">{t.fromThirdParty(p.source_site || p.site)}</p>}
+        {extra.licence_note && (
+          <p className="card__licence" lang="en" dir="ltr">
+            {extra.licence_note}
+            {noteHref && <> <a href={noteHref} target="_blank" rel="noopener noreferrer">{hostOf(noteHref)}</a></>}
+          </p>
+        )}
+        <SourceLine url={p.source_url} origin={srcSite} date={extra.scraped_at} t={t} lang={lang} />
       </div>
     </article>
   );
@@ -77,10 +144,11 @@ export function ListingCard({ l, t, lang }: { l: LC; t: Strings; lang: Lang }) {
     l.area_m2 != null ? `${fmtNumber(l.area_m2, lang)} m²` : null,
   ].filter(Boolean) as string[];
   const type = listingType(l.title, t);
-  const place = l.district || l.city_display || l.city;
+  const city = placeText(l.city_display, l.city, t, lang);
+  const place = l.district || city;
   // District names are published in Latin script only; they are shown as published (isolated), never transliterated.
   const title = type && place ? <>{t.inArea(type, "")}<bdi lang={l.district ? "en" : undefined}>{place}</bdi></> : l.title;
-  const sub = l.district && l.city ? (l.city_display || l.city) : null;
+  const sub = l.district && l.city ? city : null;
   return (
     <article className={`card card--listing${safeImage(l.image_url) ? "" : " card--text"}`}>
       <Img src={l.image_url} alt={l.title} />
@@ -91,56 +159,26 @@ export function ListingCard({ l, t, lang }: { l: LC; t: Strings; lang: Lang }) {
         {facts.length > 0 && <ul className="card__facts">{facts.map((f) => <li key={f}><bdi>{f}</bdi></li>)}</ul>}
         <p className="card__price">{price ? <bdi>{price}</bdi> : <span className="card__price-none">{t.priceOnRequest}</span>}</p>
         {price && l.listing_type === "rent" && <p className="card__note">{t.rentNoPeriod}</p>}
-        <SourceLink url={l.source_url} site={l.site} t={t} />
+        <SourceLine url={l.source_url} origin={l.site} date={(l as LC & { scraped_at?: string }).scraped_at} t={t} lang={lang} />
       </div>
     </article>
   );
 }
 
-/** A project with no photo and no page of its own (index-only or third-party record): one line in a plain list. */
-function ProjectRow({ p, t, lang }: { p: PC; t: Strings; lang: Lang }) {
-  const href = safeUrl(p.source_url);
-  const srcSite = p.source_site || p.site;
-  const place = [p.city_display ?? p.city, p.country_display ?? p.country].filter(Boolean).join(lang === "ar" ? "، " : ", ");
-  const label = p.detail === "index" ? t.srcIndex : t.srcFrom(srcSite);
-  return (
-    <li className="plist__row">
-      <div className="plist__main">
-        <span className="plist__name">{p.name}</span>
-        {place && <span className="plist__place">{place}</span>}
-      </div>
-      <div className="plist__meta">
-        <span className="plist__price">{p.price_label || t.priceOnRequest}</span>
-        {href
-          ? <a className="plist__src" href={href} target="_blank" rel="noopener noreferrer">{label}</a>
-          : <span className="plist__src">{label}</span>}
-      </div>
-    </li>
-  );
-}
+/** Projects with a photo and their own hand-read page first, then other official pages, third-party records, index rows. */
+const rank = (p: PC) => (p.detail === "page" || !p.detail ? 0 : p.detail === "thirdparty" ? 2 : 3) - (safeImage(p.image_url) ? 1 : 0);
 
 export function CardRail({ projects, listings, t, lang }: { projects: PC[]; listings: LC[]; t: Strings; lang: Lang }) {
-  // Projects with a photo or their own page become cards; the rest (name + location only) are a plain list.
-  const rich = projects.filter((p) => safeImage(p.image_url) || p.detail === "page" || !p.detail);
-  const plain = projects.filter((p) => !rich.includes(p));
-  const n = rich.length + listings.length;
-  if (!n && !plain.length) return null;
+  // Every project is a card: a photo card where the extract holds a photo, otherwise a typographic card. No drawings.
+  const ordered = projects.map((p, i) => [p, i] as const).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(([p]) => p);
+  const n = ordered.length + listings.length;
+  if (!n) return null;
   return (
-    <>
-      {n > 0 && (
-        // Up to three cards sit in a grid; only a longer set scrolls sideways (with snap and a themed thin scrollbar).
-        <div className={`card-rail${n > 3 ? " card-rail--scroll" : ""}`} role="list" data-count={n} tabIndex={n > 3 ? 0 : undefined}>
-          {rich.map((p) => <div role="listitem" key={`p-${p.id}`}><ProjectCard p={p} t={t} lang={lang} /></div>)}
-          {listings.map((l) => <div role="listitem" key={`l-${l.id}`}><ListingCard l={l} t={t} lang={lang} /></div>)}
-        </div>
-      )}
-      {plain.length > 0 && (
-        <div className="plist">
-          {n > 0 && <p className="plist__head">{t.plainHead(plain.length)}</p>}
-          <ul>{plain.map((p) => <ProjectRow key={`r-${p.id}`} p={p} t={t} lang={lang} />)}</ul>
-        </div>
-      )}
-    </>
+    // Up to three cards sit in a grid; only a longer set scrolls sideways (with snap and a themed thin scrollbar).
+    <div className={`card-rail${n > 3 ? " card-rail--scroll" : ""}`} role="list" data-count={n} tabIndex={n > 3 ? 0 : undefined}>
+      {ordered.map((p) => <div role="listitem" key={`p-${p.id}`}><ProjectCard p={p} t={t} lang={lang} /></div>)}
+      {listings.map((l) => <div role="listitem" key={`l-${l.id}`}><ListingCard l={l} t={t} lang={lang} /></div>)}
+    </div>
   );
 }
 

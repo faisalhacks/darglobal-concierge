@@ -55,3 +55,9 @@ def vector_search(q: str, k: int = 6):
 def hybrid_search(q: str, k: int = 6):
     r = _r()
     return [{"id": h.chunk["id"], "entity_id": h.chunk.get("entity_id")} for h in r.search(q, top_k=k)]
+
+
+def meta() -> dict:
+    """Recorded in E1.json: which dataset and which retriever mode the numbers were measured on."""
+    r = _r()
+    return {"dataset_version": r.store.version, "retriever_mode": r.mode, "index_state": r.index_state}

@@ -1,5 +1,8 @@
 {
   "experiment": "E1",
+  "dataset_version": "20261119-eb33f465",
+  "retriever_mode": "hybrid",
+  "index_state": "ok",
   "functions": {
     "bm25": "bm25_search",
     "embeddings": "vector_search",
@@ -8,69 +11,87 @@
   "results": {
     "bm25": {
       "en_name": {
-        "n": 12,
-        "hit@1": 1.0,
-        "hit@6": 1.0,
-        "mrr": 1.0,
-        "ms_per_query": 196.7
+        "n": 54,
+        "hit@1": 0.889,
+        "recall@1": 0.889,
+        "recall@3": 0.963,
+        "recall@6": 0.963,
+        "hit@6": 0.963,
+        "mrr": 0.923,
+        "ms_per_query": 27.8
       },
       "ar_name": {
         "n": 18,
         "hit@1": 0.944,
+        "recall@1": 0.944,
+        "recall@3": 0.944,
+        "recall@6": 1.0,
         "hit@6": 1.0,
         "mrr": 0.956,
         "ms_per_query": 2.6
       },
       "en_city": {
-        "n": 5,
-        "precision@6": 0.0,
-        "ms_per_query": 0.0
+        "n": 10,
+        "precision@6": 0.5,
+        "ms_per_query": 1.5
       }
     },
     "embeddings": {
       "en_name": {
-        "n": 12,
-        "hit@1": 0.75,
-        "hit@6": 1.0,
-        "mrr": 0.819,
-        "ms_per_query": 26.1
+        "n": 54,
+        "hit@1": 0.667,
+        "recall@1": 0.667,
+        "recall@3": 0.87,
+        "recall@6": 0.926,
+        "hit@6": 0.926,
+        "mrr": 0.78,
+        "ms_per_query": 60.2
       },
       "ar_name": {
         "n": 18,
-        "hit@1": 0.333,
-        "hit@6": 0.556,
-        "mrr": 0.428,
-        "ms_per_query": 21.7
+        "hit@1": 0.111,
+        "recall@1": 0.111,
+        "recall@3": 0.167,
+        "recall@6": 0.278,
+        "hit@6": 0.278,
+        "mrr": 0.164,
+        "ms_per_query": 85.1
       },
       "en_city": {
-        "n": 5,
-        "precision@6": 0.067,
-        "ms_per_query": 18.6
+        "n": 10,
+        "precision@6": 0.45,
+        "ms_per_query": 90.7
       }
     },
     "hybrid": {
       "en_name": {
-        "n": 12,
-        "hit@1": 0.917,
-        "hit@6": 1.0,
-        "mrr": 0.958,
-        "ms_per_query": 26.1
+        "n": 54,
+        "hit@1": 0.796,
+        "recall@1": 0.796,
+        "recall@3": 0.963,
+        "recall@6": 0.981,
+        "hit@6": 0.981,
+        "mrr": 0.881,
+        "ms_per_query": 95.8
       },
       "ar_name": {
         "n": 18,
-        "hit@1": 0.667,
+        "hit@1": 0.556,
+        "recall@1": 0.556,
+        "recall@3": 0.833,
+        "recall@6": 0.889,
         "hit@6": 0.889,
-        "mrr": 0.735,
-        "ms_per_query": 27.8
+        "mrr": 0.699,
+        "ms_per_query": 90.3
       },
       "en_city": {
-        "n": 5,
-        "precision@6": 0.067,
-        "ms_per_query": 25.0
+        "n": 10,
+        "precision@6": 0.55,
+        "ms_per_query": 95.3
       }
     }
   },
   "notes": [],
   "caveat": "Proxy benchmark built from the DB itself (known-item + city precision); small n; not end-to-end quality.",
-  "run_at": "2026-11-19T09:09:26+00:00"
+  "run_at": "2026-11-19T12:28:29+00:00"
 }

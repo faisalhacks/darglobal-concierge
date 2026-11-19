@@ -169,6 +169,18 @@ class Store:
     def page_by_id(self, pid: str) -> dict | None:
         return next((x for x in self.pages if x["id"] == pid), None)
 
+    def licence_for(self, p: dict) -> dict:
+        """Verbatim licence/disclaimer wording for a DarGlobal project, from its page row with page_type 'disclaimer'
+        (id darglobal-pg-disclaimer-<slug>, written by the data lane from the official page). Never composed here:
+        no row -> no note."""
+        if p.get("site") != "DarGlobal":
+            return {}
+        slug = str(p["id"])[3:] if str(p["id"]).startswith("dg-") else str(p["id"])
+        pg = self.page_by_id(f"darglobal-pg-disclaimer-{slug}")
+        if not pg or pg.get("page_type") != "disclaimer" or not (pg.get("text") or "").strip():
+            return {}
+        return {"licence_note": pg["text"].strip(), "licence_url": pg.get("source_url")}
+
     def chunk_by_id(self, cid: str) -> dict | None:
         return next((c for c in self.chunks if c["id"] == cid), None)
 

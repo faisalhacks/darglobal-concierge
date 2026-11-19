@@ -1,12 +1,12 @@
 {
- "dataset_version": "20261119-e5604e7e",
+ "dataset_version": "20261119-eb33f465",
  "counts": {
-  "projects": 71,
+  "projects": 72,
   "listings": 1661,
-  "pages": 92,
-  "chunks": 2641,
+  "pages": 94,
+  "chunks": 2671,
   "projects_by_site": {
-   "DarGlobal": 41,
+   "DarGlobal": 42,
    "Wasalt": 30
   },
   "listings_by_type": {
@@ -15,16 +15,16 @@
   },
   "projects_detail_by_site": {
    "DarGlobal": {
-    "page": 6,
-    "index": 32,
+    "page": 12,
+    "index": 27,
     "thirdparty_only": 3,
     "with_thirdparty_facts": 23,
-    "with_any_detail_facts": 29
+    "with_any_detail_facts": 30
    }
   },
   "projects_by_site_country": {
    "DarGlobal": {
-    "Oman": 15,
+    "Oman": 16,
     "Qatar": 2,
     "Saudi Arabia": 10,
     "Spain": 3,
@@ -40,6 +40,7 @@
    "auctions": 1,
    "city_guide": 47,
    "contact": 2,
+   "disclaimer": 2,
    "guide": 8,
    "guides_index": 1,
    "home": 2,
@@ -94,25 +95,37 @@
  "darglobal": {
   "collection_method": "claude-in-chrome, user's own browser session, human pace",
   "index_h3_names": 38,
-  "projects": 41,
+  "projects": 42,
   "detail_slugs": [
    "dg-da-vinci-tower-interiors-by-pagani",
    "dg-les-vagues-by-elie-saab",
+   "dg-marriott-residences",
+   "dg-neptune-interiors-by-mouawad",
    "dg-the-astera-interiors-by-aston-martin",
+   "dg-the-mulliner",
+   "dg-tierra-viva-design-inspired-by-automobili-lamborghini",
+   "dg-trump-furnished-residences",
    "dg-trump-international-hotel-and-tower-dubai",
+   "dg-trump-tower-jeddah",
    "dg-urban-oasis-by-missoni",
    "dg-w-residences"
   ],
-  "oman_rows": 15,
+  "oman_rows": 16,
   "priced_rows": 0,
-  "chunks": 252,
+  "chunks": 282,
   "thirdparty_chunks": 101,
   "projects_by_level": {
    "page": [
     "dg-da-vinci-tower-interiors-by-pagani",
     "dg-les-vagues-by-elie-saab",
+    "dg-marriott-residences",
+    "dg-neptune-interiors-by-mouawad",
     "dg-the-astera-interiors-by-aston-martin",
+    "dg-the-mulliner",
+    "dg-tierra-viva-design-inspired-by-automobili-lamborghini",
+    "dg-trump-furnished-residences",
     "dg-trump-international-hotel-and-tower-dubai",
+    "dg-trump-tower-jeddah",
     "dg-urban-oasis-by-missoni",
     "dg-w-residences"
    ],
@@ -129,17 +142,13 @@
     "dg-dg1",
     "dg-fairway-villas",
     "dg-marea-interiors-by-missoni",
-    "dg-marriott-residences",
-    "dg-neptune-interiors-by-mouawad",
     "dg-nickelodeon-hotels-and-resorts",
     "dg-padel-living-residences",
     "dg-painite-villas-design-inspired-by-automobili-lamborghini",
     "dg-sunrise-haven",
     "dg-the-great-escape",
     "dg-the-great-escape-2",
-    "dg-the-mulliner",
     "dg-the-pagani-penthouse",
-    "dg-tierra-viva-design-inspired-by-automobili-lamborghini",
     "dg-top-of-the-astera",
     "dg-trump-cliff-villas",
     "dg-trump-executive-residences",
@@ -147,8 +156,7 @@
     "dg-trump-international-hotel-oman",
     "dg-trump-international-simaisma-qatar",
     "dg-trump-mansions",
-    "dg-trump-park-residences",
-    "dg-trump-tower-jeddah"
+    "dg-trump-park-residences"
    ],
    "thirdparty_only": [
     "dg-rayana",
@@ -167,6 +175,7 @@
    "projects.json",
    "the-astera.json",
    "the-mulliner.json",
+   "tierra-viva.json",
    "trump-international-hotel-and-tower-dubai.json",
    "trump-tower-jeddah.json",
    "urban-oasis-by-missoni.json",
@@ -195,6 +204,20 @@
    }
   ],
   "detail": [
+   {
+    "url": "https://darglobal.co.uk/aida-trump-international-apartments",
+    "format": "get_page_text extract (v2)",
+    "excluded_sections": [
+     "WHY INVEST (as stated by DarGlobal): WHY INVEST (investment / residency / tax claims)"
+    ],
+    "faq_excluded": [],
+    "claim_sentences_dropped": 0,
+    "text_repairs": 0,
+    "notes": "Page text read with get_page_text; registration form, footer, cookie banner and the sales phone number omitted. Images not captured on this pass (page scripts unresponsive to extraction).",
+    "geo": "lat/lng from the extract (read from the page's own map), not geocoded",
+    "matched_index_row": null,
+    "id": "dg-trump-furnished-residences"
+   },
    {
     "url": "https://darglobal.co.uk/davinci-tower-by-pagani",
     "excluded_sections": [
@@ -231,6 +254,30 @@
     "id": "dg-les-vagues-by-elie-saab"
    },
    {
+    "url": "https://darglobal.co.uk/marriott-residences-aida-oman",
+    "format": "get_page_text extract (v2)",
+    "excluded_sections": [],
+    "faq_excluded": [],
+    "claim_sentences_dropped": 0,
+    "text_repairs": 0,
+    "notes": "Read with get_page_text; form, footer, cookie banner and sales phone omitted. Page FAQ completion (Sept 2029) differs from the third-party RNS figure (Q4 2027); keep both with source and date.",
+    "area_note": "used label Area (SQM)",
+    "matched_index_row": "dg-marriott-residences",
+    "id": "dg-marriott-residences"
+   },
+   {
+    "url": "https://darglobal.co.uk/neptune",
+    "format": "get_page_text extract (v2)",
+    "excluded_sections": [],
+    "faq_excluded": [],
+    "claim_sentences_dropped": 0,
+    "text_repairs": 0,
+    "notes": "Page disagrees with itself on area (300-448 spec box vs 300-420 text); keep both. Marketing 'why invest' claims omitted from facts. Read with get_page_text; form/footer/phone omitted.",
+    "area_note": "text states '300 to 420 sqm', spec box states '300 - 448'; both kept",
+    "matched_index_row": "dg-neptune-interiors-by-mouawad",
+    "id": "dg-neptune-interiors-by-mouawad"
+   },
+   {
     "url": "https://darglobal.co.uk/the-astera",
     "excluded_sections": [
      "WHY INVEST: WHY INVEST (investment / yield / capital-growth claims)",
@@ -251,6 +298,30 @@
     "id": "dg-the-astera-interiors-by-aston-martin"
    },
    {
+    "url": "https://darglobal.co.uk/the-mulliner",
+    "format": "get_page_text extract (v2)",
+    "excluded_sections": [],
+    "faq_excluded": [],
+    "claim_sentences_dropped": 0,
+    "text_repairs": 0,
+    "notes": "Page says 5 bedrooms / 485.22 sqm; third-party sources mention 3 or 4 bedrooms and 5,222 sq ft for a unit; keep all with source and date. Read with get_page_text; form/footer/phone omitted.",
+    "area_note": "used label Area (SQM)",
+    "matched_index_row": "dg-the-mulliner",
+    "id": "dg-the-mulliner"
+   },
+   {
+    "url": "https://darglobal.co.uk/tierra-viva",
+    "format": "get_page_text extract (v2)",
+    "excluded_sections": [],
+    "faq_excluded": [],
+    "claim_sentences_dropped": 0,
+    "text_repairs": 0,
+    "notes": "Page disagrees with itself on area; keep both. Page's 'why invest' claims (e.g. 'Highest ROI in Europe') are marketing statements and are NOT facts for the bot; excluded. Read with get_page_text; form/footer/phone omitted.",
+    "area_note": "text states '700 to 1,450 sqm', spec box states '680 - 1,515'; both kept",
+    "matched_index_row": "dg-tierra-viva-design-inspired-by-automobili-lamborghini",
+    "id": "dg-tierra-viva-design-inspired-by-automobili-lamborghini"
+   },
+   {
     "url": "https://darglobal.co.uk/trump-international-hotel-and-tower-dubai",
     "excluded_sections": [
      "REGISTER YOUR INTEREST: REGISTER YOUR INTEREST (lead form boilerplate)",
@@ -266,6 +337,19 @@
     "image_rule": "JSON-LD images of the page",
     "matched_index_row": "dg-trump-international-hotel-and-tower-dubai",
     "id": "dg-trump-international-hotel-and-tower-dubai"
+   },
+   {
+    "url": "https://darglobal.co.uk/trump-tower-jeddah",
+    "format": "get_page_text extract (v2)",
+    "excluded_sections": [],
+    "faq_excluded": [],
+    "claim_sentences_dropped": 0,
+    "text_repairs": 0,
+    "notes": "Read with get_page_text; form, footer, cookie banner and sales phone omitted. 'Why invest' marketing claims (residency, tax) omitted from facts.",
+    "area_note": "used label Area (SQM)",
+    "status_note": "no STATUS label on the page; 'under development' stated in the page FAQ",
+    "matched_index_row": "dg-trump-tower-jeddah",
+    "id": "dg-trump-tower-jeddah"
    },
    {
     "url": "https://darglobal.co.uk/urban-oasis-by-missoni",
@@ -302,33 +386,50 @@
     "id": "dg-w-residences"
    }
   ],
-  "skipped": [
-   {
-    "file": "aida-trump-international-apartments.json",
-    "reason": "not a project detail page (no H1 + fact labels); not ingested"
-   },
-   {
-    "file": "marriott-residences-aida-oman.json",
-    "reason": "not a project detail page (no H1 + fact labels); not ingested"
-   },
-   {
-    "file": "neptune.json",
-    "reason": "not a project detail page (no H1 + fact labels); not ingested"
-   },
-   {
-    "file": "the-mulliner.json",
-    "reason": "not a project detail page (no H1 + fact labels); not ingested"
-   },
-   {
-    "file": "trump-tower-jeddah.json",
-    "reason": "not a project detail page (no H1 + fact labels); not ingested"
-   }
-  ],
+  "skipped": [],
   "darglobal_unresolved": [
    {
     "id": "dg-trump-mansions",
     "name": "Trump Mansions",
     "location_published": "Rayana, Wadi Safar, Riyadh"
+   }
+  ],
+  "city_from_master_development": [
+   {
+    "id": "dg-azure-oceanfront-villas-interiors-by-fendi-casa",
+    "location_published": "AIDA | Oman",
+    "city": "Muscat",
+    "evidence": "DarGlobal publishes AIDA as 'AIDA, Muscat, Oman' (darglobal.co.uk/projects) and 'a branded residential complex at AIDA, Muscat' (darglobal.co.uk/marriott-residences-aida-oman)"
+   },
+   {
+    "id": "dg-fairway-villas",
+    "location_published": "Aida, Oman",
+    "city": "Muscat",
+    "evidence": "DarGlobal publishes AIDA as 'AIDA, Muscat, Oman' (darglobal.co.uk/projects) and 'a branded residential complex at AIDA, Muscat' (darglobal.co.uk/marriott-residences-aida-oman)"
+   },
+   {
+    "id": "dg-marriott-residences",
+    "location_published": "Aida, Oman",
+    "city": "Muscat",
+    "evidence": "DarGlobal publishes AIDA as 'AIDA, Muscat, Oman' (darglobal.co.uk/projects) and 'a branded residential complex at AIDA, Muscat' (darglobal.co.uk/marriott-residences-aida-oman)"
+   },
+   {
+    "id": "dg-nickelodeon-hotels-and-resorts",
+    "location_published": "AIDA | Oman",
+    "city": "Muscat",
+    "evidence": "DarGlobal publishes AIDA as 'AIDA, Muscat, Oman' (darglobal.co.uk/projects) and 'a branded residential complex at AIDA, Muscat' (darglobal.co.uk/marriott-residences-aida-oman)"
+   },
+   {
+    "id": "dg-the-great-escape",
+    "location_published": "Aida, Oman",
+    "city": "Muscat",
+    "evidence": "DarGlobal publishes AIDA as 'AIDA, Muscat, Oman' (darglobal.co.uk/projects) and 'a branded residential complex at AIDA, Muscat' (darglobal.co.uk/marriott-residences-aida-oman)"
+   },
+   {
+    "id": "dg-the-great-escape-2",
+    "location_published": "Aida, Oman",
+    "city": "Muscat",
+    "evidence": "DarGlobal publishes AIDA as 'AIDA, Muscat, Oman' (darglobal.co.uk/projects) and 'a branded residential complex at AIDA, Muscat' (darglobal.co.uk/marriott-residences-aida-oman)"
    }
   ],
   "thirdparty": {
@@ -623,18 +724,6 @@
      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
     },
     {
-     "id": "dg-neptune-interiors-by-mouawad",
-     "column": "status",
-     "value": "Under construction",
-     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
-    },
-    {
-     "id": "dg-neptune-interiors-by-mouawad",
-     "column": "handover_year",
-     "value": 2027,
-     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
-    },
-    {
      "id": "dg-rayana",
      "column": "status",
      "value": "Under construction",
@@ -653,24 +742,6 @@
      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
     },
     {
-     "id": "dg-the-mulliner",
-     "column": "status",
-     "value": "Completed",
-     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
-    },
-    {
-     "id": "dg-tierra-viva-design-inspired-by-automobili-lamborghini",
-     "column": "status",
-     "value": "Under construction",
-     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
-    },
-    {
-     "id": "dg-tierra-viva-design-inspired-by-automobili-lamborghini",
-     "column": "handover_year",
-     "value": 2028,
-     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
-    },
-    {
      "id": "dg-trump-plaza-jeddah",
      "column": "status",
      "value": "Under construction",
@@ -680,18 +751,6 @@
      "id": "dg-trump-plaza-jeddah",
      "column": "handover_year",
      "value": 2030,
-     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
-    },
-    {
-     "id": "dg-trump-tower-jeddah",
-     "column": "status",
-     "value": "Under construction; main construction contract awarded",
-     "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
-    },
-    {
-     "id": "dg-trump-tower-jeddah",
-     "column": "handover_year",
-     "value": 2029,
      "source_url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
     }
    ],
@@ -754,9 +813,9 @@
   }
  ],
  "chunk_headers": {
-  "chunks_total": 2641,
-  "chunks_needing_header": 737,
-  "with_header": 737,
+  "chunks_total": 2671,
+  "chunks_needing_header": 765,
+  "with_header": 765,
   "format": "{name_en} | {name_ar} | {city}, {country} | {site} | {section}: "
  },
  "contact_pages": [
@@ -1081,5 +1140,10 @@
   "HTTP 404 https://wasalt.sa/en/properties-for-sale-in-buraydah",
   "duplicate content (redirect/alias) https://wasalt.sa/en/s/masterplan -> https://wasalt.sa/en",
   "duplicate content (redirect/alias) https://wasalt.sa/en/s/wasalt-business -> https://wasalt.sa/en"
+ ],
+ "source_labels_n": 47,
+ "disclaimer_pages": [
+  "darglobal-pg-disclaimer-marriott-residences",
+  "darglobal-pg-disclaimer-trump-tower-jeddah"
  ]
 }

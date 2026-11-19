@@ -1,7 +1,7 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { API_BASE } from "@/lib/api";
-import { fmtDate, fmtNumber, hasArabic } from "@/lib/format";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { API_BASE, safeUrl } from "@/lib/api";
+import { fmtDate, hasArabic } from "@/lib/format";
 import { DEFAULT_CHIPS, STRINGS, TRAP_CHIP } from "@/lib/i18n";
 import { readSSE } from "@/lib/sse";
 import type {
@@ -25,44 +25,65 @@ type Turn = UserTurn | AssistantTurn;
 
 const uid = () => (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`);
 
-/** Plain-text renderer: paragraphs and simple dash lists. Model prose never carries links (SPEC §18). */
-function Prose({ text }: { text: string }) {
+/** One [n] marker in the prose: a small chip that opens source n (who published it, title, collection date, link). */
+function Cite({ n, src, lang }: { n: number; src: Source; lang: Lang }) {
+  const t = STRINGS[lang];
+  const [open, setOpen] = useState(false);
+  const href = safeUrl(src.url);
+  const id = `cite${useId().replace(/:/g, "")}`;
+  return (
+    <span className="cite">
+      <button type="button" className="cite__chip" aria-expanded={open} aria-controls={id} aria-label={t.citeLabel(n)}
+        onClick={() => setOpen((v) => !v)} onKeyDown={(e) => { if (e.key === "Escape") setOpen(false); }}>{n}</button>
+      {open && (
+        <span className="cite__pop" id={id} role="note">
+          <span className="cite__site"><bdi>{src.site}</bdi></span>
+          {href
+            ? <a className="cite__title" href={href} target="_blank" rel="noopener noreferrer"><bdi>{src.title || href}</bdi></a>
+            : <span className="cite__title"><bdi>{src.title}</bdi></span>}
+          {src.scraped_at && <span className="cite__date">{t.dataAsOf} <time dateTime={src.scraped_at}>{fmtDate(src.scraped_at, lang)}</time></span>}
+        </span>
+      )}
+    </span>
+  );
+}
+
+/** Text with [n] markers turned into citation chips; a marker with no matching source stays as plain text. */
+function Cited({ text, sources, lang }: { text: string; sources: Source[]; lang: Lang }) {
+  if (!sources.length || !/\[\d{1,2}\]/.test(text)) return <>{text}</>;
+  const parts = text.split(/(\[\d{1,2}\])/);
+  return (
+    <>
+      {parts.map((part, i) => {
+        const m = /^\[(\d{1,2})\]$/.exec(part);
+        const src = m ? sources[Number(m[1]) - 1] : undefined;
+        return m && src ? <Cite key={i} n={Number(m[1])} src={src} lang={lang} /> : <span key={i}>{part}</span>;
+      })}
+    </>
+  );
+}
+
+/** Plain-text renderer: paragraphs and simple dash lists. Model prose never carries links (SPEC §18); [n] markers
+ * become citation chips that point at the answer's own sources list. */
+function Prose({ text, sources = [], lang }: { text: string; sources?: Source[]; lang: Lang }) {
   const blocks = text.replace(/\r/g, "").split(/\n{2,}/);
   return (
     <>
       {blocks.map((b, i) => {
         const lines = b.split("\n").filter((l) => l.trim());
         if (lines.length && lines.every((l) => /^\s*[-•*]\s+/.test(l))) {
-          return <ul key={i}>{lines.map((l, j) => <li key={j}>{l.replace(/^\s*[-•*]\s+/, "")}</li>)}</ul>;
+          return <ul key={i}>{lines.map((l, j) => <li key={j}><Cited text={l.replace(/^\s*[-•*]\s+/, "")} sources={sources} lang={lang} /></li>)}</ul>;
         }
-        return <p key={i}>{lines.map((l, j) => (<span key={j}>{j > 0 && <br />}{l}</span>))}</p>;
+        return <p key={i}>{lines.map((l, j) => (<span key={j}>{j > 0 && <br />}<Cited text={l} sources={sources} lang={lang} /></span>))}</p>;
       })}
     </>
   );
 }
 
-/** The first message: what is in the corpus, from /api/meta numbers only. */
+/** The first message: one sentence. Corpus counts live on How it works (read from /api/meta there). */
 function Greeting() {
-  const { t, lang, meta } = useApp();
-  if (!meta) return <p>{t.greetingNoMeta}</p>;
-  const n = (v: number | undefined) => fmtNumber(v ?? 0, lang);
-  const dg = meta.coverage?.DarGlobal;
-  const dgProjects = dg?.projects ?? meta.counts_by_site?.DarGlobal?.projects ?? 0;
-  const ws = meta.coverage?.Wasalt;
-  const wsProjects = ws?.projects ?? meta.counts_by_site?.Wasalt?.projects ?? 0;
-  const wsListings = ws?.listings ?? meta.counts_by_site?.Wasalt?.listings ?? meta.counts?.listings ?? 0;
-  const date = fmtDate(meta.data_as_of, lang);
-  return (
-    <>
-      <p>{t.greetingLead}</p>
-      <p>
-        {dgProjects > 0
-          ? t.corpusBoth(n(dgProjects), n(dg?.detail_pages ?? 0), n(wsProjects), n(wsListings), date)
-          : t.corpusGap(n(wsProjects), n(wsListings), date)}
-      </p>
-      {dgProjects > 0 && dg?.prices_published !== true && <p>{t.greetingNoPrice}</p>}
-    </>
-  );
+  const { t, meta } = useApp();
+  return <p>{meta ? t.greetingLead : t.greetingNoMeta}</p>;
 }
 
 export function Chat({ embedded = false }: { embedded?: boolean }) {
@@ -410,7 +431,7 @@ function AssistantView({
 
         {a.text && (
           <div className={`prose${a.status === "streaming" ? " prose--streaming" : ""}`}>
-            <Prose text={a.text} />
+            <Prose text={a.text} sources={a.status === "streaming" ? [] : (a.sources ?? [])} lang={a.lang} />
           </div>
         )}
 

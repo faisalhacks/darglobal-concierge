@@ -1,6 +1,7 @@
-# syntax=docker/dockerfile:1.7
 # One container: FastAPI serves /api/* and the static Next.js export at /.
-# Target: Hugging Face Docker Space (port 7860, uid 1000). Same image runs on Render.
+# One Dockerfile for every host: Railway (listens on the injected $PORT), Hugging Face Spaces / Render (7860, uid
+# 1000) and a local `docker build .`. No cache mounts: Railway rejects a cache mount without its own service-specific
+# id=, so the file uses nothing a host-specific builder could refuse.
 #
 # Build inputs that are produced OUTSIDE Docker (the in-Docker index build ran out of memory):
 #   data/concierge.sqlite        the dataset
@@ -17,8 +18,7 @@ RUN npm install -g pnpm@9.15.4 --no-fund --no-audit
 WORKDIR /build/frontend
 # Lockfile may be pnpm-lock.yaml; the glob keeps the layer cacheable when it is absent.
 COPY frontend/package.json frontend/pnpm-lock.yaml* ./
-RUN --mount=type=cache,target=/pnpm/store \
-    if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile; else pnpm install; fi
+RUN if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile; else pnpm install; fi
 COPY frontend/ ./
 ENV NEXT_TELEMETRY_DISABLED=1
 # next.config must set output: "export" -> frontend/out
@@ -73,7 +73,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     # stop at 45 and answer extractively from code after that.
     LLM_TOOL_ROUTING=false \
     LLM_DAILY_BUDGET=45 \
-    # find-my-home: all five eval journeys pass in mock, EN + AR (H01 H02 H04 H05 A14)
+    # Same default as backend/app/config.py, so the image, local runs and the eval suite behave the same.
     FF_FIND_MY_HOME=true
 
 # Non-root uid 1000 (required by HF Spaces), created first so files are owned via COPY --chown
@@ -102,11 +102,12 @@ COPY --chown=1000:1000 evals/results/latest.json /app/evals/results/latest.json
 
 EXPOSE 7860
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-  CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:7860/healthz',timeout=4).status==200 else 1)"
+  CMD python -c "import os,urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:%s/healthz' % os.environ.get('PORT','7860'),timeout=4).status==200 else 1)"
 
 # No --forwarded-allow-ips "*": uvicorn would then take the client-controlled LEFT-most X-Forwarded-For hop as
 # the client address. The app reads the hop its own edge proxy appended (TRUSTED_PROXY_HOPS, right-most);
 # GET /readyz reports xff_hops_seen so the value can be checked per host (deploy/README.md).
 # --limit-concurrency bounds in-flight requests (memory) on a shared free CPU Space. One worker.
+# $PORT: Railway injects it; HF Spaces / Render / local fall back to 7860. `exec` keeps uvicorn as PID 1 (signals).
 ENV TRUSTED_PROXY_HOPS=1
-CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "7860", "--workers", "1", "--no-proxy-headers", "--limit-concurrency", "64", "--no-access-log"]
+CMD ["sh", "-c", "exec uvicorn backend.app.main:app --host 0.0.0.0 --port \"${PORT:-7860}\" --workers 1 --no-proxy-headers --limit-concurrency 64 --no-access-log"]

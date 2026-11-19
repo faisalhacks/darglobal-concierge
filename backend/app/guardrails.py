@@ -231,18 +231,32 @@ def context_numbers(context: str) -> set[str]:
     return nums
 
 
+# A small number next to one of these is a rate of return, not a count ("8% yield", "return of 7"): no exemption.
+_RETURN_WORDS = re.compile(r"%|٪|\byields?\b|\breturns?\b|\broi\b|عائد|العائد|عوائد")
+
+
+def _near_return(text: str, start: int, end: int) -> bool:
+    after = text[end:end + 2]
+    if "%" in after or "٪" in after:
+        return True
+    return bool(_RETURN_WORDS.search(text[max(0, start - 24):end + 24].lower()))
+
+
 def number_check(text: str, allowed: set[str], not_published: str = "not published") -> str:
-    """Every number in prose must appear in context; otherwise it is replaced (small counts <=10 allowed)."""
+    """Every number in prose must appear in context; otherwise it is replaced. Small counts (<=10, no decimals) are
+    allowed, except next to %, yield, return, ROI or عائد, where a small number is a rate of return."""
     def repl(m):
         n = _norm_num(m.group(1))
         try:
-            if float(n) <= 10 and "." not in n:
+            if float(n) <= 10 and "." not in n and not _near_return(m.string, m.start(), m.end()):
                 return m.group(0)
         except ValueError:
             pass
         return m.group(0) if n in allowed else not_published
     norm_digits = text.translate(str.maketrans("٠١٢٣٤٥٦٧٨٩", "0123456789"))
-    return _NUM.sub(repl, norm_digits)
+    out = _NUM.sub(repl, norm_digits)
+    # "not published%" -> "not published": the percent sign of a removed figure goes with it.
+    return re.sub(rf"({re.escape(not_published)})\s*[%٪]", r"\1", out)
 
 
 def screen_output(text: str, allowed_numbers: set[str], lang: str = "en") -> str:

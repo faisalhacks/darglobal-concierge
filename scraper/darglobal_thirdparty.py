@@ -23,6 +23,13 @@ Rules (data lane, binding):
 - Wire-hosted Dar Global releases (source_type press_release_wire) are tagged "company statement".
 - A sale/asking price quoted in a headline is cut from the stored title (reported under redacted_titles).
 - Empty files are skipped and reported. Facts whose curator note says "do not use" are excluded.
+- When the project's own DarGlobal page was collected, the page's published values (completion, status, units,
+  floors, size) join the 'Figures by source and date' lines as "DarGlobal project page (read <date>)", so a
+  page-vs-third-party conflict (e.g. Marriott Residences: page September 2029 vs press Q4 2027) is shown with both
+  values. The page values never become separate third-party source chunks.
+- Every source gets an origin label (source_label): "LSE filing (...)", the publisher for press, and
+  "DarGlobal (via <publisher>)" for company releases hosted elsewhere, so no third-party fact is labelled bare
+  "DarGlobal".
 """
 from __future__ import annotations
 
@@ -123,9 +130,30 @@ def human_date(s: str | None) -> str:
     return f"{int(dd)} {MONTHS[int(m) - 1]} {y}" + (" (date as displayed; uncertain)" if "uncertain" in (s or "") else "")
 
 
+def publisher(f: dict) -> str:
+    m = re.search(r"\(([^()]*)\)\s*$", f.get("source_title") or "")
+    pub = m.group(1) if m else ""
+    pub = re.sub(r"\s+press release$", "", pub).strip()
+    return pub or re.sub(r"^www\.", "", re.sub(r"^https?://([^/]+).*$", r"\1", f["source_url"]))
+
+
+def source_label(f: dict) -> str:
+    """Honest origin label for a source: never a bare 'DarGlobal' for a page DarGlobal did not host."""
+    t = f["source_type"]
+    if t == "darglobal_page":
+        return "DarGlobal"
+    if t == "rns":
+        return "LSE filing (Dar Global PLC RNS 1301W, via ticker.app)"
+    if t in ("press_release_wire", "press_supplement_developer_bylined"):
+        return f"DarGlobal (via {publisher(f)})"
+    return publisher(f)
+
+
 def short_source(f: dict) -> str:
     if f["source_type"] == "rns":
         return "Dar Global PLC RNS 1301W"
+    if f["source_type"] == "darglobal_page":
+        return "DarGlobal project page"
     m = re.search(r"\(([^()]*)\)\s*$", f.get("source_title") or "")
     return m.group(1) if m else (f.get("source_title") or f["source_url"])
 
@@ -286,12 +314,41 @@ def merge(projects: dict[str, dict], d: Path = THIRDPARTY) -> tuple[dict[str, di
                     "why": f"DarGlobal publishes the location as '{row.get('location_published')}' (no country token); "
                            f"third-party sources place Rayana in Wadi Safar, Diriyah, Riyadh, {c}",
                     "source_url": src["source_url"]})
-        extras[pid] = build_extra(row, fs, origin.get(pid))
+        extras[pid] = build_extra(row, fs, origin.get(pid), page_facts(row))
     for nr in rep["new_rows"]:
         nr["source_url"] = projects[nr["id"]]["source_url"]
     rep["sources_n"] = len({f["source_url"] for fs in facts_by_pid.values() for f in fs})
     rep["projects_with_facts"] = sorted(facts_by_pid)
     return extras, rep
+
+
+def page_facts(row: dict) -> list[dict]:
+    """The project's own DarGlobal page values, shaped like facts, for the figures-by-source lines only."""
+    url = row.get("dg_source_url")
+    if not url or url == dgm.INDEX_URL:
+        return []
+    date_ = (row.get("scraped_at") or "")[:10]
+    base = {"source_url": url, "source_title": f"{row.get('name_en')} (DarGlobal project page)",
+            "source_type": "darglobal_page", "source_date": date_, "_slug": None, "_file": None,
+            "_collected_at": row.get("scraped_at")}
+    out = []
+    if row.get("handover_text") or row.get("handover_year"):
+        out.append({**base, "field": "completion", "value": row.get("handover_text") or str(row["handover_year"])})
+    if row.get("status"):
+        out.append({**base, "field": "status", "value": row["status"]})
+    if row.get("unit_types"):
+        out.append({**base, "field": "unit_types", "value": "; ".join(row["unit_types"])})
+    pt = " ".join(row.get("property_types") or [])
+    if re.search(r"bedroom", pt, re.I) and not row.get("unit_types"):
+        out.append({**base, "field": "bedrooms", "value": f"{pt} (property type on the page)"})
+    if row.get("featuring") and re.fullmatch(r"\d+ floors", row["featuring"]):
+        out.append({**base, "field": "floors", "value": row["featuring"].split()[0]})
+    area = row.get("area_published") or ""
+    if row.get("area_text_sqm"):
+        area = (area + "; " if area else "") + f"text: {row['area_text_sqm']}"
+    if area:
+        out.append({**base, "field": "size", "value": area})
+    return out
 
 
 def primary_source(fs: list[dict]) -> str:
@@ -303,8 +360,10 @@ def primary_source(fs: list[dict]) -> str:
     return sorted(n, key=lambda u: (-n[u], -int((last[u] or "0").replace("-", "")), u))[0]
 
 
-def build_extra(row: dict, fs: list[dict], tp_name: str | None) -> dict:
-    """Group facts by source (one chunk each, own source_url), figures by date, and the source list."""
+def build_extra(row: dict, fs: list[dict], tp_name: str | None, pf: list[dict] | None = None) -> dict:
+    """Group facts by source (one chunk each, own source_url), figures by date, and the source list.
+    pf = the project's own DarGlobal page values; they join the figures lines only."""
+    pf = pf or []
     slug_of = {f["_slug"] for f in fs}
     by_src: dict[str, list[dict]] = {}
     for f in fs:
@@ -331,17 +390,24 @@ def build_extra(row: dict, fs: list[dict], tp_name: str | None) -> dict:
     for f in fs:
         if f["field"] != "name" or len({x["value"] for x in fs if x["field"] == "name"}) > 1:
             by_field.setdefault(f["field"], []).append(f)
+    for f in pf:   # page value first in each line, only where a third-party source reports the same field
+        if f["field"] in by_field:
+            by_field[f["field"]].insert(0, f)
     fig_lines = []
     for fld in sorted(by_field):
         g = by_field[fld]
         if len({x["source_url"] for x in g}) < 2:
             continue
-        parts = [f"{x['value']} ({short_source(x)}, {human_date(x['source_date'])})" for x in g]
+        parts = [f"{x['value']} (DarGlobal project page, read {human_date(x['source_date'])})"
+                 if x["source_type"] == "darglobal_page" else
+                 f"{x['value']} ({short_source(x)}, {human_date(x['source_date'])})" for x in g]
         label = FIELD_LABEL.get(fld, fld.replace("_", " ").capitalize())
         ln = f"{label}: reported as " + (", ".join(parts[:-1]) + " and " + parts[-1] if len(parts) > 1 else parts[0])
         if (fld == "status" and row.get("status") and any(x["source_type"] == "rns" and x["value"] == row["status"]
                                                           for x in g)) or (fld == "completion" and row.get("handover_source")):
             ln += "; the structured record uses the most recent RNS value"
+        elif fld in ("completion", "status") and any(x["source_type"] == "darglobal_page" for x in g):
+            ln += "; the structured record uses the DarGlobal page value"
         fig_lines.append(ln + ".")
     rns_url = next((f["source_url"] for f in reversed(fs) if f["source_type"] == "rns"), None)
     dated = [u for u in sources if iso_date(by_src[u][0]["source_date"])]
@@ -351,10 +417,13 @@ def build_extra(row: dict, fs: list[dict], tp_name: str | None) -> dict:
     figures = {"source_url": rns_url or latest, "text": " ".join(fig_lines)} if fig_lines else None
     src_list = [f"{by_src[u][0]['source_title']} - {TYPE_LABEL.get(by_src[u][0]['source_type'])}, "
                 f"{human_date(by_src[u][0]['source_date'])}: {u}" for u in sources]
+    labels = {u: source_label(by_src[u][0]) for u in sources}
+    for c in src_chunks:
+        c["label"] = labels[c["source_url"]]
     tags = sorted({TAG.get(f["source_type"], f["source_type"]) for f in fs})
     return {"thirdparty_name": tp_name, "files": sorted({f["_file"] for f in fs}), "slugs": sorted(slug_of),
             "facts_n": len(fs), "sources": sources, "source_chunks": src_chunks, "figures": figures,
-            "source_list": src_list, "source_tags": tags,
+            "source_list": src_list, "source_tags": tags, "source_labels": labels,
             "primary_source": row["source_url"] if row.get("thirdparty_only") else (rns_url or latest),
             "collected_at": fs[0]["_collected_at"]}
 

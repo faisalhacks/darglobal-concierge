@@ -356,7 +356,7 @@ def create_app(settings: Settings | None = None, llm=None, embedder=None) -> Fas
         p = store.project_by_id(slug)
         if not p:
             return JSONResponse({"code": "NOT_FOUND", "message": "Project not found."}, status_code=404)
-        return {k: v for k, v in p.items() if k != "content_hash"}
+        return {**{k: v for k, v in p.items() if k != "content_hash"}, **store.licence_for(p)}
 
     @app.get("/api/listings")
     async def listings(city: str | None = None, listing_type: str | None = None, min: float | None = None,

@@ -2,8 +2,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { getMeta } from "@/lib/api";
 import {
-  LANG_KEY, SCALE_KEY, THEME_KEY, applyScale, applyTheme, parseScale, parseTheme, readStore, syncThemeColor, writeStore,
-  type TextScale, type ThemePref,
+  CHATW_KEY, LANG_KEY, SCALE_KEY, THEME_KEY, applyChatWidth, applyScale, applyTheme, parseChatWidth, parseScale, parseTheme, readStore, syncThemeColor, writeStore,
+  type ChatWidth, type TextScale, type ThemePref,
 } from "@/lib/prefs";
 import { useRailLayout, type RailCtl } from "@/lib/useRailLayout";
 import { STRINGS, type Strings } from "@/lib/i18n";
@@ -25,6 +25,8 @@ interface Ctx {
   setTheme: (t: ThemePref) => void;
   textScale: TextScale;
   setTextScale: (s: TextScale) => void;
+  chatWidth: ChatWidth;
+  setChatWidth: (w: ChatWidth) => void;
   /** About/sources sheet: open it from any trigger; focus returns to that trigger on close. */
   aboutOpen: boolean;
   openAbout: (trigger?: HTMLElement | null) => void;
@@ -45,6 +47,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const setResetChat = useCallback((fn: (() => void) | null) => setResetChatState(() => fn), []);
   const [theme, setThemeState] = useState<ThemePref>("system");
   const [textScale, setScaleState] = useState<TextScale>(1);
+  const [chatWidth, setChatWidthState] = useState<ChatWidth>("comfortable");
   const rail = useRailLayout();
   const [aboutOpen, setAboutOpen] = useState(false);
   const aboutTrigger = useRef<HTMLElement | null>(null);
@@ -53,6 +56,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     // The pre-paint script already applied these to <html>; mirror them into state (no DOM write, so no flash).
     setThemeState(parseTheme(readStore(THEME_KEY)));
     setScaleState(parseScale(readStore(SCALE_KEY)));
+    setChatWidthState(parseChatWidth(readStore(CHATW_KEY)));
   }, []);
   useEffect(() => {
     // System mode follows the OS live; keep theme-color in step.
@@ -72,6 +76,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setScaleState(sc);
     applyScale(sc);
     writeStore(SCALE_KEY, sc === 1 ? "1" : "1.125");
+  }, []);
+  const setChatWidth = useCallback((w: ChatWidth) => {
+    setChatWidthState(w);
+    applyChatWidth(w);
+    writeStore(CHATW_KEY, w);
   }, []);
   const openAbout = useCallback((trigger?: HTMLElement | null) => {
     aboutTrigger.current = trigger ?? (document.activeElement as HTMLElement | null);
@@ -146,9 +155,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo(
     () => ({
       lang, setLang, t: STRINGS[lang], meta, metaState, llmState, resetChat, setResetChat,
-      theme, setTheme, textScale, setTextScale, aboutOpen, openAbout, closeAbout, aboutTrigger,
+      theme, setTheme, textScale, setTextScale, chatWidth, setChatWidth, aboutOpen, openAbout, closeAbout, aboutTrigger,
     }),
-    [lang, setLang, meta, metaState, llmState, resetChat, setResetChat, theme, setTheme, textScale, setTextScale,
+    [lang, setLang, meta, metaState, llmState, resetChat, setResetChat, theme, setTheme, textScale, setTextScale, chatWidth, setChatWidth,
       aboutOpen, openAbout, closeAbout],
   );
   return (

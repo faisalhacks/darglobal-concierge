@@ -6,7 +6,7 @@
   justify-content: flex-end;
   align-items: center;
   block-size: 48px;
-  padding-inline: max(var(--gutter, clamp(16px, 2.5vw, 40px)), calc((100% - 880px) / 2));
+  padding-inline: max(var(--gutter, clamp(16px, 2.5vw, 40px)), calc((100% - var(--composer-max, 880px)) / 2));
 }
 
 .strip .btn {
@@ -26,7 +26,7 @@
 }
 /* 44px hit area around the 40px disc. */
 .strip .btn::before { content: ""; position: absolute; inset: -2px; border-radius: 50%; }
-.strip .btn:hover { background: var(--surface-2); border-color: var(--accent, #c2a36b); }
+.strip .btn:hover { background: var(--surface-2); border-color: var(--accent, #d2ad69); }
 .strip .btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
 @media (prefers-reduced-motion: reduce) {

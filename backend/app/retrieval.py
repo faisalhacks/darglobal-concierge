@@ -78,6 +78,14 @@ def expand_query(toks: list[str]) -> list[str]:
 # (a listing question may need them) but ranked below content pages for questions that want an explanation.
 DEMOTE_PAGE_TYPES = {"sitemap_index", "index", "srp", "guides_index", "listing_index", "search_results"}
 DEMOTE_FACTOR = 0.35
+# Editorial pages (blog posts, guides, terms, disclaimers). A property question ("cheapest flat for rent") must not be
+# answered from one unless it is clearly about the question: the relevance floor below. Starting values from the
+# quality council, to be tuned on the eval, not measured yet.
+EDITORIAL_PAGE_TYPES = {"guide", "guides_index", "blog", "article", "news", "terms", "disclaimer", "legal", "privacy",
+                        "policy"}
+_EDITORIAL_URL = re.compile(r"^https?://blog\.|/blog/|/terms|/privacy|/disclaimer|/legal", re.I)
+PROPERTY_FLOOR_COS = 0.6
+PROPERTY_FLOOR_COVERAGE = 0.5
 _TAGS = re.compile(r"<[^>]+>")
 
 
@@ -159,6 +167,7 @@ class Retriever:
         self._tok = [tokenize(c.get("text") or "") or ["_"] for c in self.chunks]
         self.bm25 = BM25Okapi(self._tok) if self.chunks else None
         page_types = {pg["id"]: (pg.get("page_type") or "").lower() for pg in store.pages}
+        self._page_types = page_types
         self._demote = np.array([
             (c.get("entity_type") == "page" and page_types.get(c.get("entity_id") or "", "") in DEMOTE_PAGE_TYPES)
             or is_index_like(c.get("text") or "") for c in self.chunks], dtype=bool)
@@ -258,12 +267,33 @@ class Retriever:
         return [Hit(self.chunks[i], float(fused[i]), float(bm[i]), float(cos[i]) if cos is not None else None)
                 for i in cand]
 
-    def gate(self, query: str, hits: list[Hit], entity_ids: list[str] | None = None) -> bool:
-        """Calibrated retrieval gate. True = enough evidence to answer; False -> no_data template."""
+    def is_editorial(self, chunk: dict) -> bool:
+        """A blog post, guide, terms or legal page (by page type, or by its URL when the type is missing)."""
+        if chunk.get("entity_type") != "page":
+            return False
+        pt = getattr(self, "_page_types", {}).get(chunk.get("entity_id") or "", "")
+        return pt in EDITORIAL_PAGE_TYPES or bool(_EDITORIAL_URL.search(chunk.get("source_url") or ""))
+
+    def relevance_floor(self, query: str, hit: Hit) -> bool:
+        """The stricter test for an editorial best hit on a property question: cosine >= PROPERTY_FLOOR_COS AND
+        specific-term coverage of that hit >= PROPERTY_FLOOR_COVERAGE. With no embeddings (BM25-only) the cosine
+        cannot be shown, so the floor fails and the question goes to the structured data."""
+        spec = specific_terms(query)
+        toks = set(tokenize(hit.chunk.get("text") or ""))
+        coverage = sum(1 for t in spec if t in toks or stem(t) in toks) / len(spec) if spec else 0.0
+        return hit.cosine is not None and hit.cosine >= PROPERTY_FLOOR_COS and coverage >= PROPERTY_FLOOR_COVERAGE
+
+    def gate(self, query: str, hits: list[Hit], entity_ids: list[str] | None = None,
+             property_intent: bool = False) -> bool:
+        """Calibrated retrieval gate. True = enough evidence to answer; False -> no_data template (or, for a property
+        question, a reroute to the structured data in chat.py). With `property_intent`, a best hit that is an
+        editorial page must also pass relevance_floor()."""
         if not hits:
             return False
         if entity_ids and any(h.chunk.get("entity_id") in set(entity_ids) for h in hits):
             return True
+        if property_intent and self.is_editorial(hits[0].chunk) and not self.relevance_floor(query, hits[0]):
+            return False
         spec = specific_terms(query)
         if spec:
             top_text = set()

@@ -19,3 +19,11 @@ Deviations from SPEC.md, why, and what it costs. Numbers are not repeated here; 
 ## Feature flags
 
 The flags `FF_FIND_MY_HOME`, `FF_MAP`, `FF_VOICE`, `FF_HANDOFF_BRIEF`, `FF_WIDGET_DEMO` are read from the environment and reported in `/api/meta.flags`. The state at the last eval run is recorded in `evals/results/latest.json` under `run_context.flags`. At the last recorded full run all five were false (find-my-home cases therefore exercise the off state). Check `run_context.flags` in the current result file before quoting this.
+
+## Rejected designs (quality pass, 2026-11)
+
+| Design | Why it was rejected |
+|---|---|
+| **LLM-first everywhere** (send every turn to a model to classify, rewrite and plan) | The free tiers are capped (50 requests a day on OpenRouter). A call per turn for greetings, calculations and plain filtered searches spends the budget on work that code does deterministically and testably. The "before" run showed only 29% of turns reach the understanding call; the gate is widened only for reference words, unresolved ordering words and thin filters. |
+| **Multi-agent** (planner, retriever, writer and critic as separate model calls) | Each extra hop multiplies latency and free-tier calls, and adds failure surfaces (the 6 degraded turns in the before run were already all-models-down events). Grounding is cheaper to enforce with code: fact sheets built from the store, location repair, number checks. |
+| **Saved answers** (a bank of canned replies keyed by question) | Cached answers go stale against the dataset and cannot follow a conversation (refine, reference, topic switch). The baked cache stays for chips and reviewer questions only; everything else is answered from live structured data and the 32-type playbook, which carries policy, never facts. |

@@ -11,6 +11,7 @@ import hashlib
 import operator
 import re
 from collections import Counter
+from dataclasses import dataclass, field
 
 from .arabic import normalize_text
 
@@ -326,3 +327,122 @@ def first_sentence(text: str) -> str:
 
 STATUS_AR = {"under development": "قيد التطوير", "completed": "مكتمل", "completed and sold out": "مكتمل ومباع بالكامل",
              "sold out": "مباع بالكامل", "ready": "جاهز", "off-plan": "على الخريطة", "launched": "تم الإطلاق"}
+
+
+# ---------------------------------------------------------------- conversation memory (stateless, rebuilt per request)
+# Frozen contract (docs/CONTRACT_QUALITY.md §1). Nothing is stored server-side: every request rebuilds the memory from
+# the client's history (user turns re-planned in code) plus the client's `last_entities` ids, which are validated
+# against the store. Values never come from the client verbatim; only ids do, and unknown ids are dropped.
+
+
+MAX_LAST_ENTITIES = 6
+MEMORY_FIELDS = ("site", "country", "city", "property_type", "listing_type", "beds", "budget_max", "currency")
+
+
+@dataclass
+class Memory:
+    site: str | None = None            # "DarGlobal" | "Wasalt" | None
+    country: str | None = None         # canonical English name, as in the store
+    city: str | None = None
+    property_type: str | None = None   # villa | apartment | townhouse | land | floor | penthouse ...
+    listing_type: str | None = None    # "buy" | "rent" | None
+    beds: int | None = None
+    budget_max: float | None = None
+    currency: str | None = None        # ISO code ("SAR", "AED", "OMR" ...)
+    last_entities: list[str] = field(default_factory=list)  # ids shown on the previous turn, order kept, max 6
+    last_intent: str | None = None
+    # Added behind the frozen fields (allowed by the contract):
+    brand: str | None = None
+    projects_level: bool = False       # the remembered request was about projects, not listings
+    reset: bool = False                # the memory was cleared on this request (reset phrase or understanding)
+
+    def filters(self) -> dict:
+        """The remembered search filters that are set (no ids, no intent)."""
+        return {k: getattr(self, k) for k in MEMORY_FIELDS + ("brand",) if getattr(self, k) is not None}
+
+    def is_empty(self) -> bool:
+        return not self.filters() and not self.last_entities
+
+    def merge(self, values: dict) -> None:
+        """An explicit new value wins over the remembered one; a new country clears the remembered city."""
+        new_country = values.get("country")
+        if new_country and new_country != self.country and not values.get("city"):
+            self.city = None
+        for k in MEMORY_FIELDS + ("brand",):
+            v = values.get(k)
+            if v is not None:
+                setattr(self, k, v)
+
+    def clear(self) -> None:
+        for k in MEMORY_FIELDS + ("brand",):
+            setattr(self, k, None)
+        self.last_entities = []
+        self.last_intent = None
+        self.projects_level = False
+        self.reset = True
+
+
+def validate_entity_ids(ids, store) -> list[str]:
+    """Client-sent ids: strings only, known to the store (projects or listings), de-duplicated, order kept, max 6."""
+    out: list[str] = []
+    for i in ids if isinstance(ids, (list, tuple)) else []:
+        if not isinstance(i, str) or not i or len(i) > 120 or i in out:
+            continue
+        if store.project_by_id(i) or store.listing_by_id(i):
+            out.append(i)
+        if len(out) >= MAX_LAST_ENTITIES:
+            break
+    return out
+
+
+def entity_name(store, eid: str) -> str | None:
+    p = store.project_by_id(eid)
+    if p:
+        return p.get("name_en") or p.get("name_ar") or eid
+    x = store.listing_by_id(eid)
+    if x:
+        return x.get("title") or eid
+    return None
+
+
+def memory_block(mem: "Memory", store) -> str:
+    """Plain-text memory for a prompt: remembered filters, then the previous turn's entities as numbered lines with
+    names resolved from the store (never from the client)."""
+    f = mem.filters()
+    lines = ["remembered filters: " + (", ".join(f"{k}={v}" for k, v in f.items()) if f else "none")]
+    if mem.last_intent:
+        lines.append(f"previous intent: {mem.last_intent}")
+    if mem.last_entities:
+        lines.append("shown on the previous turn (1-based positions for refs):")
+        for n, eid in enumerate(mem.last_entities, 1):
+            row = store.project_by_id(eid) or store.listing_by_id(eid) or {}
+            where = ", ".join(v for v in (row.get("city"), row.get("country")) if v)
+            kind = "project" if store.project_by_id(eid) else "listing"
+            lines.append(f"{n}. {eid} = {entity_name(store, eid)} ({kind}{', ' + where if where else ''})")
+    else:
+        lines.append("shown on the previous turn: nothing")
+    return "\n".join(lines)
+
+
+# "forget that", "something else", "start over", "انسى", "غير الموضوع": the user abandons the previous topic.
+RESET_RX = re.compile(
+    r"(?<![a-z])(forget (that|it|this|about (that|it|this|those|them))|never ?mind|start (over|again|fresh)|"
+    r"something (else|different)|different (topic|question|thing)|change (of )?(the )?(topic|subject)|"
+    r"new (search|topic|question)|scratch that|from scratch|reset)(?![a-z])"
+    r"|(?<![\w])(انس[يا]?|انسي ذلك|خلنا من|غير الموضوع|موضوع ثاني|موضوع اخر|شي ثاني|شيء اخر|من جديد|ابدا من جديد)(?![\w])")
+
+
+def is_reset(norm: str) -> bool:
+    return bool(RESET_RX.search(norm))
+
+
+# Words that point at something shown earlier ("it", "them", "that one", "the second", "both", "هذا", "الثاني").
+REFERENCE_RX = re.compile(
+    r"(?<![a-z])(it|its|it's|them|they|those|these|that one|this one|that project|this project|the one|"
+    r"both|either|each|first|second|third|fourth|last|1st|2nd|3rd|4th|former|latter|same one|the others?)(?![a-z])"
+    r"|(?<![\w])(هذا|هذه|هذي|ذلك|تلك|هذاك|هذيك|هم|منهم|الاثنين|كلاهما|الاول|الثاني|الثالث|الرابع|الاخير|"
+    r"نفسه|سعره|موقعه|تسليمه|مساحته)(?![\w])")
+
+
+def has_reference(norm: str) -> bool:
+    return bool(REFERENCE_RX.search(norm))

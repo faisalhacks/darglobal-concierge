@@ -113,3 +113,54 @@ def test_config_from_env(monkeypatch):
     monkeypatch.setenv("BACKUP_DAILY_BUDGET", "7")
     cfg = BackupConfig.from_env()
     assert cfg.enabled and cfg.daily_budget == 7 and cfg.base_url == "https://integrate.api.nvidia.com/v1"
+
+
+# ---------------------------------------------------------------- Lane A: non-streaming backup, meta, cache header
+def _nv_json(req):
+    body = json.loads(req.content)
+    assert body["stream"] is False and body["chat_template_kwargs"] == {"enable_thinking": False}
+    if body.get("tools"):
+        msg = {"tool_calls": [{"function": {"name": "search_knowledge", "arguments": "{\"query\": \"x\"}"}}]}
+    else:
+        msg = {"content": "{\"intent\": \"search\"}"}
+    return httpx.Response(200, json={"model": NV_MODEL, "choices": [{"message": msg}]})
+
+
+def test_complete_json_and_tool_call_fall_back_to_nvidia():
+    import asyncio
+    from backend.app.llm import LLMResult
+    c, llm, calls = _app(QUOTA, _nv_json)
+    rec = LLMResult()
+    out = asyncio.run(llm.complete_json([{"role": "user", "content": "q"}], rec))
+    assert out == '{"intent": "search"}' and rec.provider == "nvidia-backup" and calls["nv"] == 1 and rec.calls == 2
+    tc = asyncio.run(llm.tool_call([{"role": "user", "content": "q"}], [{"type": "function"}], LLMResult()))
+    assert tc == {"name": "search_knowledge", "arguments": {"query": "x"}} and calls["nv"] == 2
+    assert llm.meta()["used"] == 2
+
+
+def test_json_backup_respects_budget_and_failure():
+    import asyncio
+    from backend.app.llm import LLMResult
+    c, llm, calls = _app(QUOTA, lambda r: httpx.Response(429, json={}), cap=1)
+    assert asyncio.run(llm.complete_json([{"role": "user", "content": "q"}], LLMResult())) is None
+    assert asyncio.run(llm.complete_json([{"role": "user", "content": "q"}], LLMResult())) is None
+    assert calls["nv"] == 1  # second call blocked by the budget
+
+
+def test_meta_llm_available_with_backup_and_build_and_cache_header():
+    c, llm, _ = _app(QUOTA, _nv_ok)
+    m = c.get("/api/meta").json()
+    assert m["llm_available"] is True and m["llm"]["backup"]["enabled"] and len(m["build"]) >= 3
+    r = c.get("/")
+    if r.headers.get("content-type", "").startswith("text/html") and "Frontend not built" not in r.text:
+        assert r.headers["cache-control"] == "no-cache, must-revalidate"
+
+
+def test_llm_available_when_only_backup_configured(monkeypatch):
+    s = _settings(openrouter_api_key=None)
+    monkeypatch.delenv("BACKUP_PROVIDER", raising=False)
+    monkeypatch.delenv("NVIDIA_API_KEY", raising=False)
+    assert s.llm_available is False
+    monkeypatch.setenv("BACKUP_PROVIDER", "nvidia")
+    monkeypatch.setenv("NVIDIA_API_KEY", "nv-test")
+    assert s.llm_available is True

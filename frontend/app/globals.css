@@ -5,13 +5,14 @@
 
 /* ============================== 1. TOKENS ============================== */
 :root {
-  /* Dark is the default theme (spec §3); every pair measured: text >= 7:1, muted >= 4.5:1, boundaries >= 3:1. */
-  --bg: #0c0b0a; --surface: #1a1816; --surface-2: #26231f;
-  --border: #3d3832; --border-strong: #7a7266;
-  --text: #f3efe8; --text-muted: #b8b0a3;
-  --accent: #c2a36b; --accent-strong: #d7bb85; --on-accent: #15120e;
-  --danger: #f0958a; --ok: #9ccf9f; --focus: #d7bb85; --scrim: rgba(0, 0, 0, .55);
-  --shadow-card: none; --shadow-pop: 0 8px 24px rgba(0, 0, 0, .45);
+  /* Dark "midnight ink" (quality council): cool blue-black neutrals so the gold accent is the one warm thing on screen.
+     Measured on bg / surface / surface-2: text >= 13.4, muted >= 7.3, accent >= 7.2, --border-strong 4.9 / 4.5 / 4.0. */
+  --bg: #0d131d; --surface: #141c29; --surface-2: #1c2636;
+  --border: #2e3a4e; --border-strong: #7384a0;
+  --text: #eef1f6; --text-muted: #aab4c5;
+  --accent: #d2ad69; --accent-strong: #e4c789; --on-accent: #161108;
+  --danger: #f0958a; --ok: #9ccf9f; --focus: #e4c789; --scrim: rgba(5, 9, 15, .6);
+  --shadow-card: none; --shadow-pop: 0 8px 24px rgba(3, 6, 12, .5);
   color-scheme: dark;
 
   /* Legacy names kept as aliases so components written before the rewrite keep resolving per theme. */
@@ -32,26 +33,36 @@
   --rail-w: clamp(280px, 24vw + 40px, 440px);
 }
 :root[data-theme="light"] {
-  --bg: #fdfcfa; --surface: #ffffff; --surface-2: #f4f0e8;
-  --border: #d9d1c2; --border-strong: #8c8273;
-  --text: #161412; --text-muted: #5c554b;
-  --accent: #7a5f2c; --accent-strong: #5f4a20; --on-accent: #ffffff;
-  --danger: #a3271b; --ok: #256b3a; --focus: #5f4a20; --scrim: rgba(22, 20, 18, .45);
-  --shadow-card: 0 1px 2px rgba(22, 20, 18, .06); --shadow-pop: 0 8px 24px rgba(22, 20, 18, .14);
+  /* Light "soft parchment" (owner request: soothing, low glare). No pure white anywhere: bg #f1ece2, cards #f8f4ec.
+     Measured on bg / surface / surface-2: text 14.2 / 15.3 / 12.9, muted 7.5 / 8.1 / 6.8, accent 6.0 / 6.4 / 5.4,
+     accent-strong 8.4 / 9.0 / 7.6, border-strong 4.0 / 4.3 / 3.6, danger >= 6.0, ok >= 5.5, on-accent on accent 6.6. */
+  --bg: #f1ece2; --surface: #f8f4ec; --surface-2: #e8e1d3;
+  --border: #d3c9b6; --border-strong: #7d725f;
+  --text: #211d17; --text-muted: #52493b;
+  --accent: #6f5522; --accent-strong: #55401a; --on-accent: #fbf7ee;
+  --danger: #9c261a; --ok: #22633a; --focus: #55401a; --scrim: rgba(33, 29, 23, .42);
+  --shadow-card: 0 1px 2px rgba(60, 46, 20, .08); --shadow-pop: 0 8px 24px rgba(60, 46, 20, .16);
   color-scheme: light;
 }
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
-    --bg: #fdfcfa; --surface: #ffffff; --surface-2: #f4f0e8;
-    --border: #d9d1c2; --border-strong: #8c8273;
-    --text: #161412; --text-muted: #5c554b;
-    --accent: #7a5f2c; --accent-strong: #5f4a20; --on-accent: #ffffff;
-    --danger: #a3271b; --ok: #256b3a; --focus: #5f4a20; --scrim: rgba(22, 20, 18, .45);
-    --shadow-card: 0 1px 2px rgba(22, 20, 18, .06); --shadow-pop: 0 8px 24px rgba(22, 20, 18, .14);
+    /* Light "soft parchment" (owner request: soothing, low glare). No pure white anywhere: bg #f1ece2, cards #f8f4ec.
+       Measured on bg / surface / surface-2: text 14.2 / 15.3 / 12.9, muted 7.5 / 8.1 / 6.8, accent 6.0 / 6.4 / 5.4,
+       accent-strong 8.4 / 9.0 / 7.6, border-strong 4.0 / 4.3 / 3.6, danger >= 6.0, ok >= 5.5, on-accent on accent 6.6. */
+    --bg: #f1ece2; --surface: #f8f4ec; --surface-2: #e8e1d3;
+    --border: #d3c9b6; --border-strong: #7d725f;
+    --text: #211d17; --text-muted: #52493b;
+    --accent: #6f5522; --accent-strong: #55401a; --on-accent: #fbf7ee;
+    --danger: #9c261a; --ok: #22633a; --focus: #55401a; --scrim: rgba(33, 29, 23, .42);
+    --shadow-card: 0 1px 2px rgba(60, 46, 20, .08); --shadow-pop: 0 8px 24px rgba(60, 46, 20, .16);
     color-scheme: light;
   }
 }
 :root[data-text-scale="large"] { --text-scale: 1.125; }
+/* Chat width (Appearance): Comfortable is the default 880px column, Wide lifts it to 1100px. */
+:root[data-chat-width="wide"] { --composer-max: 1100px; }
+:root[data-chat-width="wide"] .prose, :root[data-chat-width="wide"] .sources, :root[data-chat-width="wide"] .compare__verdict { max-width: min(1040px, 100%); }
+:root[data-chat-width="wide"] .bubble { max-width: min(1040px, 85%); }
 
 /* Type roles (spec §2). Declared per language on every element of that language, so an English answer inside the
    Arabic UI (or the reverse) sets itself in its own scale. */

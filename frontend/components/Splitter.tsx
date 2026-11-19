@@ -78,6 +78,7 @@ export function Splitter() {
       aria-orientation="vertical"
       aria-controls="rail"
       aria-label={shellT(t, lang, "railResize")}
+      title={shellT(t, lang, "railResizeTip")}
       aria-valuemin={RAIL_MIN}
       aria-valuemax={RAIL_MAX}
       aria-valuenow={rail.collapsed ? RAIL_MIN : rail.width}
@@ -90,6 +91,8 @@ export function Splitter() {
       onPointerCancel={end}
       onDoubleClick={rail.reset}
       onKeyDown={onKeyDown}
-    />
+    >
+      <span className="splitter__grip" aria-hidden="true"><i /><i /><i /></span>
+    </div>
   );
 }

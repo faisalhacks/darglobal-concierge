@@ -531,6 +531,14 @@ def build():
     A("- Small n everywhere; compare intervals, not point estimates.")
     A("- Lighthouse: " + (f"{latest['targets']['lighthouse_mobile'].get('actual')}" if latest["targets"].get("lighthouse_mobile", {}).get("actual") is not None else NM + " (not run by this generator)."))
     A("")
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from quality_section import build as _qbuild  # evals/quality_section.py: conversation before/after (12)
+        _q = _qbuild()
+        if _q:
+            L.append(_q)
+    except Exception as e_:  # noqa: BLE001
+        print("quality section skipped:", type(e_).__name__, e_)
     report = "\n".join(L) + "\n"
 
     # README numbers block

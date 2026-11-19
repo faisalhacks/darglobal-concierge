@@ -32,7 +32,7 @@
 }
 .row .btn:hover { background: var(--surface-2); color: var(--text); }
 .row .btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-.row .btn[aria-pressed="true"] { color: var(--accent-strong, #d7bb85); background: var(--surface-2); }
+.row .btn[aria-pressed="true"] { color: var(--accent-strong, #e4c789); background: var(--surface-2); }
 .row .btn[aria-expanded="true"] { color: var(--text); background: var(--surface-2); }
 .row .btn[aria-disabled="true"] { opacity: 0.55; cursor: not-allowed; }
 .row .btn[aria-disabled="true"]:hover { background: transparent; color: var(--text-muted); }

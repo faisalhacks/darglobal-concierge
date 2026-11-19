@@ -1,0 +1,961 @@
+{
+ "label": "fix2",
+ "run_at": "2026-11-19T19:32:18+00:00",
+ "base_url": "http://localhost:8031",
+ "conversation_file": "conversations_30.yaml",
+ "dataset_version": "20261119-eb33f465",
+ "provider": "nvidia",
+ "model": "nvidia/nemotron-3-ultra-550b-a55b",
+ "llm_mode": "live",
+ "max_llm_calls": 28,
+ "nvidia_probe_before": null,
+ "conversations": [
+  {
+   "id": "c05",
+   "category": "superlative",
+   "playbook": "superlative",
+   "lang": "en",
+   "tags": [],
+   "turns": [
+    {
+     "n": 1,
+     "say": "What is the most expensive villa you have?",
+     "playbook": "superlative",
+     "payload_last_entities": [],
+     "answer": "The most expensive villa for sale in the Wasalt sample is Villa 1189.54 SQM Facing 3 Streets on 40m Width Street in Hay Al Mubaoth, Madinah at 11,000,000 SAR; here are the top 6.",
+     "trace": {
+      "intent": "superlative",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 79,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "Sorted the published rows to find the top one",
+       "Showed 6 result cards",
+       "Wrote the answer in code from the data",
+       "Answer guide: superlative"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 79,
+     "ttft_ms": 2125.0,
+     "cards": [
+      {
+       "id": "wasalt-l-5958693",
+       "name": "Villa 1189.54 SQM Facing 3 Streets on 40m Width Street",
+       "city": "Madinah",
+       "price": {
+        "amount": 11000000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5764186",
+       "name": "Villa 350 SQM",
+       "city": "Riyadh",
+       "price": {
+        "amount": 10178420.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5976406",
+       "name": "Villa 900 SQM Facing South on 15m Width Street",
+       "city": "Riyadh",
+       "price": {
+        "amount": 10000000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5955090",
+       "name": "Villa 1673.46 SQM Facing North East on 20m Width Street",
+       "city": "Madinah",
+       "price": {
+        "amount": 9000000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5840314",
+       "name": "Villa 350 SQM",
+       "city": "Riyadh",
+       "price": {
+        "amount": 7100556.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-240455",
+       "name": "Villa 300 SQM",
+       "city": "Riyadh",
+       "price": {
+        "amount": 6985637.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Cheapest villas for sale",
+      "Most expensive villas for sale",
+      "Largest villas for sale"
+     ],
+     "sources": [
+      {
+       "title": "Villa 1189.54 SQM Facing 3 Streets on 40m Width Street",
+       "url": "https://wasalt.sa/en/property/sale/villa-118954-sqm-facing-3-streets-on-40m-width-street-5958693"
+      },
+      {
+       "title": "Villa 350 SQM",
+       "url": "https://wasalt.sa/en/property/sale/villa-350-sqm-5764186"
+      },
+      {
+       "title": "Villa 900 SQM Facing South on 15m Width Street",
+       "url": "https://wasalt.sa/en/property/sale/villa-900-sqm-facing-south-on-15m-width-street-5976406"
+      },
+      {
+       "title": "Villa 1673.46 SQM Facing North East on 20m Width Street",
+       "url": "https://wasalt.sa/en/property/sale/villa-167346-sqm-facing-north-east-on-20m-width-street-5955090"
+      },
+      {
+       "title": "Villa 350 SQM",
+       "url": "https://wasalt.sa/en/property/sale/villa-350-sqm-5840314"
+      },
+      {
+       "title": "Villa 300 SQM",
+       "url": "https://wasalt.sa/en/property/sale/villa-300-sqm-240455"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_min": {
+       "pass": true,
+       "detail": ""
+      },
+      "sorted": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_blog_source": {
+       "pass": true,
+       "detail": ""
+      }
+     }
+    },
+    {
+     "n": 2,
+     "say": "and the cheapest one?",
+     "playbook": "superlative",
+     "payload_last_entities": [
+      "wasalt-l-5958693",
+      "wasalt-l-5764186",
+      "wasalt-l-5976406",
+      "wasalt-l-5955090",
+      "wasalt-l-5840314",
+      "wasalt-l-240455"
+     ],
+     "answer": "The cheapest villa for sale in the Wasalt sample is Villa 385.62 SQM Facing North on 20m Width Street in Al Majd, Hayil at 610,000 SAR; here are the top 6.",
+     "trace": {
+      "intent": "superlative",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 93,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "Sorted the published rows to find the top one",
+       "Showed 6 result cards",
+       "Wrote the answer in code from the data",
+       "Answer guide: superlative"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 93,
+     "ttft_ms": 2140.999999945052,
+     "cards": [
+      {
+       "id": "wasalt-l-5957549",
+       "name": "Villa 385.62 SQM Facing North on 20m Width Street",
+       "city": "Hayil",
+       "price": {
+        "amount": 610000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5972218",
+       "name": "Villa 329.94 SQM Facing East on 15m Width Street",
+       "city": "Taif",
+       "price": {
+        "amount": 670000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5954883",
+       "name": "Villa 320 SQM Facing West on 15m Width Street",
+       "city": "Hayil",
+       "price": {
+        "amount": 675000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5971893",
+       "name": "Villa 261.66 SQM Facing West on 15m Width Street",
+       "city": "Abha",
+       "price": {
+        "amount": 680000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5968802",
+       "name": "Villa 247.76 SQM Facing South on 15m Width Street",
+       "city": "Hayil",
+       "price": {
+        "amount": 680000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5968803",
+       "name": "Villa 272.68 SQM",
+       "city": "Hayil",
+       "price": {
+        "amount": 680000.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Cheapest villas for sale",
+      "Most expensive villas for sale",
+      "Largest villas for sale"
+     ],
+     "sources": [
+      {
+       "title": "Villa 385.62 SQM Facing North on 20m Width Street",
+       "url": "https://wasalt.sa/en/property/sale/villa-38562-sqm-facing-north-on-20m-width-street-5957549"
+      },
+      {
+       "title": "Villa 329.94 SQM Facing East on 15m Width Street",
+       "url": "https://wasalt.sa/en/property/sale/villa-32994-sqm-facing-east-on-15m-width-street-5972218"
+      },
+      {
+       "title": "Villa 320 SQM Facing West on 15m Width Street",
+       "url": "https://wasalt.sa/en/property/sale/villa-320-sqm-facing-west-on-15m-width-street-5954883"
+      },
+      {
+       "title": "Villa 261.66 SQM Facing West on 15m Width Street",
+       "url": "https://wasalt.sa/en/property/sale/villa-26166-sqm-facing-west-on-15m-width-street-5971893"
+      },
+      {
+       "title": "Villa 247.76 SQM Facing South on 15m Width Street",
+       "url": "https://wasalt.sa/en/property/sale/villa-24776-sqm-facing-south-on-15m-width-street-5968802"
+      },
+      {
+       "title": "Villa 272.68 SQM",
+       "url": "https://wasalt.sa/en/property/sale/villa-27268-sqm-5968803"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_min": {
+       "pass": true,
+       "detail": ""
+      },
+      "sorted": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_blog_source": {
+       "pass": true,
+       "detail": ""
+      }
+     }
+    },
+    {
+     "n": 3,
+     "say": "how big is the first one?",
+     "playbook": "followup_reference",
+     "payload_last_entities": [
+      "wasalt-l-5957549",
+      "wasalt-l-5972218",
+      "wasalt-l-5954883",
+      "wasalt-l-5971893",
+      "wasalt-l-5968802",
+      "wasalt-l-5968803"
+     ],
+     "answer": "Villa 385.62 SQM Facing North on 20m Width Street, for sale in Al Majd, Hayil: price 610,000 SAR, 7 bedrooms, built-up area 385.62 m².",
+     "trace": {
+      "intent": "general",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 312,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "Searched the collected pages",
+       "Showed 1 result card",
+       "Wrote the answer in code from the data",
+       "Answer guide: followup_reference"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 312,
+     "ttft_ms": 2344.000000040978,
+     "cards": [
+      {
+       "id": "wasalt-l-5957549",
+       "name": "Villa 385.62 SQM Facing North on 20m Width Street",
+       "city": "Hayil",
+       "price": {
+        "amount": 610000.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Projects in Oman",
+      "Apartments for rent in Riyadh",
+      "Branded residences",
+      "20% down on 2,000,000 SAR"
+     ],
+     "sources": [
+      {
+       "title": "Villa 385.62 SQM Facing North on 20m Width Street",
+       "url": "https://wasalt.sa/en/property/sale/villa-38562-sqm-facing-north-on-20m-width-street-5957549"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "ref": {
+       "pass": true,
+       "detail": ""
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "c27",
+   "category": "typo_translit",
+   "playbook": "filtered_search",
+   "lang": "en",
+   "tags": [
+    "typo"
+   ],
+   "turns": [
+    {
+     "n": 1,
+     "say": "show me vilas in jedda unde 2 milion",
+     "playbook": "filtered_search",
+     "payload_last_entities": [],
+     "answer": "I found 65 villas in Jeddah in the Wasalt sample. Here are 6; tell me a budget to narrow it.",
+     "trace": {
+      "intent": "search",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 63,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "Searched the Wasalt listings",
+       "Showed 6 result cards",
+       "Wrote the answer in code from the data",
+       "Answer guide: filtered_search"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 63,
+     "ttft_ms": 2062.000000034459,
+     "cards": [
+      {
+       "id": "wasalt-l-5873202",
+       "name": "Villa 312 SQM Facing West, North",
+       "city": "Jeddah",
+       "price": {
+        "amount": 3860000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5873201",
+       "name": "Villa 312 SQM Facing West, North",
+       "city": "Jeddah",
+       "price": {
+        "amount": 3860000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5873198",
+       "name": "Villa 312 SQM Facing West, North",
+       "city": "Jeddah",
+       "price": {
+        "amount": 3860000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5873197",
+       "name": "Villa 312 SQM Facing West, North",
+       "city": "Jeddah",
+       "price": {
+        "amount": 3860000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5873193",
+       "name": "Villa 312 SQM Facing East, North",
+       "city": "Jeddah",
+       "price": {
+        "amount": 3860000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5873196",
+       "name": "Villa 312 SQM Facing East, North",
+       "city": "Jeddah",
+       "price": {
+        "amount": 3860000.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Projects in Jeddah"
+     ],
+     "sources": [
+      {
+       "title": "Villa 312 SQM Facing West, North",
+       "url": "https://wasalt.sa/en/property/sale/villa-312-sqm-facing-west,-north-5873202"
+      },
+      {
+       "title": "Villa 312 SQM Facing West, North",
+       "url": "https://wasalt.sa/en/property/sale/villa-312-sqm-facing-west,-north-5873201"
+      },
+      {
+       "title": "Villa 312 SQM Facing West, North",
+       "url": "https://wasalt.sa/en/property/sale/villa-312-sqm-facing-west,-north-5873198"
+      },
+      {
+       "title": "Villa 312 SQM Facing West, North",
+       "url": "https://wasalt.sa/en/property/sale/villa-312-sqm-facing-west,-north-5873197"
+      },
+      {
+       "title": "Villa 312 SQM Facing East, North",
+       "url": "https://wasalt.sa/en/property/sale/villa-312-sqm-facing-east,-north-5873193"
+      },
+      {
+       "title": "Villa 312 SQM Facing East, North",
+       "url": "https://wasalt.sa/en/property/sale/villa-312-sqm-facing-east,-north-5873196"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_min": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_city": {
+       "pass": true,
+       "detail": ""
+      }
+     }
+    },
+    {
+     "n": 2,
+     "say": "wat about apartmnts",
+     "playbook": "refine",
+     "payload_last_entities": [
+      "wasalt-l-5873202",
+      "wasalt-l-5873201",
+      "wasalt-l-5873198",
+      "wasalt-l-5873197",
+      "wasalt-l-5873193",
+      "wasalt-l-5873196"
+     ],
+     "answer": "I found 33 apartments for sale in Jeddah in the Wasalt sample, all under 2,000,000 SAR. Here are 6 examples:\n\n- 6-bedroom, 247.9 m2 in Al Rabbwah — 1,180,000 SAR \n- 4-bedroom, not published m2 in Al Safa — 640,000 SAR \n- 3-bedroom, 720 m2 in Al Faiha A — 340,000 SAR \n- 3-bedroom in Al Safa — 349,000 SAR \n- 2-bedroom, 575 m2 in Al Bawadi — 280,000 SAR \n- 172 m2 in Al Naeem (bedrooms not published) — 1,050,000 SAR \n\nWould you like me to filter by bedroom count, district, or a tighter budget?",
+     "trace": {
+      "intent": "search",
+      "path": "llm_understanding",
+      "tool": null,
+      "llm_calls": 2,
+      "model": "nvidia/nemotron-3-ultra-550b-a55b",
+      "provider": "openrouter",
+      "latency_ms": 5344,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "An AI model read the question and mapped it to the data",
+       "Searched the Wasalt listings",
+       "Showed 6 result cards",
+       "An AI model wrote the wording from these facts only",
+       "Answer guide: filtered_search"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 5344,
+     "ttft_ms": 6061.999999918044,
+     "cards": [
+      {
+       "id": "wasalt-l-5934631",
+       "name": "Apartment 247.9 SQM with 6 Bedrooms",
+       "city": "Jeddah",
+       "price": {
+        "amount": 1180000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5972831",
+       "name": "Apartment",
+       "city": "Jeddah",
+       "price": {
+        "amount": 1050000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5972197",
+       "name": "Apartment with 3 Bedrooms",
+       "city": "Jeddah",
+       "price": {
+        "amount": 340000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5972081",
+       "name": "Apartment with 2 Bedrooms",
+       "city": "Jeddah",
+       "price": {
+        "amount": 280000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5934355",
+       "name": "Apartment 170.37 SQM with 4 Bedrooms",
+       "city": "Jeddah",
+       "price": {
+        "amount": 640000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5972073",
+       "name": "Apartment with 3 Bedrooms",
+       "city": "Jeddah",
+       "price": {
+        "amount": 349000.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Projects in Jeddah"
+     ],
+     "sources": [
+      {
+       "title": "Apartment 247.9 SQM with 6 Bedrooms",
+       "url": "https://wasalt.sa/en/property/sale/apartment-2479-sqm-with-6-bedrooms-5934631"
+      },
+      {
+       "title": "Apartment",
+       "url": "https://wasalt.sa/en/property/sale/apartment-5972831"
+      },
+      {
+       "title": "Apartment with 3 Bedrooms",
+       "url": "https://wasalt.sa/en/property/sale/apartment-with-3-bedrooms-5972197"
+      },
+      {
+       "title": "Apartment with 2 Bedrooms",
+       "url": "https://wasalt.sa/en/property/sale/apartment-with-2-bedrooms-5972081"
+      },
+      {
+       "title": "Apartment 170.37 SQM with 4 Bedrooms",
+       "url": "https://wasalt.sa/en/property/sale/apartment-17037-sqm-with-4-bedrooms-5934355"
+      },
+      {
+       "title": "Apartment with 3 Bedrooms",
+       "url": "https://wasalt.sa/en/property/sale/apartment-with-3-bedrooms-5972073"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": false,
+       "detail": "2e+06 not in context"
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_min": {
+       "pass": true,
+       "detail": ""
+      }
+     }
+    },
+    {
+     "n": 3,
+     "say": "tell me abt the frist one",
+     "playbook": "followup_reference",
+     "payload_last_entities": [
+      "wasalt-l-5934631",
+      "wasalt-l-5972831",
+      "wasalt-l-5972197",
+      "wasalt-l-5972081",
+      "wasalt-l-5934355",
+      "wasalt-l-5972073"
+     ],
+     "answer": "Apartment 247.9 SQM with 6 Bedrooms, for sale in Al Rabbwah, Jeddah: price 1,180,000 SAR, 6 bedrooms, built-up area 247.9 m².",
+     "trace": {
+      "intent": "general",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 92,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "Searched the collected pages",
+       "Showed 1 result card",
+       "Wrote the answer in code from the data",
+       "Answer guide: followup_reference"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 92,
+     "ttft_ms": 2140.00000001397,
+     "cards": [
+      {
+       "id": "wasalt-l-5934631",
+       "name": "Apartment 247.9 SQM with 6 Bedrooms",
+       "city": "Jeddah",
+       "price": {
+        "amount": 1180000.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Projects in Oman",
+      "Apartments for rent in Riyadh",
+      "Branded residences",
+      "20% down on 2,000,000 SAR"
+     ],
+     "sources": [
+      {
+       "title": "Apartment 247.9 SQM with 6 Bedrooms",
+       "url": "https://wasalt.sa/en/property/sale/apartment-2479-sqm-with-6-bedrooms-5934631"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "ref": {
+       "pass": true,
+       "detail": ""
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "llm_calls_counted": 2,
+ "stop_reason": null,
+ "judge_calls": 0,
+ "summary": {
+  "turns": 6,
+  "turn_pass_by_category": {
+   "superlative": {
+    "passed": 3,
+    "n": 3,
+    "rate": 1.0
+   },
+   "typo_translit": {
+    "passed": 2,
+    "n": 3,
+    "rate": 0.6667
+   }
+  },
+  "turn_pass_by_check": {
+   "cards_city": {
+    "passed": 1,
+    "n": 1,
+    "rate": 1.0
+   },
+   "cards_min": {
+    "passed": 4,
+    "n": 4,
+    "rate": 1.0
+   },
+   "country_city": {
+    "passed": 6,
+    "n": 6,
+    "rate": 1.0
+   },
+   "empty_content": {
+    "passed": 6,
+    "n": 6,
+    "rate": 1.0
+   },
+   "lang_match": {
+    "passed": 6,
+    "n": 6,
+    "rate": 1.0
+   },
+   "no_blog_source": {
+    "passed": 2,
+    "n": 2,
+    "rate": 1.0
+   },
+   "no_dead_end": {
+    "passed": 6,
+    "n": 6,
+    "rate": 1.0
+   },
+   "numbers_traceable": {
+    "passed": 5,
+    "n": 6,
+    "rate": 0.8333
+   },
+   "ref": {
+    "passed": 2,
+    "n": 2,
+    "rate": 1.0
+   },
+   "sorted": {
+    "passed": 2,
+    "n": 2,
+    "rate": 1.0
+   },
+   "stream_ok": {
+    "passed": 6,
+    "n": 6,
+    "rate": 1.0
+   }
+  },
+  "turn_pass_by_playbook": {
+   "filtered_search": {
+    "passed": 1,
+    "n": 1,
+    "rate": 1.0
+   },
+   "followup_reference": {
+    "passed": 2,
+    "n": 2,
+    "rate": 1.0
+   },
+   "refine": {
+    "passed": 0,
+    "n": 1,
+    "rate": 0.0
+   },
+   "superlative": {
+    "passed": 2,
+    "n": 2,
+    "rate": 1.0
+   }
+  },
+  "turn_pass_by_tag": {
+   "typo": {
+    "passed": 2,
+    "n": 3,
+    "rate": 0.6667
+   }
+  },
+  "share_path_llm_understanding": 0.1667,
+  "empty_content_rate": 0.0,
+  "latency_trace_ms": {
+   "p50": 92.5,
+   "p95": 4086.0,
+   "n": 6
+  },
+  "ttft_ms": {
+   "p50": 2140.5,
+   "p95": 5132.5,
+   "n": 6
+  },
+  "judge": {
+   "n": 0,
+   "helpfulness_mean": null,
+   "tone_mean": null,
+   "limit": "Gemini judge is weak on Gulf dialect; reported separately, never overrides a check"
+  }
+ },
+ "nvidia_probe_after": null,
+ "server_budget_used": {
+  "start": 0,
+  "end": 2,
+  "delta": 2
+ }
+}

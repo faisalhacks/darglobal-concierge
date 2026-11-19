@@ -12,7 +12,7 @@
   gap: var(--sp-16, 16px);
   justify-items: start;
   inline-size: 100%;
-  max-inline-size: 880px;
+  max-inline-size: var(--composer-max, 880px);
   margin-inline: auto;
 }
 
@@ -90,7 +90,7 @@
   cursor: pointer;
   transition: border-color 120ms ease-out, background-color 120ms ease-out;
 }
-.chips .chip:hover { border-color: var(--accent, #c2a36b); }
+.chips .chip:hover { border-color: var(--accent, #d2ad69); }
 .chips .chip:active { background: var(--surface-2); }
 .chips .chip:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .chips .chip[aria-disabled="true"] { color: var(--text-muted); cursor: not-allowed; }

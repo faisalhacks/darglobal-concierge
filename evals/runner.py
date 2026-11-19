@@ -269,6 +269,22 @@ class DB:
                     nums.extend(flat_numbers(dict(r)))
         return nums
 
+    def holdings_numbers(self):
+        """Aggregate counts the greeting/capabilities summary states (projects per site and country, listings, cities).
+        Real DB aggregates, not invented; the stream does not ship them, so the check derives them here."""
+        nums = []
+        if not self.ok:
+            return nums
+        qs = ("SELECT COUNT(*) FROM projects", "SELECT COUNT(*) FROM listings",
+              "SELECT COUNT(DISTINCT city) FROM listings", "SELECT COUNT(DISTINCT country) FROM projects")
+        for q in qs:
+            for r in self.conn.execute(q):
+                nums.append(float(r[0]))
+        for q in ("SELECT COUNT(*) FROM projects GROUP BY site", "SELECT COUNT(*) FROM projects GROUP BY site, country"):
+            for r in self.conn.execute(q):
+                nums.append(float(r[0]))
+        return nums
+
     def host_known(self, url):
         h = urllib.parse.urlparse(url).netloc.lower()
         return url in self.urls or h in self.hosts
@@ -420,7 +436,7 @@ def run_checks(checks, rep: Reply, user_texts, db: DB, ctx):
     ids_ctx = [r.get("id") for r in (rep.trace.get("retrieved") or [])] + rep.card_ids()
     ctx_nums = flat_numbers([rep.cards, rep.compare, rep.calc, rep.meta]) + [
         v for t in user_texts for v, _, _ in extract_numbers(t)
-    ] + db.context_numbers([i for i in ids_ctx if i])
+    ] + db.context_numbers([i for i in ids_ctx if i]) + db.holdings_numbers()
 
     for key, want in checks.items():
         if key == "intent" and rep.intent not in want:

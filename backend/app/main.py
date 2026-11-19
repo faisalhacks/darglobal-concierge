@@ -222,6 +222,27 @@ def starter_chips(store: Store) -> dict:
     return {"en": en[:5], "ar": ar[:5]}
 
 
+def _build_id() -> str:
+    """Short build id for /api/meta: env (BUILD_ID / RAILWAY_GIT_COMMIT_SHA / GIT_SHA), else a hash of the app sources."""
+    for k in ("BUILD_ID", "RAILWAY_GIT_COMMIT_SHA", "GIT_SHA", "SOURCE_VERSION"):
+        v = (os.environ.get(k) or "").strip()
+        if v:
+            return v[:8]
+    import hashlib
+    h = hashlib.sha1()
+    try:
+        d = os.path.dirname(os.path.abspath(__file__))
+        for n in sorted(x for x in os.listdir(d) if x.endswith(".py")):
+            with open(os.path.join(d, n), "rb") as f:
+                h.update(f.read())
+    except OSError:
+        return "dev"
+    return h.hexdigest()[:8]
+
+
+BUILD_ID = _build_id()
+
+
 def _make_llm(s: Settings):
     if s.llm_mode == "mock":
         return MockLLM(fail_with=os.environ.get("MOCK_LLM_FAIL") or None)
@@ -330,7 +351,10 @@ def create_app(settings: Settings | None = None, llm=None, embedder=None) -> Fas
             return one("error", {"code": "RATE_LIMITED", "retry_after_s": retry,
                                  "message": templates.t("rate_limited", detect_lang(msg, lang))},
                        status=429, extra={"Retry-After": str(retry)})
-        req = ChatRequest(session_id=str(body.get("session_id") or "")[:64], message=msg, history=history, lang=lang)
+        le = body.get("last_entities")
+        le = le if isinstance(le, list) else []
+        req = ChatRequest(session_id=str(body.get("session_id") or "")[:64], message=msg, history=history, lang=lang,
+                          last_entities=le[:12])
 
         async def gen():
             try:
@@ -348,6 +372,9 @@ def create_app(settings: Settings | None = None, llm=None, embedder=None) -> Fas
         if engine.llm is not None and hasattr(engine.llm, "cfg") and callable(getattr(engine.llm, "meta", None)):
             return engine.llm.meta()
         return {"enabled": False, "provider": None, "model": None, "used": 0, "cap": 0}
+
+    def backup_available() -> bool:
+        return engine.llm is not None and callable(getattr(engine.llm, "available", None)) and bool(engine.llm.available())
 
     def llm_meta() -> dict:
         router = getattr(engine.llm, "router", None)
@@ -373,7 +400,8 @@ def create_app(settings: Settings | None = None, llm=None, embedder=None) -> Fas
                                                       if str(x.get("site") or "Wasalt").lower() == site.lower())}
                                for site in ("DarGlobal", "Wasalt")},
             "completeness": _flat_completeness(store.meta.get("completeness") or {}), "models": s.openrouter_models,
-            "llm_available": llm_info["state"] == "ok", "flags": s.flags,
+            "llm_available": llm_info["state"] == "ok" or bool(llm_info["backup"].get("enabled") and backup_available()),
+            "build": BUILD_ID, "flags": s.flags,
             "candidate": s.candidate, "retrieval": retriever.mode, "maintenance_mode": s.maintenance_mode,
             "coverage": store.coverage(), "llm": llm_info, "starter_chips": chips_cache,
         }
@@ -493,7 +521,7 @@ def create_app(settings: Settings | None = None, llm=None, embedder=None) -> Fas
             for cand in ([f"{stem}.html", f"{stem}/index.html"] if stem else []) + ["index.html"]:
                 f = _safe(cand)
                 if f:
-                    return FileResponse(f, media_type="text/html", headers={"Cache-Control": "no-cache"})
+                    return FileResponse(f, media_type="text/html", headers={"Cache-Control": "no-cache, must-revalidate"})
             return HTMLResponse("<!doctype html><title>Concierge</title><p>Frontend not built.</p>")
         return _not_found(False)
 

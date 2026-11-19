@@ -10,7 +10,7 @@
   background: var(--bg);
 }
 .composer > .inner {
-  max-inline-size: 880px;
+  max-inline-size: var(--composer-max, 880px);
   margin-inline: auto;
 }
 
@@ -64,9 +64,9 @@
   min-inline-size: 6rem;
   padding-inline: var(--sp-16, 16px);
   border-radius: 12px;
-  border: 1px solid var(--accent, #c2a36b);
-  background: var(--accent, #c2a36b);
-  color: var(--on-accent, #15120e);
+  border: 1px solid var(--accent, #d2ad69);
+  background: var(--accent, #d2ad69);
+  color: var(--on-accent, #161108);
   font: inherit;
   font-size: var(--fs-control, 0.9375rem);
   font-weight: 600;
@@ -74,7 +74,7 @@
   cursor: pointer;
   transition: background-color 120ms ease-out, border-color 120ms ease-out, color 120ms ease-out;
 }
-.row .btn:hover { background: var(--accent-strong, #d7bb85); border-color: var(--accent-strong, #d7bb85); }
+.row .btn:hover { background: var(--accent-strong, #e4c789); border-color: var(--accent-strong, #e4c789); }
 .row .btn:active { transform: translateY(1px); }
 .row .btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 /* Disabled Send: transparent with a control boundary and a muted label (spec §3), same box size. */

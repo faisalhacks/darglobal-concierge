@@ -331,11 +331,23 @@ export function Chat({ embedded = false }: { embedded?: boolean }) {
       .map((x) => ({ role: x.role, content: x.text.slice(0, MAX_CHARS) }))
       .slice(-8);
 
+  /** Ids of the cards on the latest assistant turn that showed any: projects first, then listings, card order, max 6. */
+  const lastEntities = (ts: Turn[]): string[] => {
+    for (let i = ts.length - 1; i >= 0; i--) {
+      const x = ts[i];
+      if (x.role !== "assistant" || !x.cards) continue;
+      const ids = [...(x.cards.projects ?? []).map((p) => p.id), ...(x.cards.listings ?? []).map((l) => l.id)].filter(Boolean);
+      if (ids.length) return ids.slice(0, 6);
+    }
+    return [];
+  };
+
   const run = useCallback(async (message: string, prior: Turn[]) => {
     const msgLang: Lang = hasArabic(message) ? "ar" : lang;
     const aId = uid();
     const userTurn: UserTurn = { id: uid(), role: "user", text: message, lang: hasArabic(message) ? "ar" : "en" };
     const history = buildHistory(prior);
+    const last_entities = lastEntities(prior);
     setTurns([...prior, userTurn, { id: aId, role: "assistant", forText: message, lang: msgLang, text: "", status: "waiting" }]);
     setBusy(true);
     setAnnounce(STRINGS[lang].thinking);
@@ -347,7 +359,7 @@ export function Chat({ embedded = false }: { embedded?: boolean }) {
       const res = await fetch(`${API_BASE}/api/chat/stream`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
-        body: JSON.stringify({ session_id: sessionId.current, message, history, lang: "auto" }),
+        body: JSON.stringify({ session_id: sessionId.current, message, history, lang: "auto", last_entities }),
         signal: ac.signal,
       });
       if (!res.ok || !res.body || !(res.headers.get("content-type") ?? "").includes("text/event-stream")) {

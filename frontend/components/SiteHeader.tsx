@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { shellT, type ShellKey } from "@/lib/shellStrings";
-import type { TextScale, ThemePref } from "@/lib/prefs";
+import type { ChatWidth, TextScale, ThemePref } from "@/lib/prefs";
 import { useApp, useRail } from "./AppContext";
 import { AboutSheet } from "./AboutSheet";
 
@@ -80,7 +80,7 @@ function Radios<V extends string | number>({ label, value, options, onChange }: 
 }
 
 function AppearanceControls() {
-  const { t, lang, theme, setTheme, textScale, setTextScale } = useApp();
+  const { t, lang, theme, setTheme, textScale, setTextScale, chatWidth, setChatWidth } = useApp();
   const s = (k: ShellKey) => shellT(t, lang, k);
   return (
     <>
@@ -101,6 +101,15 @@ function AppearanceControls() {
         options={[
           { value: 1, label: s("textSizeDefault") },
           { value: 1.125, label: s("textSizeLarge") },
+        ]}
+      />
+      <Radios<ChatWidth>
+        label={s("chatWidthLabel")}
+        value={chatWidth}
+        onChange={setChatWidth}
+        options={[
+          { value: "comfortable", label: s("chatWidthComfortable") },
+          { value: "wide", label: s("chatWidthWide") },
         ]}
       />
     </>
@@ -144,13 +153,13 @@ function AppearanceMenu() {
   const id = useId();
   const pop = usePopover(true);
   const label = shellT(t, lang, "appearance");
+  const visible = shellT(t, lang, "themeButton");
   return (
     <div className="appearance hdr-wide" onBlur={pop.onBlur}>
       <button
         ref={pop.trigger}
         type="button"
-        className="hdr-icon"
-        aria-label={label}
+        className="hdr-labeled"
         title={label}
         aria-haspopup="true"
         aria-expanded={pop.open}
@@ -158,6 +167,7 @@ function AppearanceMenu() {
         onClick={() => pop.setOpen(!pop.open)}
       >
         <Icon name="appearance" />
+        <span className="hdr-labeled__text">{visible}</span>
       </button>
       <div ref={pop.panel} id={id} className="popover appearance__panel" role="group" aria-label={label} hidden={!pop.open}>
         {pop.open && <AppearanceControls />}

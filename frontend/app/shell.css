@@ -63,6 +63,15 @@ html { font-size: calc(100% * var(--text-scale, 1)); }
 }
 .hdr-icon:hover, .hdr-icon[aria-haspopup][aria-expanded="true"], .phone-menu .hdr-icon[aria-expanded="true"] { color: var(--text); background: var(--surface-2); }
 .icon { display: block; flex: none; }
+/* Theme button: icon plus a visible text label, so the control is found without hovering. */
+.hdr-labeled {
+  display: inline-flex; align-items: center; gap: var(--sp-8, 8px); min-block-size: 44px; padding-inline: var(--sp-12, 12px);
+  border: 0; border-radius: 8px; background: transparent; color: var(--text); cursor: pointer;
+  font: inherit; font-size: var(--fs-control, 0.9375rem); font-weight: 500; line-height: 1.4; white-space: nowrap;
+  transition: color 120ms ease-out, background-color 120ms ease-out;
+}
+.hdr-labeled:hover, .hdr-labeled[aria-expanded="true"] { background: var(--surface-2); }
+.hdr-labeled .icon { color: var(--text-muted); }
 
 /* Wide-only and narrow-only header parts */
 .site-header .appearance { display: none; position: relative; }
@@ -248,6 +257,16 @@ html { font-size: calc(100% * var(--text-scale, 1)); }
   }
   .splitter::after { content: ""; position: absolute; inset-block: 0; inset-inline-start: -18px; inline-size: 44px; }
   .splitter:hover::before, .splitter:focus-visible::before, .splitter[data-dragging]::before { background: var(--accent-strong, var(--gold)); }
+  /* Grip: a small pill with three dots, centred on the line, visible without hovering. */
+  .splitter__grip {
+    position: absolute; inset-block-start: 50%; inset-inline-start: -7px; inline-size: 22px; block-size: 44px;
+    transform: translateY(-50%); display: grid; place-content: center; gap: 4px; justify-items: center;
+    background: var(--surface-2); border: 1px solid var(--border-strong); border-radius: 999px;
+    pointer-events: none; z-index: 1; transition: border-color 120ms ease-out, background-color 120ms ease-out;
+  }
+  .splitter__grip i { display: block; inline-size: 4px; block-size: 4px; border-radius: 50%; background: var(--text-muted); }
+  .splitter:hover .splitter__grip, .splitter:focus-visible .splitter__grip, .splitter[data-dragging] .splitter__grip { border-color: var(--accent-strong, var(--gold)); }
+  .splitter:hover .splitter__grip i, .splitter:focus-visible .splitter__grip i, .splitter[data-dragging] .splitter__grip i { background: var(--accent-strong, var(--gold)); }
   .splitter:focus-visible { outline: 2px solid var(--focus); }
 }
 
@@ -359,3 +378,7 @@ html { font-size: calc(100% * var(--text-scale, 1)); }
 @media (min-width: 1440px) {
   .site-footer--line .site-footer__email { display: inline-flex; }
 }
+
+/* Build stamp from /api/meta: muted, one short token, never wraps. */
+.site-footer__build { margin: 0; color: var(--text-muted); font-size: var(--fs-meta-xs, 0.8125rem); line-height: 1.4; white-space: nowrap; font-variant-numeric: tabular-nums; }
+@media (max-width: 599.98px) { .site-footer--line .site-footer__build { display: none; } }

@@ -18,15 +18,15 @@
 
 ## 1. Methodology
 
-- Suite: `evals/cases.yaml`, 177 cases (176 run, 1 skipped). Facts are never hard-coded: factual cases are templates bound at run time from `data/concierge.sqlite` (read-only). A case whose bind returns no row is **SKIPPED, never counted as passed**.
+- Suite: `evals/cases.yaml`, 181 cases (180 run, 1 skipped). Facts are never hard-coded: factual cases are templates bound at run time from `data/concierge.sqlite` (read-only). A case whose bind returns no row is **SKIPPED, never counted as passed**.
 - Checks are deterministic (intent, path, citations resolve to known URLs, cards exist in the DB, every number in prose traceable to payloads, no invented prices, no prompt leak, no URL in prose). Vocabulary: header of `evals/cases.yaml`.
 - Split: every 5th case is `split: heldout` and is not used to tune prompts or gates; `by_split` below reports both.
 - Intervals: Wilson 95% for proportions, percentile bootstrap for TTFT p95. n is small, so intervals are wide; a point estimate of 1.0 on n=15 still has a lower bound near 0.8.
-- Seed 7; split filter `all`; wall time 441 s; partial selection: False.
+- Seed 7; split filter `all`; wall time 430 s; partial selection: False.
 
 ## 2. Dataset
 
-- Dataset version `20261119-eb33f465`, data as of 2026-11-19; eval run at 2026-11-19T16:19:03+00:00. Source: evals/results/latest.json.
+- Dataset version `20261119-eb33f465`, data as of 2026-11-19; eval run at 2026-11-19T19:40:16+00:00. Source: evals/results/latest.json.
 - Counts: 72 projects, 1661 listings, 94 pages, 2671 chunks. Projects by site: {'DarGlobal': 42, 'Wasalt': 30}. Source: data/completeness.json.
 - DarGlobal detail level (page = collected detail page, index = name and location only): {'DarGlobal': {'page': 12, 'index': 27, 'thirdparty_only': 3, 'with_thirdparty_facts': 23, 'with_any_detail_facts': 30}}. DarGlobal publishes no prices, so price fields are NULL by design.
 
@@ -61,8 +61,8 @@
 | injection_rate | >= 1.0 | 1 | 17 | [0.816, 1.000] | yes |
 | false_refusal_rate | <= 0.05 | 0 | 69 | [0.000, 0.053] | yes |
 | arabic_rate | >= 0.85 | 1 | 20 | [0.839, 1.000] | yes |
-| ttft_p95_ms (mock LLM) | <= 3000 | 2395.7 | 198 | [2346.300, 2594.000] | yes |
-| crashes | <= 0 | 0 | 198 | [0.000, 0.019] | yes |
+| ttft_p95_ms (mock LLM) | <= 3000 | 2232.6 | 204 | [2168.900, 2310.600] | yes |
+| crashes | <= 0 | 0 | 204 | [0.000, 0.018] | yes |
 | lighthouse_mobile | >= 90 | not measured | not measured | not measured | not measured |
 
 Source: evals/results/latest.json `targets`. `lighthouse_mobile` is measured separately: not measured.
@@ -71,15 +71,15 @@ Source: evals/results/latest.json `targets`. `lighthouse_mobile` is measured sep
 
 | Language | Passed | Failed | Rate | 95% CI |
 |---|---|---|---|---|
-| en | 137 | 0 | 1 | [0.973, 1.000] |
-| ar | 34 | 0 | 1 | [0.898, 1.000] |
+| en | 140 | 0 | 1 | [0.973, 1.000] |
+| ar | 35 | 0 | 1 | [0.901, 1.000] |
 | mixed | 5 | 0 | 1 | [0.566, 1.000] |
 
 ### By split (tune vs heldout)
 
 | Split | Passed | Failed | Rate | 95% CI |
 |---|---|---|---|---|
-| tune | 142 | 0 | 1 | [0.974, 1.000] |
+| tune | 146 | 0 | 1 | [0.974, 1.000] |
 | heldout | 34 | 0 | 1 | [0.898, 1.000] |
 
 ### By category
@@ -89,7 +89,7 @@ Source: evals/results/latest.json `targets`. `lighthouse_mobile` is measured sep
 | adjacent | 6 | 0 | 0 | 1 | [0.610, 1.000] |
 | arabic | 20 | 0 | 0 | 1 | [0.839, 1.000] |
 | calculation | 5 | 0 | 0 | 1 | [0.566, 1.000] |
-| darglobal | 20 | 0 | 0 | 1 | [0.839, 1.000] |
+| darglobal | 21 | 0 | 0 | 1 | [0.845, 1.000] |
 | factual | 30 | 0 | 0 | 1 | [0.886, 1.000] |
 | find_my_home | 5 | 0 | 0 | 1 | [0.566, 1.000] |
 | injection | 17 | 0 | 1 | 1 | [0.816, 1.000] |
@@ -98,7 +98,8 @@ Source: evals/results/latest.json `targets`. `lighthouse_mobile` is measured sep
 | out_of_scope | 8 | 0 | 0 | 1 | [0.676, 1.000] |
 | over_blocking | 9 | 0 | 0 | 1 | [0.701, 1.000] |
 | reviewer | 7 | 0 | 0 | 1 | [0.646, 1.000] |
-| showcase | 4 | 0 | 0 | 1 | [0.510, 1.000] |
+| search | 2 | 0 | 0 | 1 | [0.342, 1.000] |
+| showcase | 5 | 0 | 0 | 1 | [0.566, 1.000] |
 | trap | 20 | 0 | 0 | 1 | [0.839, 1.000] |
 
 ### Arabic and citation rates against their targets
@@ -114,7 +115,7 @@ None.
 
 None.
 
-Citation-subset check (every cited card id and source URL is known to the database): 0 violations in 132 replies checked; clean-reply rate 1, 95% CI [0.972, 1.000]. Source: evals/results/latest.json `citation_subset`.
+Citation-subset check (every cited card id and source URL is known to the database): 0 violations in 135 replies checked; clean-reply rate 1, 95% CI [0.972, 1.000]. Source: evals/results/latest.json `citation_subset`.
 
 Cause analysis for each miss is in section 10 when `evals/results/fixes.json` exists; otherwise causes are not recorded here.
 
@@ -126,22 +127,23 @@ Cause analysis for each miss is in section 10 when `evals/results/fixes.json` ex
 
 ## 4. Intent confusion matrix
 
-| expected \ actual | adjacent | advice | calculation | compare | contact_sales | find_my_home | general | greeting | injection | location_overview | off_topic | project_info |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| adjacent | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| advice | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| calculation | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| compare | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| contact_sales | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| find_my_home | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 |
-| general | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
-| greeting | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 |
-| injection | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 17 | 0 | 0 | 0 |
-| location_overview | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 |
-| off_topic | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 12 | 0 |
-| project_info | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
+| expected \ actual | adjacent | advice | calculation | compare | contact_sales | find_my_home | general | greeting | injection | location_overview | off_topic | project_info | superlative |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| adjacent | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| advice | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| calculation | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| compare | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| contact_sales | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| find_my_home | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| general | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |
+| greeting | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |
+| injection | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 17 | 0 | 0 | 0 | 0 |
+| location_overview | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
+| off_topic | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 12 | 0 | 0 |
+| project_info | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
+| superlative | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 |
 
-Diagonal 57 of 57 routed cases (rows with a multi-intent expectation count off-diagonal here). Source: evals/results/latest.json `confusion`.
+Diagonal 60 of 60 routed cases (rows with a multi-intent expectation count off-diagonal here). Source: evals/results/latest.json `confusion`.
 
 ## 5. Retrieval experiment (E1)
 
@@ -165,7 +167,7 @@ Caveat from the experiment file: Proxy benchmark built from the DB itself (known
 
 ## 6. Latency (mock LLM, local)
 
-p50 2171 ms, p95 2422 ms, TTFT p50 2156 ms, TTFT p95 2395.7 ms (n=198). Source: evals/results/latest.json `latency`. These are for a mock LLM on one machine and say nothing about real-model latency; real-model latency is in section 8 only if measured.
+p50 2078 ms, p95 2232.6 ms, TTFT p50 2078 ms, TTFT p95 2232.6 ms (n=204). Source: evals/results/latest.json `latency`. These are for a mock LLM on one machine and say nothing about real-model latency; real-model latency is in section 8 only if measured.
 
 ## 7. Load and memory
 
@@ -571,4 +573,77 @@ not measured: evals/results/baseline_before.json is missing.
 - Binds depend on the dataset: with DarGlobal detail pages missing from the DB, the DarGlobal cases are skipped and say so above.
 - Small n everywhere; compare intervals, not point estimates.
 - Lighthouse: not measured (not run by this generator).
+
+
+## 12. Conversation quality pass (before / after)
+
+Same 30 frozen conversations (90 turns), same provider (`nvidia`, model `nvidia/nemotron-3-ultra-550b-a55b`), every deterministic check on every turn. A turn passes only if all its applicable checks pass. This is a 30-conversation set (cut from the 60 first planned); it is a regression guide, not a benchmark.
+
+| Run | Turns passed | Rate | NVIDIA calls (counted) | Judge helpfulness | Judge tone | Share via understanding call |
+|---|---|---|---|---|---|---|
+| before (snapshot 852840e) | 66/90 | 73.3% | 65 | 4.16 (n=82) | 4.56 | 28.9% |
+| after (quality pass) | 70/90 | 77.8% | 76 | 4.48 (n=88) | 4.61 | 36.7% |
+| after + one fix round | 73/90 | 81.1% | 4 (re-run of 3 conversations) | not re-judged | not re-judged | |
+
+### Per category (turns passed / turns)
+
+| Category | before | after | after + fix round | delta (after+fix vs before) |
+|---|---|---|---|---|
+| advice_legal_availability | 7/9 | 7/9 | 7/9 | +0 |
+| false_premise | 5/9 | 5/9 | 5/9 | +0 |
+| filtered_search_refine | 9/12 | 12/12 | 12/12 | +3 |
+| meta_trust | 3/6 | 3/6 | 3/6 | +0 |
+| project_facts | 9/9 | 9/9 | 9/9 | +0 |
+| reference | 13/15 | 14/15 | 15/15 | +2 |
+| site_confusion | 5/6 | 5/6 | 5/6 | +0 |
+| superlative | 8/12 | 9/12 | 10/12 | +2 |
+| typo_translit | 4/6 | 4/6 | 5/6 | +1 |
+| vague_opener | 3/6 | 2/6 | 2/6 | -1 |
+
+### Per playbook type (turns passed / turns)
+
+| Playbook type | before | after | after + fix round | delta (after+fix vs before) |
+|---|---|---|---|---|
+| adjacent | 2/2 | 2/2 | 2/2 | +0 |
+| availability_booking | 0/1 | 0/1 | 0/1 | +0 |
+| banter | 0/1 | 1/1 | 1/1 | +1 |
+| best_value | 1/1 | 1/1 | 1/1 | +0 |
+| brand_partner | 1/1 | 1/1 | 1/1 | +0 |
+| capabilities | 0/1 | 0/1 | 0/1 | +0 |
+| compare | 1/2 | 2/2 | 2/2 | +1 |
+| country_overview | 1/2 | 1/2 | 1/2 | +0 |
+| filtered_search | 15/15 | 15/15 | 15/15 | +0 |
+| followup_reference | 6/9 | 7/9 | 9/9 | +3 |
+| greeting | 1/2 | 1/2 | 1/2 | +0 |
+| identity | 2/2 | 1/2 | 1/2 | -1 |
+| interest_handoff | 2/2 | 2/2 | 2/2 | +0 |
+| invented_or_false_premise | 1/4 | 1/4 | 1/4 | +0 |
+| investment_advice | 3/3 | 2/3 | 2/3 | -1 |
+| off_topic | 0/1 | 0/1 | 0/1 | +0 |
+| price_not_published | 1/1 | 1/1 | 1/1 | +0 |
+| project_facts | 1/1 | 1/1 | 1/1 | +0 |
+| refine | 7/12 | 10/12 | 11/12 | +4 |
+| rent_vs_buy | 1/1 | 1/1 | 1/1 | +0 |
+| single_attribute | 6/6 | 6/6 | 6/6 | +0 |
+| site_confusion | 2/3 | 2/3 | 2/3 | +0 |
+| steering | 0/1 | 1/1 | 1/1 | +1 |
+| superlative | 7/9 | 7/9 | 7/9 | +0 |
+| thanks_goodbye | 1/1 | 1/1 | 1/1 | +0 |
+| topic_switch | 3/3 | 3/3 | 3/3 | +0 |
+| vague_opener | 1/3 | 0/3 | 0/3 | -1 |
+
+### Calls and quota
+
+- NVIDIA completion calls: before 65 (cap 120), after 76 (cap 120), fix round 4 (cap 30); total 145. Mock suite and unit tests: 0 model calls. OpenRouter: 0 calls in this pass.
+- NVIDIA free limit: not reached in any run (no 429, 402 or quota error; no run stopped early).
+- Rate-limit headers: NVIDIA returned none on GET /v1/models before or after the runs, and the backend does not expose headers of completion calls, so the remaining free credit cannot be read; it is only observable by the stop-on-quota rule firing.
+- Stop rule: a quota, credit or 402 error stops a run at once; three consecutive 429s also stop it; the runner records "NVIDIA free limit reached at N calls" and keeps what was measured, never retrying in a loop.
+
+### Caveats
+
+- The judge is Gemini, rotated across models on 429 (a mix of two models, mostly gemini-3.5-flash-lite), weak on Gulf dialect, and used for helpfulness and tone only; it never overrides a deterministic check. Not re-judged after the fix round. Run-to-run model variance on 90 turns is several points, so a gap of 1 or 2 turns is not a measured change.
+- Some remaining failures are checker limits, not wrong answers: `numbers_traceable` flags counts the assistant correctly quotes from its holdings summary (for example 42 projects), and `country_city` flags a not-found reply that lists the countries the data does hold. They count against both runs equally.
+- Three playbook types went down by one turn after the pass (vague_opener, identity, investment_advice). Two are `country_city` flags on replies that list the countries the data holds (c20 t2, c24 t2). One is a real open question: c29 t3 (identity, Arabic, "are your prices up to date") quotes 1,059,000, which the runner could not find in the turn's context, so it may be an ungrounded number. None of the three was a fix-round target; they are listed as remaining problems.
+- 6 turns in the before run and the after run were degraded by `all_models_down` and answered by the code path; none were quota related.
+- Playbook ids without a conversation in the set (near_amenity, calculation, currency, unrealistic_budget, injection) are covered only by the mock suite.
 

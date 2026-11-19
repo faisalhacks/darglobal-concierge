@@ -13,12 +13,22 @@ function safeExternal(url: string | null | undefined): string | null {
  * where the line under the composer takes over). One disclaimer sentence, short on phones, plus Privacy and, from
  * 600px, the candidate's links. Full (content pages): the longer disclaimer and the same links.
  */
+/** Short build id from /api/meta (field name tolerated: build, build_id, build_stamp); nothing renders when absent. */
+function buildStamp(meta: unknown): string | null {
+  const m = meta as Record<string, unknown> | null;
+  const raw = m?.build ?? m?.build_id ?? m?.build_stamp;
+  const s = typeof raw === "string" || typeof raw === "number" ? String(raw).trim() : "";
+  return s && /^[\w.\-+: ]{1,40}$/.test(s) ? s : null;
+}
+
 export function SiteFooter({ compact = false }: { compact?: boolean }) {
   const { t, lang, meta } = useApp();
   const c = meta?.candidate;
   const github = safeExternal(c?.github);
   const linkedin = safeExternal(c?.linkedin);
   const email = c?.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c.email) ? c.email : null;
+  const build = buildStamp(meta);
+  const stamp = build && <p className="site-footer__build" dir="ltr" lang="en">{shellT(t, lang, "buildLabel")} {build}</p>;
   const hasCandidate = Boolean(c?.name || github || linkedin || email);
   const candidate = hasCandidate && (
     <p className="site-footer__candidate">
@@ -37,6 +47,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
         </p>
         <Link className="site-footer__privacy" href="/privacy/">{t.navPrivacy}</Link>
         {candidate}
+        {stamp}
       </footer>
     );
   }
@@ -46,6 +57,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
       <div className="site-footer__row">
         <Link href="/privacy/">{t.navPrivacy}</Link>
         {candidate}
+        {stamp}
       </div>
     </footer>
   );

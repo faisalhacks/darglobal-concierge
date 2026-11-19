@@ -4,10 +4,12 @@
 
 export type ThemePref = "system" | "light" | "dark";
 export type TextScale = 1 | 1.125;
+export type ChatWidth = "comfortable" | "wide";
 export interface RailLayout { railW: number | null; collapsed: boolean; touched: boolean }
 
 export const THEME_KEY = "concierge.theme";
 export const SCALE_KEY = "concierge.textScale";
+export const CHATW_KEY = "concierge.chatWidth";
 export const LAYOUT_KEY = "concierge.layout";
 export const LANG_KEY = "concierge.lang";
 
@@ -20,7 +22,7 @@ export const SPLIT_MIN_VIEWPORT = 900;
 export const AUTO_COLLAPSE_BELOW = 1280;
 
 /** theme-color per resolved theme; matches --bg in globals.css. */
-export const THEME_COLOR = { dark: "#0c0b0a", light: "#fdfcfa" } as const;
+export const THEME_COLOR = { dark: "#0d131d", light: "#f1ece2" } as const;
 
 export function readStore(key: string): string | null {
   try { return window.localStorage.getItem(key); } catch { return null; }
@@ -37,6 +39,14 @@ export function parseTheme(v: string | null | undefined): ThemePref {
 }
 export function parseScale(v: string | null | undefined): TextScale {
   return v === "1.125" || v === "large" ? 1.125 : 1;
+}
+export function parseChatWidth(v: string | null | undefined): ChatWidth {
+  return v === "wide" ? "wide" : "comfortable";
+}
+export function applyChatWidth(w: ChatWidth): void {
+  const d = document.documentElement;
+  if (w === "wide") d.setAttribute("data-chat-width", "wide");
+  else d.removeAttribute("data-chat-width");
 }
 export function parseLayout(v: string | null | undefined): RailLayout {
   const out: RailLayout = { railW: null, collapsed: false, touched: false };
@@ -110,6 +120,7 @@ d.lang=l;d.dir=l==='ar'?'rtl':'ltr';
 if(!e&&sp&&(q==='ar'||q==='en')&&q!==l){try{sp.set('lang',l);history.replaceState(history.state,'',location.pathname+'?'+sp.toString()+location.hash)}catch(x){}}
 var t=g(ls,'${THEME_KEY}');if(t==='light'||t==='dark')d.setAttribute('data-theme',t);else t='system';
 var sc=g(ls,'${SCALE_KEY}');if(sc==='1.125'||sc==='large'){d.style.setProperty('--text-scale','1.125');d.setAttribute('data-text-scale','large')}
+var cw=g(ls,'${CHATW_KEY}');if(cw==='wide')d.setAttribute('data-chat-width','wide');
 var c=false;try{var o=JSON.parse(g(ls,'${LAYOUT_KEY}')||'null');if(o){if(typeof o.railW==='number'&&o.railW>=${RAIL_MIN}&&o.railW<=${RAIL_MAX})d.style.setProperty('--rail-w',Math.round(o.railW)+'px');c=o.collapsed===true}}catch(x){}
 d.setAttribute('data-rail',c?'collapsed':'open');
 function tc(){var m=document.querySelectorAll('meta[name="theme-color"]');for(var i=0;i<m.length;i++){var md=m[i].getAttribute('media')||'';var own=md.indexOf('light')>=0?'${THEME_COLOR.light}':'${THEME_COLOR.dark}';m[i].setAttribute('content',t==='light'?'${THEME_COLOR.light}':t==='dark'?'${THEME_COLOR.dark}':own)}}

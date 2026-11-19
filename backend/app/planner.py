@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 
 from .arabic import normalize_text
 from .conversation import _VAGUE_WORDS, _INVEST, _LUXURY, _dist, conversational_intent, is_vague, simple_arithmetic, vague_topic
+from .conversation import Memory, has_reference, is_reset, validate_entity_ids
 from .guardrails import is_injection
 from .store import Store
 
@@ -121,6 +122,9 @@ class Plan:
     topic: str | None = None  # vague: luxury | invest | ptype | generic
     adjacent: bool = False  # the message also asks a property-adjacent question (visa, finance, tax ...)
     adjacent_topic: str | None = None  # visa | finance | tax | ownership | living
+    refs: list[str] = field(default_factory=list)  # ids resolved from Memory.last_entities ("the second one")
+    memory: Memory | None = None  # the stateless conversation memory this plan was built with (history present)
+    question_type: str | None = None  # from the understanding call, when it ran (playbook selection, trace)
 
 
 # ---------------- existence gate (SPEC §0 never invent, R7 traps) ----------------
@@ -603,8 +607,8 @@ def _last_user(history: list[dict] | None) -> str | None:
 
 
 _ORDINALS = {"first": 0, "1st": 0, "second": 1, "2nd": 1, "third": 2, "3rd": 2, "fourth": 3, "4th": 3, "last": -1,
-             "الاول": 0, "الثاني": 1, "الثالث": 2, "الرابع": 3, "الاخير": -1}
-_ORDINAL = re.compile(r"(?<![\w])(first|1st|second|2nd|third|3rd|fourth|4th|last|الاول|الثاني|الثالث|الرابع|الاخير)"
+             "frist": 0, "firts": 0, "fisrt": 0, "secnd": 1, "scond": 1, "thrid": 2, "الاول": 0, "الثاني": 1, "الثالث": 2, "الرابع": 3, "الاخير": -1}
+_ORDINAL = re.compile(r"(?<![\w])(first|frist|firts|fisrt|1st|second|secnd|scond|2nd|third|thrid|3rd|fourth|4th|last|الاول|الثاني|الثالث|الرابع|الاخير)"
                       r"(?![\w])(?:\s+(?:one|project|ones?|المشروع|مشروع))?")
 _CHEAPER = re.compile(r"(?<![a-z])(cheaper|cheapest|less expensive|lower price|more affordable)(?![a-z])|ارخص|اقل سعر")
 _AREA = re.compile(r"(\d[\d,]*(?:\.\d+)?)\s*(m2|m²|sqm|sq\.? ?m|square met(?:er|re)s?|م2|متر(?: مربع)?)", re.I)
@@ -801,26 +805,102 @@ def superlative(norm: str) -> str | None:
 
 
 _CTX_FIELDS = ("property_type", "city", "country", "listing_type", "site", "beds", "brand")
+# Intents whose entities describe a property request; small talk, calculations and guard intents never feed memory.
+_MEMORY_INTENTS = ("search", "location_overview", "brand_partner", "project_info", "compare", "superlative", "vague",
+                   "general", "find_my_home")
+_LISTING_ONLY = ("property_type", "beds", "budget_max", "currency", "listing_type")
 
 
-def carried_context(history: list[dict] | None, store: Store) -> tuple[dict, bool]:
-    """(entity fields, projects_level) from the most recent earlier user message that set any of them."""
-    for turn in reversed([h for h in (history or []) if h.get("role") == "user"][-4:]):
+def carried_context(history: list[dict] | None, store: Store, last_entities: list[str] | None = None,
+                    reset: bool = False) -> Memory:
+    """Stateless Memory (docs/CONTRACT_QUALITY.md §1), rebuilt from the client's history on every request.
+
+    Each earlier user turn is re-planned in code (no history, no model) and merged oldest to newest: an explicit
+    new value wins, a new country clears the city, a reset phrase ("forget that", "something else") clears
+    everything, and a projects-level turn ("projects in Dubai") drops the listing-only filters. `last_entities` are
+    ids only, validated against the store; without them the ids come from the project names in the last assistant
+    turn (server-side text, in order of mention). `reset=True` (from the understanding call) clears everything.
+    """
+    mem = Memory()
+    if reset:
+        mem.clear()
+        return mem
+    turns = list(history or [])
+    for turn in [h for h in turns if h.get("role") == "user"][-6:]:
         m = turn.get("content") or ""
-        if superlative(normalize_text(m)):
+        norm = normalize_text(m)
+        if not norm:
             continue
+        if is_reset(norm):
+            mem.clear()
+            mem.reset = False  # cleared in the past; `reset` reports this request only
         pe = plan(m, store, None, {"_skip_adjacent": True})
-        got = {k: getattr(pe.entities, k) for k in _CTX_FIELDS if getattr(pe.entities, k, None) is not None}
-        if got:
-            proj = pe.intent in ("location_overview", "brand_partner") and "property_type" not in got                 or got.get("site") == "DarGlobal"
-            return got, proj
-    return {}, False
+        mem.last_intent = pe.intent
+        if pe.intent not in _MEMORY_INTENTS:
+            continue
+        e = pe.entities
+        got = {k: getattr(e, k, None) for k in _CTX_FIELDS + ("budget_max", "currency")}
+        got = {k: v for k, v in got.items() if v is not None}
+        if not got:
+            continue
+        explicit = _any(PROJECT_WORDS, norm) or got.get("site") == "DarGlobal" or pe.intent == "brand_partner"
+        cont = bool(_CONTINUE.search(norm)) and not explicit
+        if pe.intent == "superlative":
+            proj = pe.text == "projects"
+        elif cont:
+            proj = mem.projects_level  # "and in Oman?": the same request in a new place, the level is kept
+        else:
+            proj = (pe.intent in ("location_overview", "brand_partner") and "property_type" not in got
+                    or got.get("site") == "DarGlobal")
+        if proj and not cont and not any(k in got for k in _LISTING_ONLY):
+            for k in _LISTING_ONLY:
+                setattr(mem, k, None)
+        mem.merge(got)
+        mem.projects_level = proj
+    ids = validate_entity_ids(last_entities or [], store)
+    if not ids:
+        last_a = next((h.get("content") or "" for h in reversed(turns) if h.get("role") == "assistant"), "")
+        ids = extract_projects(normalize_text(last_a), store)[:6] if last_a else []
+    mem.last_entities = ids
+    return mem
 
 
-def plan(message: str, store: Store, history: list[dict] | None = None, flags: dict | None = None) -> Plan:
+def _fill_from(ent: Entities, src, keys) -> None:
+    """Fill the empty fields of `ent` from `src` (an Entities or a Memory). A new country in the current message
+    never inherits the remembered city (or place)."""
+    country_changed = bool(ent.country) and normalize_text(ent.country or "") != normalize_text(
+        getattr(src, "country", None) or "")
+    for k in keys:
+        if k in ("city", "place") and country_changed:
+            continue
+        if getattr(ent, k, None) in (None, False) and getattr(src, k, None) is not None:
+            setattr(ent, k, getattr(src, k))
+
+
+def plan(message: str, store: Store, history: list[dict] | None = None, flags: dict | None = None,
+         last_entities: list[str] | None = None) -> Plan:
+    """`last_entities`: ids of the cards shown on the previous turn (client-sent, validated in carried_context)."""
+    pl = _plan(message, store, history, flags, last_entities)
+    return pl
+
+
+def _plan(message: str, store: Store, history: list[dict] | None, flags: dict | None,
+          last_entities: list[str] | None) -> Plan:
     flags = flags or {}
     norm = normalize_text(message)
     ent = extract_entities(message, store)
+    _mem: list[Memory] = []
+
+    def memory() -> Memory:
+        """Built once, only on the branches that use it (history present); a reset phrase now clears it."""
+        if not _mem:
+            _mem.append(carried_context(history, store, last_entities, reset=is_reset(norm)))
+        return _mem[0]
+
+    def done(p_: Plan) -> Plan:
+        if _mem:
+            p_.memory = _mem[0]
+        return p_
 
     if is_injection(message):
         return Plan("injection", ent)
@@ -884,7 +964,11 @@ def plan(message: str, store: Store, history: list[dict] | None = None, flags: d
 
     sup = superlative(norm)
     if sup and not ent.project_ids and len(norm.split()) <= 9:
-        ctx, proj_ctx = carried_context(history, store)
+        mem = memory() if history else Memory()
+        ctx = {k: getattr(mem, k) for k in _CTX_FIELDS if getattr(mem, k, None) is not None}
+        if ent.country and normalize_text(ent.country) != normalize_text(mem.country or ""):
+            ctx.pop("city", None)  # a new country clears the remembered city
+        proj_ctx = mem.projects_level
         own = ent.property_type or ent.city or ent.country or ent.listing_type or ent.site
         if sup != "price_asc" or ctx or own and history:
             for k, v in ctx.items():
@@ -894,11 +978,17 @@ def plan(message: str, store: Store, history: list[dict] | None = None, flags: d
             pl = Plan("superlative", ent, follow_up=bool(ctx), topic=sup)
             pl.text = "projects" if (ent.site == "DarGlobal" or (proj_ctx and not ent.property_type)
                                      or _any(PROJECT_WORDS, norm)) else "listings"
-            return pl
+            return done(pl)
 
     if history and not ent.project_ids:
         prev = _last_user(history)
         prev_plan = plan(prev, store) if prev else None
+        if prev and _CONTINUE.search(normalize_text(prev)):
+            # The previous user turn was itself a continuation ("what about Jeddah"): its standalone plan is a bare
+            # place question, so plan it against the history before it ("and Madinah?" then keeps type and beds).
+            idx = max((i for i, t_ in enumerate(history) if t_.get("role") == "user"), default=0)
+            if idx > 0:
+                prev_plan = plan(prev, store, history[:idx])
         # "What is its price?" after asking about a name that is not in the data: still not in the data.
         if prev_plan and prev_plan.unknown and _any(FOLLOW_UP, norm):
             return Plan("general", ent, follow_up=True, unknown=prev_plan.unknown,
@@ -907,32 +997,38 @@ def plan(message: str, store: Store, history: list[dict] | None = None, flags: d
         short = len(norm.split()) <= 6
         # "the second one", "tell me about the first": the n-th project named in the last assistant turn
         m_ord = _ORDINAL.search(norm)
-        if short and m_ord:
-            last_a = next((h.get("content") or "" for h in reversed(history) if h.get("role") == "assistant"), "")
-            ids = extract_projects(normalize_text(last_a), store)
+        if short and m_ord and not _any(COMPARE, norm):  # "compare the first and the third" is below
+            # Memory.last_entities: the client's card ids (validated) or, without them, the project names in the
+            # last assistant turn in order of mention.
+            ids = memory().last_entities
             k = _ORDINALS[m_ord.group(1)]
             if ids and (k == -1 or k < len(ids)):
-                ent.project_ids = [ids[k]]
-                return Plan("project_info", ent, follow_up=True)
-        if prev_plan and short and prev_plan.intent == "search" and (
+                rid = ids[k]
+                if store.project_by_id(rid):
+                    ent.project_ids = [rid]
+                    return done(Plan("project_info", ent, follow_up=True, refs=[rid]))
+                # A listing card: the id is resolved; answering it is the answer layer's job.
+                return done(Plan("general", ent, follow_up=True, refs=[rid]))
+        if prev_plan and short and prev_plan.intent == "search" and not is_reset(norm) and (
                 ent.sort or _CHEAPER.search(norm) or ent.beds is not None or ent.budget_max is not None):
-            # "cheaper ones?", "only 3 beds", "under 1M": the previous search with one filter changed
-            pe = prev_plan.entities
-            for k in ("city", "country", "place", "listing_type", "beds", "budget_min", "budget_max", "currency",
-                      "property_type", "baths", "area_m2"):
-                if getattr(ent, k) in (None, False):
-                    setattr(ent, k, getattr(pe, k))
+            # "cheaper ones?", "only 3 beds", "under 1M": the previous search with one filter changed; anything
+            # the previous message did not say comes from the conversation memory.
+            keys = ("city", "country", "place", "listing_type", "beds", "budget_min", "budget_max", "currency",
+                    "property_type", "baths", "area_m2")
+            _fill_from(ent, prev_plan.entities, keys)
+            _fill_from(ent, memory(), keys)
             if _CHEAPER.search(norm):
                 ent.sort = "price_asc"
-            return Plan("search", ent, follow_up=True)
+            return done(Plan("search", ent, follow_up=True))
         if prev_plan and short and prev_plan.intent in ("location_overview", "search", "brand_partner"):
             pe = prev_plan.entities
-            if (ent.city or ent.country) and _CONTINUE.search(norm):
-                for k in ("listing_type", "beds", "budget_min", "budget_max", "currency", "property_type", "site",
-                          "brand"):
-                    if getattr(ent, k) is None:
-                        setattr(ent, k, getattr(pe, k))
-                return Plan(prev_plan.intent, ent, follow_up=True)
+            if (ent.city or ent.country) and _CONTINUE.search(norm) and not is_reset(norm):
+                # "what about Jeddah": same request in a new place; type, budget, beds and buy/rent are kept.
+                keys = ("listing_type", "beds", "budget_min", "budget_max", "currency", "property_type", "site",
+                        "brand")
+                _fill_from(ent, pe, keys)
+                _fill_from(ent, memory(), keys)
+                return done(Plan(prev_plan.intent, ent, follow_up=True))
             if ent.site and not (ent.city or ent.country):
                 ent.city, ent.country, ent.place = pe.city, pe.country, pe.place
                 ent.listing_type = ent.listing_type or pe.listing_type
@@ -940,6 +1036,15 @@ def plan(message: str, store: Store, history: list[dict] | None = None, flags: d
                 return Plan(intent, ent, follow_up=True)
 
     follow_up = False
+    if not ent.project_ids and history and _any(COMPARE, norm) and has_reference(norm):
+        # "compare them", "compare the first and the third": projects shown on the previous turn
+        projs = [i for i in memory().last_entities if store.project_by_id(i)]
+        picks = [projs[k] for k in (_ORDINALS[m.group(1)] for m in _ORDINAL.finditer(norm))
+                 if projs and (k == -1 or k < len(projs))]
+        picks = list(dict.fromkeys(picks)) if len(set(picks)) >= 2 else projs[:2]
+        if len(picks) >= 2:
+            ent.project_ids = picks[:2]
+            return done(Plan("compare", ent, follow_up=True, refs=picks[:2]))
     if not ent.project_ids and history and _any(FOLLOW_UP, norm):
         for turn in reversed(history[-8:]):
             ids = extract_projects(normalize_text(turn.get("content") or ""), store)

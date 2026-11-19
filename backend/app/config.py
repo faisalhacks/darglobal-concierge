@@ -101,7 +101,14 @@ class Settings:
             return False
         if self.llm_mode == "mock":
             return True
-        return bool(self.openrouter_api_key)
+        return bool(self.openrouter_api_key) or self.backup_configured
+
+    @property
+    def backup_configured(self) -> bool:
+        """NVIDIA backup writer switched on (BACKUP_PROVIDER=nvidia + NVIDIA_API_KEY): the LLM path stays open
+        even when the primary has no key or is in quota."""
+        return (os.environ.get("BACKUP_PROVIDER") or "").strip().lower() == "nvidia" \
+            and bool((os.environ.get("NVIDIA_API_KEY") or "").strip())
 
 
 def _rate_limit() -> tuple[int, int]:

@@ -225,7 +225,7 @@ const SAMPLE_EVALS = {
 function meta() {
   const dgDetail = DG.filter((p) => p.detail === "page").length;
   return {
-    dataset_version: VERSION, data_as_of: AS_OF,
+    dataset_version: VERSION, data_as_of: AS_OF, build: "mock-a1b2c3d",
     counts: { projects: 30 + DG.length, listings: 1661, pages: 67, chunks: 2389 },
     counts_by_site: { DarGlobal: { projects: DG.length, listings: 0 }, Wasalt: { projects: 30, listings: 1661 } },
     coverage: {

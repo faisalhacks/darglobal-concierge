@@ -9,6 +9,7 @@ only and goes only into the Authorization header; it is never logged and never s
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
@@ -58,7 +59,8 @@ class BackupConfig:
 
 
 class BackupLLM:
-    """Wraps the primary client. Everything but `stream` is delegated untouched (no backup for JSON / tool calls)."""
+    """Wraps the primary client. `stream`, `complete_json` and `tool_call` fall back to NVIDIA (primary tried
+    once first); everything else is delegated untouched."""
 
     def __init__(self, primary, cfg: BackupConfig, first_token_s: float = 8.0, total_s: float = 30.0,
                  transport: httpx.AsyncBaseTransport | None = None, clock=time.monotonic, day=_utc_day):
@@ -91,6 +93,64 @@ class BackupLLM:
         self.fails += 1
         if self.fails >= BREAKER_FAILS:
             self.open_until, self.fails = self._clock() + BREAKER_COOLDOWN_S, 0
+
+    # ---------------------------------------------------------------- non-streaming (understanding JSON, tool call)
+    async def _post_nv(self, body: dict, rec: LLMResult, timeout_s: float) -> dict | None:
+        """One non-streaming NVIDIA call, thinking off, counted against the backup budget. None on any failure."""
+        if not self.available():
+            return None
+        body = {**body, "model": self.cfg.model, "stream": False, "chat_template_kwargs": {"enable_thinking": False}}
+        rec.calls += 1
+        self._roll()
+        self.used += 1
+        t0 = self._clock()
+        try:
+            async with httpx.AsyncClient(timeout=httpx.Timeout(connect=5.0, read=timeout_s, write=10.0, pool=5.0),
+                                         transport=self.transport) as client:
+                resp = await asyncio.wait_for(client.post(
+                    f"{self.cfg.base_url}/chat/completions", json=body,
+                    headers={"Authorization": f"Bearer {self.cfg.api_key}", "Content-Type": "application/json"}),
+                    timeout=timeout_s)
+            if resp.status_code != 200:
+                self._fail()
+                return None
+            obj = resp.json()
+            msg = obj["choices"][0]["message"]
+        except (httpx.HTTPError, asyncio.TimeoutError, ValueError, KeyError, IndexError, TypeError):
+            self._fail()
+            return None
+        finally:
+            log.info("backup non-stream ms=%d", int((self._clock() - t0) * 1000))
+        self.fails = 0
+        rec.model = obj.get("model") or self.cfg.model
+        rec.provider = "nvidia-backup"
+        return msg
+
+    async def complete_json(self, messages: list[dict], rec: LLMResult, max_tokens: int = 400) -> str | None:
+        before = rec.model
+        out = await self.primary.complete_json(messages, rec, max_tokens=max_tokens)
+        if out is not None or rec.model != before or not self.cfg.enabled:
+            return out  # answered, or the primary was healthy (empty / unparseable is not a quota event)
+        msg = await self._post_nv({"messages": messages, "temperature": 0, "max_tokens": max_tokens,
+                                   "response_format": {"type": "json_object"}}, rec, self.first_token_s + 4)
+        return (msg or {}).get("content") or None
+
+    async def tool_call(self, messages: list[dict], tools: list[dict], rec: LLMResult) -> dict | None:
+        before = rec.model
+        out = await self.primary.tool_call(messages, tools, rec)
+        if out is not None or rec.model != before or not self.cfg.enabled:
+            return out
+        msg = await self._post_nv({"messages": messages, "tools": tools, "tool_choice": "auto",
+                                   "temperature": 0, "max_tokens": 200}, rec, self.first_token_s)
+        try:
+            tc = (msg or {}).get("tool_calls") or []
+            if not tc:
+                return None
+            fn = tc[0]["function"]
+            args = json.loads(fn.get("arguments") or "{}")
+            return {"name": fn["name"], "arguments": args if isinstance(args, dict) else {}}
+        except (ValueError, KeyError, IndexError, TypeError):
+            return None
 
     # ---------------------------------------------------------------- stream
     async def stream(self, messages: list[dict], rec: LLMResult, max_tokens: int = 1200,

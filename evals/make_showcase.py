@@ -94,7 +94,8 @@ def load_case_checks(cases_path: str) -> dict[str, dict]:
 def sources_in(results_dir: str) -> list[dict]:
     """Live files first (preferred), then latest.json."""
     srcs = []
-    for p in sorted(glob.glob(os.path.join(results_dir, "live_*.json"))):
+    order = {"live_nvidia.json": 0, "live_openrouter.json": 1, "live_subset.json": 2}  # NVIDIA answers first
+    for p in sorted(glob.glob(os.path.join(results_dir, "live_*.json")), key=lambda x: (order.get(os.path.basename(x), 9), x)):
         d = _load(p)
         if d and isinstance(d.get("cases"), list):
             srcs.append({"path": p, "data": d, "live": True, "llm_mode": "live"})
@@ -179,6 +180,20 @@ def _failed_keys(case: dict, keys: list[str]) -> set[str]:
     return {k for k in keys if k.lower() in txt}
 
 
+def source_label(src: dict, case: dict, turn: dict) -> dict:
+    """provider/model/label of the run that produced a record, from the result file only."""
+    d = src["data"]
+    if src["llm_mode"] != "live":
+        return {"provider": None, "model": None, "label": "model mocked"}
+    rc = d.get("run_context") or {}
+    prov = rc.get("llm_provider") or "openrouter"  # live_subset.json predates the field and was an OpenRouter run
+    model = turn.get("model") or case.get("model")  # per card: only when a model wrote this answer
+    via = {"nvidia": "NVIDIA API", "openrouter": "OpenRouter"}.get(prov, prov)
+    if not model:  # the answer on this card was built by code; the run was still live
+        return {"provider": prov, "model": None, "label": f"live run via {via}; answer built by code"}
+    return {"provider": prov, "model": model, "label": f"live model: {model} via {via}"}
+
+
 def _gallery_entry(cat_key: str, case: dict, src: dict, checks: dict) -> dict:
     d, turns = src["data"], case["turns"]
     last = turns[-1]
@@ -199,7 +214,7 @@ def _gallery_entry(cat_key: str, case: dict, src: dict, checks: dict) -> dict:
                   "latency_ms": case.get("latency_ms")},
         "passed": bool(case.get("passed")), "failures": case.get("failures") or [],
         "checks": [{"key": k, "ok": k not in bad} for k in checks],
-        "source": {"llm_mode": src["llm_mode"], "label": "live model" if live else "model mocked",
+        "source": {"llm_mode": src["llm_mode"], **source_label(src, case, last),
                    "host": urlparse(base).netloc if isinstance(base, str) and base else None,
                    "run_at": d.get("run_at"), "file": _rel(src["path"]), "dataset_version": d.get("dataset_version")},
     }

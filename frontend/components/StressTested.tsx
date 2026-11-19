@@ -24,7 +24,7 @@ export interface GalleryEntry {
   id: string; category: string; lang?: string; questions: string[]; reply_excerpt: string; reply_truncated?: boolean;
   cards_count: number; sources_count: number; trace: ShowcaseScenario["trace"]; passed: boolean; failures?: string[];
   checks: { key: string; ok: boolean }[];
-  source: { llm_mode?: string | null; label?: string; host?: string | null; run_at?: string | null; file?: string };
+  source: { llm_mode?: string | null; label?: string; provider?: string | null; model?: string | null; host?: string | null; run_at?: string | null; file?: string };
 }
 export interface GalleryCategory { id: string; label: L10n; entries: GalleryEntry[] }
 export interface Gallery { categories?: GalleryCategory[]; excerpt_chars?: number; stats?: { entries?: number; categories?: number; passed?: number; failed?: number } }
@@ -309,13 +309,14 @@ function GalleryBlock() {
   if (state === "ready" && cats.length === 0) return <FullBlock />; // older showcase.json without a gallery
   const all = cats.flatMap((c) => c.entries.map((e) => ({ e, c })));
   const shown = cat === "all" ? all : all.filter((x) => x.c.id === cat);
-  const srcName = (m?: string | null) => (m === "live" ? s.srcLive : s.srcMock);
+  const srcName = (e: { source?: { llm_mode?: string | null; label?: string } }) =>
+    e.source?.llm_mode === "live" ? (lang === "en" && e.source.label ? e.source.label : s.srcLive) : s.srcMock;
   const day = (iso?: string | null) => {
     const d = iso ? new Date(iso) : null;
     return d && !Number.isNaN(d.getTime()) ? new Intl.DateTimeFormat(lang === "ar" ? "ar-SA-u-nu-latn" : "en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(d) : "";
   };
   const groups = new Set<string>();
-  all.forEach(({ e }) => groups.add(`${srcName(e.source?.llm_mode)} ${s.on} ${day(e.source?.run_at)}`));
+  all.forEach(({ e }) => groups.add(`${srcName(e)} ${s.on} ${day(e.source?.run_at)}`));
   const passed = all.filter((x) => x.e.passed).length;
   return (
     <section className="stress stress--full gal" id="stress-tested" aria-labelledby="stress-tested-h" lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
@@ -374,7 +375,7 @@ function GalleryBlock() {
                     <li>{s.sources(e.sources_count ?? 0)}</li>
                   </ul>
                   <div className="stress__foot">
-                    {when && <p className="stress__captured">{s.capturedSrc(srcName(e.source?.llm_mode))}<time dateTime={when}>{fmtWhen(when, lang)}</time></p>}
+                    {when && <p className="stress__captured">{s.capturedSrc(srcName(e))}<time dateTime={when}>{fmtWhen(when, lang)}</time></p>}
                     {qs[0] && (qs.length > 1
                       ? <span className="gal__try"><TryLive q={qs[0]} s={s} onHome={false} /><span className="stress__captured">{s.firstTurn}</span></span>
                       : <TryLive q={qs[0]} s={s} onHome={false} />)}

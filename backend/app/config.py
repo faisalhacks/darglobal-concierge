@@ -16,6 +16,13 @@ FLAGS_ON_BY_DEFAULT = ("FF_FIND_MY_HOME",)
 # Live check 2026-11-19: nemotron answered (finish=stop, 0 reasoning chars with exclude); gemma-4-31b sent nothing
 # for 30 s. Nemotron first, gemmas after; one model per request, hops are client-side under the first-token limit.
 DEFAULT_MODELS = "nvidia/nemotron-3-ultra-550b-a55b:free,google/gemma-4-31b-it:free,google/gemma-4-26b-a4b-it:free"  # docs/MODEL_ROUTER.md order; nemotron first spent max_tokens on hidden reasoning (finish=length, 0 chars)
+# EVAL-ONLY answer provider (never set in the Dockerfile or any deploy config; a test pins that). When
+# EVAL_LLM_PROVIDER=nvidia the same client, router, prompts, timeouts and guardrails talk to NVIDIA's
+# OpenAI-compatible endpoint with NVIDIA_API_KEY, because OpenRouter's free tier allows ~50 requests/day.
+# The model is the NVIDIA-hosted id of production's nvidia/nemotron-3-ultra (exact id confirmed against
+# GET /v1/models on 2026-11-19); override with EVAL_LLM_MODEL.
+EVAL_NVIDIA_BASE_URL = "https://integrate.api.nvidia.com/v1"
+EVAL_NVIDIA_MODEL = "nvidia/nemotron-3-ultra-550b-a55b"
 EMBED_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
 
@@ -72,8 +79,14 @@ class Settings:
     llm_quota_cooldown_s: float = 1800.0  # 402 / daily free cap -> quota state this long (or until X-RateLimit-Reset)
     llm_boot_model_check: bool = True  # GET /models at boot (free, no completion) and drop unlisted / non-free models
     answer_cache_path: str = "data/answer_cache.json"  # baked, read-only answer cache (backend/scripts/warm_cache.py)
+    eval_llm_provider: str = ""  # "" (production: OpenRouter) | "nvidia" (eval only)
     flags: dict[str, bool] = field(default_factory=dict)
     candidate: dict[str, str | None] = field(default_factory=dict)
+
+    @property
+    def llm_provider(self) -> str:
+        """openrouter | nvidia: where answers actually come from (nvidia only with the eval override)."""
+        return "nvidia" if self.eval_llm_provider == "nvidia" else "openrouter"
 
     @property
     def llm_mode_label(self) -> str:
@@ -111,13 +124,24 @@ def load_settings() -> Settings:
         if local not in origins:
             origins.append(local)
     total = _float("LLM_TIMEOUT_S", 30.0)
+    provider = os.environ.get("EVAL_LLM_PROVIDER", "").strip().lower()
+    provider = provider if provider == "nvidia" else ""
+    if provider:
+        api_key = (os.environ.get("NVIDIA_API_KEY") or "").strip() or None
+        base_url = EVAL_NVIDIA_BASE_URL
+        models = [(os.environ.get("EVAL_LLM_MODEL") or EVAL_NVIDIA_MODEL).strip()]
+    else:
+        api_key = (os.environ.get("OPENROUTER_API_KEY") or "").strip() or None
+        base_url = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
+        models = [m.strip() for m in os.environ.get("OPENROUTER_MODELS", DEFAULT_MODELS).split(",") if m.strip()]
     return Settings(
         data_path=os.environ.get("DATA_PATH", "data/concierge.sqlite"),
         index_dir=os.environ.get("INDEX_DIR", "data/index"),
         static_dir=os.environ.get("STATIC_DIR", "/app/static"),
-        openrouter_api_key=(os.environ.get("OPENROUTER_API_KEY") or "").strip() or None,
-        openrouter_models=[m.strip() for m in os.environ.get("OPENROUTER_MODELS", DEFAULT_MODELS).split(",") if m.strip()],
-        openrouter_base_url=os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"),
+        openrouter_api_key=api_key,
+        openrouter_models=models,
+        openrouter_base_url=base_url,
+        eval_llm_provider=provider,
         app_url=app_url,
         allowed_origins=origins,
         rate_limit_n=n,

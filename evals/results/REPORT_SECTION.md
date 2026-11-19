@@ -1,8 +1,8 @@
 ## Evaluation results
 
-- Run at: 2026-11-19T15:33:17+00:00  |  Target: `http://localhost:8002`  |  Dataset: `20261119-eb33f465` (as of 2026-11-19)
+- Run at: 2026-11-19T16:19:03+00:00  |  Target: `http://localhost:8019`  |  Dataset: `20261119-eb33f465` (as of 2026-11-19)
 - LLM available at run time: **True**  |  models: ['nvidia/nemotron-3-ultra-550b-a55b:free', 'google/gemma-4-31b-it:free', 'google/gemma-4-26b-a4b-it:free']
-- Result: **170 passed, 0 failed, 1 skipped**
+- Result: **176 passed, 0 failed, 1 skipped**
 
 ### Scores vs targets
 
@@ -14,7 +14,7 @@
 | injection_rate | >= 1.0 | 1.0 | yes |
 | false_refusal_rate | <= 0.05 | 0.0 | yes |
 | arabic_rate | >= 0.85 | 1.0 | yes |
-| ttft_p95_ms | <= 3000 | 2390.5 | yes |
+| ttft_p95_ms | <= 3000 | 2395.7 | yes |
 | crashes | <= 0 | 0 | yes |
 | lighthouse_mobile | >= 90 | n/a | n/a |
 
@@ -22,6 +22,7 @@
 
 | Category | Passed | Failed | Skipped | Rate |
 |---|---|---|---|---|
+| adjacent | 6 | 0 | 0 | 1.0 |
 | arabic | 20 | 0 | 0 | 1.0 |
 | calculation | 5 | 0 | 0 | 1.0 |
 | darglobal | 20 | 0 | 0 | 1.0 |
@@ -38,7 +39,7 @@
 
 ### Latency (ms)
 
-p50 2156.5  |  p95 2406.0  |  TTFT p50 2156.0  |  TTFT p95 2390.5  (n=190)
+p50 2171.0  |  p95 2422.0  |  TTFT p50 2156.0  |  TTFT p95 2395.7  (n=198)
 
 ### Failures (to be fixed and re-run)
 
@@ -84,6 +85,9 @@ p50 2156.5  |  p95 2406.0  |  TTFT p50 2156.0  |  TTFT p95 2390.5  (n=190)
  },
  "calculation": {
   "calculation": 5
+ },
+ "adjacent": {
+  "adjacent": 5
  }
 }
 ```
@@ -92,6 +96,6 @@ p50 2156.5  |  p95 2406.0  |  TTFT p50 2156.0  |  TTFT p95 2390.5  (n=190)
 
 - Numbers checks use retrieved/card ids from the trace; they are a proxy for 'in context'.
 - live_sample cases are sampled from the DB (scraped from live sites); the runner never contacts the live sites.
-- Arabic judge scores appear only when OPENROUTER_API_KEY was set and the run is not live; otherwise Arabic is deterministic-only.
+- Judge scores (Gemini, --judge gemini) are reported separately and never change a deterministic pass/fail; without the flag every check is deterministic.
 - CIs: Wilson 95% for proportions, percentile bootstrap for TTFT p95. n is small, so intervals are wide.
 - llm_calls_counted counts every attempt (retries included) as one request: a ceiling, not a measurement.

@@ -130,6 +130,8 @@ class OpenRouterClient:
         return httpx.AsyncClient(timeout=timeout, transport=self.transport)
 
     def _headers(self) -> dict:
+        if self.s.llm_provider == "nvidia":
+            return {"Authorization": f"Bearer {self.s.openrouter_api_key}", "Content-Type": "application/json"}
         h = {"Authorization": f"Bearer {self.s.openrouter_api_key}", "Content-Type": "application/json",
              "X-Title": "Property Concierge (candidate prototype)",
              # Layer 5: OpenRouter response cache (byte-identical requests only; our own caches are the bigger win).
@@ -137,6 +139,20 @@ class OpenRouterClient:
         if self.s.app_url:
             h["HTTP-Referer"] = self.s.app_url
         return h
+
+    def _wire(self, body: dict) -> dict:
+        """EVAL-ONLY NVIDIA override: same request, spelled for a plain OpenAI-compatible endpoint (one `model`,
+        no OpenRouter-only fields). Production (OpenRouter) bodies pass through untouched."""
+        if self.s.llm_provider != "nvidia":
+            return body
+        b = dict(body)
+        b["model"] = (b.pop("models", None) or self.s.openrouter_models)[0]
+        b.pop("provider", None)
+        if b.pop("reasoning", None) is not None:
+            # production asks OpenRouter for reasoning effort=low + exclude and measured 0 reasoning chars; NVIDIA's
+            # endpoint spends 8 s+ on hidden reasoning (tripping the 8 s first-token limit), so thinking is switched off
+            b["chat_template_kwargs"] = {"enable_thinking": False}
+        return b
 
     def _on_failure(self, models: list[str], kind: str, scope: str, retry: float | None, reset: float | None):
         if scope == "account_day":
@@ -170,7 +186,7 @@ class OpenRouterClient:
         try:
             async with self._client() as client:
                 async with client.stream("POST", f"{self.s.openrouter_base_url}/chat/completions",
-                                         headers=self._headers(), json=body) as resp:
+                                         headers=self._headers(), json=self._wire(body)) as resp:
                     if resp.status_code != 200:
                         raw = await resp.aread()
                         kind, scope, retry, reset = classify_error(resp.status_code, resp.headers, raw)
@@ -286,7 +302,7 @@ class OpenRouterClient:
         try:
             async with self._client() as client:
                 resp = await asyncio.wait_for(
-                    client.post(f"{self.s.openrouter_base_url}/chat/completions", headers=self._headers(), json=body),
+                    client.post(f"{self.s.openrouter_base_url}/chat/completions", headers=self._headers(), json=self._wire(body)),
                     timeout=self.s.llm_first_token_timeout_s + 4)
         except (httpx.HTTPError, asyncio.TimeoutError):
             self.router.fail(models[0], "timeout")
@@ -320,7 +336,7 @@ class OpenRouterClient:
         try:
             async with self._client() as client:
                 resp = await asyncio.wait_for(
-                    client.post(f"{self.s.openrouter_base_url}/chat/completions", headers=self._headers(), json=body),
+                    client.post(f"{self.s.openrouter_base_url}/chat/completions", headers=self._headers(), json=self._wire(body)),
                     timeout=self.s.llm_first_token_timeout_s)
         except (httpx.HTTPError, asyncio.TimeoutError):
             if models:
@@ -346,6 +362,8 @@ class OpenRouterClient:
     async def check_models(self) -> list[str]:
         """Layer 1 boot check: GET the public model list (no completion, so no quota is spent) and drop pool
         members that are gone or no longer free. Returns removed ids; network errors change nothing."""
+        if self.s.llm_provider == "nvidia":
+            return []  # eval override: NVIDIA's list has no pricing; the single pinned model is used as configured
         try:
             async with httpx.AsyncClient(timeout=httpx.Timeout(8.0), transport=self.transport) as client:
                 resp = await client.get(f"{self.s.openrouter_base_url}/models")

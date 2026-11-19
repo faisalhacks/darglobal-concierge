@@ -18,7 +18,10 @@ runner.py attaches to it), so the dataset id and the passed/failed/skipped count
 
 Optional inputs (all optional):
   evals/results/latest.json            full-suite run (mock LLM unless run_context.llm_mode says otherwise)
-  evals/results/live_subset.json       the real-model run (runner.py --max-llm-calls N; e.g. --only R1,R2,R3,R4,R5,R6,R7
+  evals/results/live_nvidia.json       answer-quality run: same Nemotron model via NVIDIA's API (EVAL_LLM_PROVIDER=nvidia), Gemini judge
+  evals/results/live_openrouter.json   production-path check: normal OpenRouter config, R1-R7 + 3 LLM-path cases
+  evals/results/judge_agreement.json   Gemini judge vs 20 hand labels (evals/judge_agreement.py)
+  evals/results/live_subset.json       the older real-model run (used only when live_openrouter.json is absent) (runner.py --max-llm-calls N; e.g. --only R1,R2,R3,R4,R5,R6,R7
                                        against the public URL). Every case with an answer is printed verbatim in section 8b.
   evals/results/E1.json                retrieval experiment; E1_before_headers.json / E1_after_headers.json for the A/B
   evals/results/baseline_before.json   the run used as 'before' in the failures table
@@ -70,7 +73,7 @@ def table(head, rows):
     return "\n".join(out)
 
 
-def pick_transcripts(latest, live):
+def pick_transcripts(latest, live, live_file="live_subset.json"):
     """Five transcripts: >=1 real-model (from live_subset), both languages, one trap or injection."""
     picked, seen = [], set()
 
@@ -83,7 +86,7 @@ def pick_transcripts(latest, live):
     if live:
         for c in live.get("cases", []):
             if c.get("status") != "skipped" and c.get("model") and c.get("turns"):
-                add(c, "evals/results/live_subset.json", f"REAL MODEL ({c['model']})")
+                add(c, f"evals/results/{live_file}", f"REAL MODEL ({c['model']})")
                 break
     cases = {c["id"]: c for c in (latest or {}).get("cases", [])}
     for want in ("R1", "R2", "R4", "A01", "T01", "D01", "D10", "R6"):
@@ -100,6 +103,84 @@ def pick_transcripts(latest, live):
                 add(c, "evals/results/latest.json", "mock LLM")
                 break
     return picked[:5]
+
+
+def nv_model(nv):
+    rc = (nv or {}).get("run_context") or {}
+    return rc.get("llm_model") or next(iter((nv or {}).get("models_answered") or {}), None) or NM
+
+
+def nv_section(nv, agree):
+    """Section 8a lines, every number read from live_nvidia.json / judge_agreement.json."""
+    if not nv:
+        return [f"{NM}: no evals/results/live_nvidia.json is on file."]
+    rc, tot, L = nv.get("run_context") or {}, nv["totals"], []
+    host = rc.get("host") or {}
+    L.append(f"Run at {nv.get('run_at')} against `{nv.get('base_url')}` (local server, `llm.mode=live`, provider `{rc.get('llm_provider')}`, model `{rc.get('llm_model')}`), dataset `{nv.get('dataset_version')}`. "
+             "Answers came from the **same Nemotron model production routes to first, called through NVIDIA's API**, because OpenRouter's free tier allows about 50 requests a day; the app code, prompts, router, timeouts and guardrails are unchanged (the override is `EVAL_LLM_PROVIDER=nvidia`, eval only, never set in the image or deploy files). "
+             f"Answer-model requests counted: {rc.get('llm_calls_counted')} (cap {rc.get('max_llm_calls')}); judge requests: {rc.get('judge_calls')} to {rc.get('judge_model')}. Host: {host.get('os')}, Python {host.get('python')}.")
+    L.append("")
+    L.append(f"**Deterministic result: {tot['passed']} passed, {tot['failed']} failed, {tot['skipped']} skipped.**" + (f" Run stopped early: {rc.get('stopped_early')}." if rc.get("stopped_early") else ""))
+    L.append("")
+    L.append(table(["Category", "Passed", "Failed", "Skipped", "Rate"], [[k, d["passed"], d["failed"], d["skipped"], f(d.get("rate"))] for k, d in sorted(tot["by_category"].items())]))
+    L.append("")
+    bad = [c for c in nv["cases"] if c.get("status") == "failed"]
+    L.append("Failed cases: " + ("; ".join(f"**{c['id']}** ({c['category']}): " + "; ".join(c["failures"])[:200].replace("|", "/") for c in bad) if bad else "none."))
+    js = nv.get("judge_summary")
+    L.append("")
+    if js:
+        L.append(f"**Gemini judge (separate from the deterministic result; it never overrides a check).** {js['n_judged']} of {js['n_cases']} cases judged. Binary pass per dimension:")
+        L.append("")
+        L.append(table(["Dimension", "Pass", "Judged", "Rate"], [[d, v["pass"], v["n"], f(v["rate"])] for d, v in js["dims"].items()]))
+        L.append("")
+        L.append(table(["Language", "n", "grounded", "next_step", "tone", "language", "all four"], [[lg, v["n"], f(v["grounded"]), f(v["next_step"]), f(v["tone"]), f(v["language"]), f(v["all_pass"])] for lg, v in js["by_language"].items()]))
+        L.append("")
+        L.append(f"All four dimensions passed for {js['all_dims_pass']} of {js['n_judged']} judged answers.")
+        weak = [(c["id"], d, x["critique"]) for c in nv["cases"] if (c.get("judge") or {}).get("judged") for d, x in c["judge"]["dims"].items() if not x["pass"]]
+        if weak:
+            L.append("")
+            L.append("Judge-flagged answers (judge opinion, not a deterministic failure):")
+            L.append("")
+            L.append(table(["Case", "Dimension", "Judge critique"], [[i, d, (c or "").replace("|", "/")] for i, d, c in weak[:60]]))
+            if len(weak) > 60:
+                L.append("")
+                L.append(f"... and {len(weak) - 60} more in evals/results/live_nvidia.json.")
+    else:
+        L.append("The judge was not run on this file.")
+    L.append("")
+    if agree:
+        L.append(f"**Judge agreement with hand labels.** I labelled {agree['n_answers']} answers myself by applying the rules in evals/judge_rubric.md literally (labels in evals/hand_labels.json, computed by evals/judge_agreement.py). Cohen's kappa, judge vs hand label:")
+        L.append("")
+        pooled = agree["pooled"]
+        L.append(table(["Dimension", "n", "Agreement", "Cohen's kappa", "Hand pass", "Judge pass"],
+                       [[d, v["n"], f(v["agreement"]), f(v["kappa"]), v["hand_pass"], v["judge_pass"]] for d, v in agree["dims"].items()]
+                       + [["pooled (all four)", pooled["n"], f(pooled["agreement"]), f(pooled["kappa"]), pooled["hand_pass"], pooled["judge_pass"]]]))
+        L.append("")
+        L.append(agree.get("note", ""))
+    else:
+        L.append(f"Judge agreement: {NM} (no evals/results/judge_agreement.json).")
+    L.append("")
+    L.append("### 8a-bis. Model-written answers from this run, verbatim")
+    L.append("")
+    shown = 0
+    for c in nv["cases"]:
+        if c.get("status") == "skipped" or not c.get("turns"):
+            continue
+        for t in c["turns"]:
+            if t.get("model") and shown < 40:
+                shown += 1
+                j = c.get("judge") or {}
+                jl = "; ".join(f"{d}={'pass' if x['pass'] else 'FAIL'}" for d, x in (j.get("dims") or {}).items()) or "not judged"
+                L.append(f"**{c['id']}** ({c.get('lang')}), status {c.get('status')}, judge: {jl}.")
+                L.append("")
+                L.append(f"> **User:** {t['say']}  ")
+                L.append("> **Concierge:** " + " ".join(str(t.get("answer") or "").split()))
+                L.append("")
+    if not shown:
+        L.append("No model-written answer on file.")
+    n_model = sum(1 for c in nv["cases"] for t in c.get("turns", []) if t.get("model"))
+    L.append(f"{n_model} of the {sum(len(c.get('turns', [])) for c in nv['cases'])} recorded turns were written by the model; the others are built by code or templates (no model call), as in production. The first {min(shown, 40)} are shown; all are in evals/results/live_nvidia.json.")
+    return L
 
 
 def real_cases(live):
@@ -132,7 +213,7 @@ def e1_pair(e1, qs):
         return None
 
 
-def limitations(F, latest, e1, live):
+def limitations(F, latest, e1, live, nv=None):
     """README 'Known limitations': the chair's disclosure sentences with every number filled from a result file."""
     T, rc = latest["targets"], latest.get("run_context") or {}
     cases = latest["cases"]
@@ -141,7 +222,10 @@ def limitations(F, latest, e1, live):
     A('DarGlobal\'s public pages publish no prices, so the concierge says "Price on request", links the official enquiry page and never estimates one; the trap question in "Try these" shows this.')
     A(f"DarGlobal's bot protection challenged my fetcher's first HTML request, so it stopped and never retried or bypassed it; I read {F['DG_FULL_PAGES']} project pages in my own browser at human pace and filled the other {F['DG_OTHER_PROJECTS']} projects from named public sources, each labelled with its real origin.")
     A("The free model tier allows 50 requests a day in total, so the starter questions are served from prepared answers and, when the cap is reached, the app shows a notice and keeps answering from the dataset with cards and sources.")
-    if F["N_REAL"]:
+    if nv:
+        js = nv.get("judge_summary") or {}
+        A(f"The mock suite measures routing, retrieval, citations and guardrails, not prose. Answer quality was measured once: {nv['totals']['passed']} passed, {nv['totals']['failed']} failed, {nv['totals']['skipped']} skipped of the same cases with the live Nemotron model ({nv_model(nv)}) called through NVIDIA's API (OpenRouter's free tier allows about 50 requests a day), judged by Gemini ({js.get('n_judged', 0)} answers) plus deterministic checks; production routing was verified separately through OpenRouter with {F['N_REAL']} cases. The judge is a second opinion and its agreement with my hand labels is reported in REPORT.md section 8a.")
+    elif F["N_REAL"]:
         A(f"The eval suite runs with the model mocked, so its scores measure routing, retrieval, citations and guardrails and not prose quality; real-model evidence is the {F['N_REAL']} answers of the live run ({F['N_REAL_MODEL']} written by a model, the rest built by code) printed verbatim in [REPORT.md](REPORT.md) section 8b, including the weak ones, and a larger real-model run is the first next step.")
     else:
         A("The eval suite runs with the model mocked, so its scores measure routing, retrieval, citations and guardrails and not prose quality; no real-model run is on file, and a real-model run is the first next step.")
@@ -186,7 +270,9 @@ def limitations(F, latest, e1, live):
 
 def build():
     latest = load(RES / "latest.json")
-    live = (latest or {}).get("live_subset") or load(RES / "live_subset.json")
+    nv, orr, agree = load(RES / "live_nvidia.json"), load(RES / "live_openrouter.json"), load(RES / "judge_agreement.json")
+    live_file = "live_openrouter.json" if orr else "live_subset.json"
+    live = orr or (latest or {}).get("live_subset") or load(RES / "live_subset.json")
     e1 = (latest or {}).get("retrieval") or load(RES / "E1.json")
     e1b, e1a = load(RES / "E1_before_headers.json"), load(RES / "E1_after_headers.json")
     base = load(RES / "baseline_before.json")
@@ -213,12 +299,16 @@ def build():
     A("")
     A(table(["Block", "LLM used", "Source"], [
         ["Full suite (all numbers in sections 3, 4, 6)", f"**{mode}** (mock = deterministic stand-in that writes prose only from retrieved context; it measures routing, retrieval, cards, citations, guardrails and calculation code, NOT model answer quality)" if mode == "mock" else f"**{mode}**", "evals/results/latest.json"],
-        ["Real-model subset (section 8)", "real free OpenRouter models" if live else NM, "evals/results/live_subset.json"],
+        ["Answer-quality run (section 8a)", f"**live**: {nv_model(nv)} via NVIDIA's API; judged by Gemini ({((nv.get('run_context') or {}).get('judge_model')) or NM}) plus deterministic checks" if nv else NM, "evals/results/live_nvidia.json"],
+        ["Production-path check (section 8)", "live: the normal OpenRouter routing and fallback, no override" if live else NM, f"evals/results/{live_file}"],
         ["Load test (section 7)", "mock" if load_r else NM, "loadtest/results/latest.json"],
     ]))
     A("")
-    A(f"- **The LLM judge was not used** (`run_context.judge_used = {rc.get('judge_used')}`). Arabic is scored by deterministic checks (reply language, RTL ratio, cards, citations, hedging) plus the owner's spot check, which is not part of any number here.")
-    A("- The account is capped at 50 requests/day in total on free `:free` models, so real-model coverage is deliberately small.")
+    A(f"- **The mock suite used no judge** (`run_context.judge_used = {rc.get('judge_used')}`); its Arabic is scored by deterministic checks (reply language, RTL ratio, cards, citations, hedging). Judge scores exist only for the live answer-quality run (8a), are reported separately and never override a deterministic check.")
+    if nv:
+        A(f"- **Answer-quality runs used the same Nemotron model ({nv_model(nv)}) via NVIDIA's API, because OpenRouter's free tier allows about 50 requests a day. Production routing was verified separately via OpenRouter (section 8). Answers were judged by Gemini plus deterministic checks.**")
+    else:
+        A("- The account is capped at 50 requests/day in total on free `:free` models, so real-model coverage is deliberately small.")
     A("")
     A("## 1. Methodology")
     A("")
@@ -365,10 +455,17 @@ def build():
     else:
         A(f"{NM}: no loadtest/results/latest.json.")
     A("")
-    A("## 8. Real-model subset")
+    A("## 8. Real-model runs")
+    A("")
+    A("### 8a. Answer-quality run (NVIDIA-hosted Nemotron, Gemini judge)")
+    A("")
+    for x in nv_section(nv, agree):
+        A(x)
+    A("")
+    A("### 8. Production-path check (OpenRouter, normal routing)")
     A("")
     if live:
-        A(f"Run at {live.get('run_at')}: {live.get('llm_calls')} real requests counted (cap {live.get('max_llm_calls', NM)}; counted per attempt, so a ceiling). {live.get('passed')} passed, {live.get('failed')} failed of {live.get('n')} run. Models that answered: {live.get('models_answered')}. App budget counter before/after: {live.get('app_budget_used_before')}/{live.get('app_budget_used_after')}. Judge not used. Source: evals/results/live_subset.json.")
+        A(f"Run at {live.get('run_at')}: {live.get('llm_calls')} real requests counted (cap {live.get('max_llm_calls', NM)}; counted per attempt, so a ceiling). {live.get('passed')} passed, {live.get('failed')} failed of {live.get('n')} run. Models that answered: {live.get('models_answered')}. App budget counter before/after: {live.get('app_budget_used_before')}/{live.get('app_budget_used_after')}. Judge not used. Source: evals/results/{live_file}.")
         A("")
         A(table(["Case", "Lang", "Status", "Model", "Degraded reason", "Failed checks"], [[c["id"], c.get("lang"), c.get("status"), c.get("model") or "-", c.get("degraded_reason") or "-", "; ".join(c.get("failures") or [])[:200].replace("|", "/")] for c in live.get("cases", [])]))
         A("")
@@ -377,11 +474,11 @@ def build():
             A("")
             A(f"**Caveat:** the real-model run was made on dataset `{live.get('dataset_version')}`, not the current `{latest.get('dataset_version')}`.")
         A("")
-        A("### 8b. Real-model answers, verbatim (including the weak ones)")
+        A("### 8b. Production-path answers, verbatim (including the weak ones)")
         A("")
         for c in real_cases(live):
             for t in c["turns"]:
-                A(f"**{c['id']}** ({c.get('lang')}), model `{c.get('model') or 'none (answered by code)'}`, path `{t.get('path')}`, intent `{t.get('intent')}`, status {c.get('status')}, {f(c.get('latency_ms'))} ms. Source: evals/results/live_subset.json.")
+                A(f"**{c['id']}** ({c.get('lang')}), model `{c.get('model') or 'none (answered by code)'}`, path `{t.get('path')}`, intent `{t.get('intent')}`, status {c.get('status')}, {f(c.get('latency_ms'))} ms. Source: evals/results/{live_file}.")
                 A("")
                 A(f"> **User:** {t['say']}  ")
                 A("> **Concierge:** " + " ".join(str(t.get("answer") or t.get("reply_excerpt", "")).split()))
@@ -391,7 +488,7 @@ def build():
     A("")
     A("## 9. Transcripts (excerpts; each labelled mock or real)")
     A("")
-    tr = pick_transcripts(latest, live)
+    tr = pick_transcripts(latest, live, live_file)
     if not tr:
         A(NM)
     for c, src, label in tr:
@@ -429,7 +526,7 @@ def build():
     A("")
     for n in rc.get("notes", []):
         A(f"- {n}")
-    A("- Mock-LLM numbers do not measure answer quality, tone or Arabic fluency; the judge was not used; real-model coverage is a handful of cases.")
+    A("- Mock-LLM numbers do not measure answer quality, tone or Arabic fluency; those are covered by the live answer-quality run (8a, judge plus deterministic checks), which used NVIDIA's API for the same model; production routing was checked on OpenRouter with a handful of cases." if nv else "- Mock-LLM numbers do not measure answer quality, tone or Arabic fluency; the judge was not used; real-model coverage is a handful of cases.")
     A("- Binds depend on the dataset: with DarGlobal detail pages missing from the DB, the DarGlobal cases are skipped and say so above.")
     A("- Small n everywhere; compare intervals, not point estimates.")
     A("- Lighthouse: " + (f"{latest['targets']['lighthouse_mobile'].get('actual')}" if latest["targets"].get("lighthouse_mobile", {}).get("actual") is not None else NM + " (not run by this generator)."))
@@ -444,8 +541,12 @@ def build():
           ""]
     rb.append(table(["Metric", "Target", "Actual", "95% CI"], [[LABELS.get(k, k), f"{v['op']} {v['target']}", f(v.get("actual")), ci(v.get("ci95"))] for k, v in T.items() if k != "lighthouse_mobile"]))
     rb.append("")
-    rb.append("Mock-LLM numbers measure routing, retrieval, citations and guardrails, not model answer quality. The LLM judge was not used. " +
-              (f"Real-model subset: {live.get('passed')}/{live.get('n')} passed using {live.get('llm_calls')} counted requests." if live else "Real-model subset: not measured."))
+    rb.append("Mock-LLM numbers measure routing, retrieval, citations and guardrails, not model answer quality. " +
+              ("Answer-quality runs used the same Nemotron model via NVIDIA's API because OpenRouter's free tier allows about 50 requests a day; production routing was verified via OpenRouter; judged by Gemini plus deterministic checks. " if nv else "The LLM judge was not used. ") +
+              (f"Live answer-quality run ({nv_model(nv)}): {nv['totals']['passed']} passed, {nv['totals']['failed']} failed, {nv['totals']['skipped']} skipped"
+               + (f"; Gemini judge: all four dimensions passed for {nv['judge_summary']['all_dims_pass']}/{nv['judge_summary']['n_judged']} answers" if nv.get("judge_summary") else "")
+               + (f"; judge vs hand labels pooled kappa {f(agree['pooled']['kappa'])}" if agree else "") + ". " if nv else "") +
+              (f"OpenRouter production-path check: {live.get('passed')}/{live.get('n')} passed using {live.get('llm_calls')} counted requests." if live else "OpenRouter production-path check: not measured."))
     if load_r:
         mem = load_r.get("memory_mib")
         rb.append(f"Load (mock LLM): {load_r['total_requests']} requests, {load_r['total_crashes']} crashes" + (f", peak {mem['peak']} MiB." if isinstance(mem, dict) else "; memory not measured."))
@@ -458,7 +559,7 @@ def build():
                  f"Dataset `{F['DATASET_VERSION']}`: {F['DG_PROJECTS']} DarGlobal projects ({F['DG_FULL_PAGES']} with a full project page) and {F['WASALT_LISTINGS']} Wasalt listings.\n"
                  "<!-- /AUTOGEN:facts -->",
         "limitations": "<!-- AUTOGEN:limitations (evals/make_report.py; do not edit by hand) -->\n"
-                       + "\n".join(f"- {x}" for x in limitations(F, latest, e1, live)) + "\n<!-- /AUTOGEN:limitations -->",
+                       + "\n".join(f"- {x}" for x in limitations(F, latest, e1, live, nv)) + "\n<!-- /AUTOGEN:limitations -->",
     }
     return report, blocks, latest, comp
 
@@ -482,7 +583,7 @@ def consistency_problems(latest, comp, a):
     v, tot = latest.get("dataset_version"), latest["totals"]
     if comp and comp.get("dataset_version") != v:
         P.append(f"dataset id differs: data/completeness.json {comp.get('dataset_version')} vs latest.json {v}")
-    for nm in ("E1", "live_subset"):
+    for nm in ("E1", "live_subset", "live_nvidia", "live_openrouter"):
         d = load(RES / f"{nm}.json")
         if d and d.get("dataset_version") != v:
             P.append(f"evals/results/{nm}.json was measured on dataset {d.get('dataset_version')}, latest.json is {v} (re-run it, or REPORT.md carries a caveat)")

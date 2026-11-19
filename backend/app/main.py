@@ -347,7 +347,10 @@ def create_app(settings: Settings | None = None, llm=None, embedder=None) -> Fas
         if mode == "off" or engine.llm is None or router is None:
             return {"mode": "off", "state": "off", "budget": {"used": 0, "cap": s.llm_daily_budget}, "pool": []}
         state = "maintenance" if s.maintenance_mode else router.state
-        return {"mode": mode, "state": state, "budget": router.budget(), "pool": router.snapshot()}
+        info = {"mode": mode, "state": state, "budget": router.budget(), "pool": router.snapshot()}
+        if mode == "live" and s.llm_provider != "openrouter":  # eval override only: report what really answers
+            info.update(provider=s.llm_provider, model=(s.openrouter_models or [None])[0])
+        return info
 
     # ------------------------------------------------------------------ data
     @app.get("/api/meta")

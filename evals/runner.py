@@ -21,12 +21,14 @@ import http.client
 import json
 import math
 import os
+import platform
 import random
 import re
 import sqlite3
 import sys
 import time
 import urllib.parse
+import urllib.error
 import urllib.request
 import uuid
 from collections import Counter, defaultdict
@@ -603,32 +605,106 @@ def run_checks(checks, rep: Reply, user_texts, db: DB, ctx):
     return fails
 
 
-# --------------------------------------------------------------------------- LLM judge (optional)
-def judge(case, question, rep: Reply, rubric, key, model, throttle):
-    body = {
-        "model": model,
-        "temperature": 0,
-        "messages": [
-            {"role": "system", "content": rubric},
-            {"role": "user", "content": json.dumps({
-                "question": question, "answer": rep.prose,
-                "sources": [s.get("title") for s in rep.sources],
-                "cards": [c.get("name") or c.get("title") for c in rep.projects + rep.listings],
-                "expected_behaviour_category": case["category"],
-            }, ensure_ascii=False)},
-        ],
+# --------------------------------------------------------------------------- LLM judge (optional, Gemini)
+JUDGE_DIMS = ("grounded", "next_step", "tone", "language")
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+DEFAULT_JUDGE_MODEL = "gemini-2.5-flash-lite"  # from GET /v1beta/models; gemini-2.5-flash hit its 20/day free cap, the 3.x flash ids took 30 s per call
+
+
+def _card_view(c):
+    keep = {k: v for k, v in c.items() if v not in (None, "", [], {}) and k not in ("image", "images", "url_image")}
+    return {k: (v if isinstance(v, (int, float, bool)) else str(v)[:160]) for k, v in list(keep.items())[:16]}
+
+
+def source_excerpts(db: DB, rep: Reply, cap=3200):
+    """What the model was allowed to see for the cited sources: the stored rows and text chunks (read-only DB)."""
+    if not db or not db.ok:
+        return []
+    out, used = [], 0
+    for c in (rep.projects + rep.listings)[:3]:
+        row = db.project(c.get("id")) or db.one("SELECT * FROM listings WHERE id=?", (c.get("id"),))
+        if row:
+            row = {k: (v if isinstance(v, (int, float)) else str(v)[:300]) for k, v in row.items()
+                   if v not in (None, "") and k not in ("image_urls", "content_hash", "scraped_at", "lat", "lng")}
+            out.append({"record": row})
+    for src in rep.sources[:4]:
+        for r in db.all("SELECT text FROM chunks WHERE source_url=? LIMIT 4", (src.get("url"),)):
+            t = (r["text"] or "")[:600]
+            if used + len(t) > cap:
+                return out
+            used += len(t)
+            out.append({"source": src.get("title"), "excerpt": t})
+    return out
+
+
+def judge_input(case, user_texts, rep: Reply, db: DB | None = None):
+    return {
+        "question": user_texts[-1], "earlier_user_turns": user_texts[:-1][-3:], "answer": rep.prose,
+        "sources": [{"title": s_.get("title"), "url": s_.get("url")} for s_ in rep.sources],
+        "cards": [_card_view(c) for c in (rep.projects + rep.listings)[:6]],
+        "chips": [c if isinstance(c, str) else (c.get("label") or c.get("text") or c) for c in rep.chips][:6],
+        "source_excerpts": source_excerpts(db, rep),
+        "expected_behaviour_category": case["category"], "question_language": case.get("lang", "en"),
     }
-    throttle.wait()
-    req = urllib.request.Request("https://openrouter.ai/api/v1/chat/completions", data=json.dumps(body).encode(),
-                                 headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
-    try:
-        with urllib.request.urlopen(req, timeout=60) as r:
-            txt = json.loads(r.read())["choices"][0]["message"]["content"]
-        m = re.search(r"\{.*\}", txt, re.S)
-        v = json.loads(m.group(0))
-        return {"judged": True, "pass": bool(v.get("pass")), "scores": v.get("scores"), "reason": str(v.get("reason", ""))[:300], "model": model}
-    except Exception as e:  # noqa: BLE001
-        return {"judged": False, "error": f"{type(e).__name__}: {e}"[:200], "model": model}
+
+
+def judge(payload, rubric, key, model, throttle, counter, timeout=45):
+    """Gemini judge: binary verdict + one-sentence critique per dimension. Reported separately; never changes a
+    deterministic pass/fail. Retries 429/500/503 with backoff; counter['calls'] counts every HTTP attempt."""
+    body = {"systemInstruction": {"parts": [{"text": rubric}]},
+            "contents": [{"role": "user", "parts": [{"text": json.dumps(payload, ensure_ascii=False)}]}],
+            "generationConfig": {"temperature": 0, "responseMimeType": "application/json", "maxOutputTokens": 800}}
+    last = "no attempt"
+    if counter.get("quota_exhausted"):
+        return {"judged": False, "error": "HTTP 429 daily quota exhausted (earlier in this run)", "model": model}
+    for attempt in range(4):
+        throttle.wait()
+        counter["calls"] += 1
+        req = urllib.request.Request(GEMINI_URL.format(model=model), data=json.dumps(body).encode(),
+                                     headers={"x-goog-api-key": key, "Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                obj = json.loads(r.read())
+            txt = "".join(p_.get("text", "") for p_ in obj["candidates"][0]["content"]["parts"])
+            v, _ = json.JSONDecoder().raw_decode(txt[txt.index("{"):])  # first object only
+            dims = {}
+            for d in JUDGE_DIMS:
+                x = v.get(d) or {}
+                dims[d] = {"pass": bool(x.get("pass")), "critique": str(x.get("critique", ""))[:300]}
+            return {"judged": True, "dims": dims, "all_pass": all(x["pass"] for x in dims.values()), "model": model}
+        except urllib.error.HTTPError as e:
+            last = f"HTTP {e.code}"
+            if e.code == 429:
+                body_txt = e.read().decode("utf-8", "replace")
+                if "per day" in body_txt.lower() or "PerDay" in body_txt:
+                    counter["quota_exhausted"] = True  # daily free-tier cap: stop judging, never loop on it
+                    counter["http_errors"]["429"] = counter["http_errors"].get("429", 0) + 1
+                    return {"judged": False, "error": "HTTP 429 daily quota exhausted", "model": model}
+            counter["http_errors"][str(e.code)] = counter["http_errors"].get(str(e.code), 0) + 1
+            if e.code in (429, 500, 503):
+                time.sleep(min(15 * (attempt + 1), 45))
+                continue
+            break
+        except Exception as e:  # noqa: BLE001
+            last = f"{type(e).__name__}: {e}"[:200]
+            time.sleep(3)
+    return {"judged": False, "error": last, "model": model}
+
+
+def judge_summary(rows):
+    """Aggregate of judged answers (reported separately from the deterministic totals)."""
+    js = [r for r in rows if (r.get("judge") or {}).get("judged")]
+    out = {"n_judged": len(js), "n_cases": len(rows), "dims": {}, "by_language": {}}
+    for d in JUDGE_DIMS:
+        k = sum(r["judge"]["dims"][d]["pass"] for r in js)
+        out["dims"][d] = {"pass": k, "n": len(js), "rate": round(k / len(js), 4) if js else None}
+    for lg in ("en", "ar", "mixed"):
+        sub = [r for r in js if r.get("lang") == lg]
+        if sub:
+            out["by_language"][lg] = {"n": len(sub), **{d: round(sum(r["judge"]["dims"][d]["pass"] for r in sub) / len(sub), 4) for d in JUDGE_DIMS},
+                                      "all_pass": round(sum(r["judge"]["all_pass"] for r in sub) / len(sub), 4)}
+    out["all_dims_pass"] = sum(r["judge"]["all_pass"] for r in js)
+    return out
 
 
 # --------------------------------------------------------------------------- binding
@@ -667,8 +743,14 @@ def main():
     ap.add_argument("--category", default="", help="comma list of categories")
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--planted-chunk", action="store_true", help="the test chunk in fixtures/ is loaded in the target")
-    ap.add_argument("--no-judge", action="store_true")
-    ap.add_argument("--judge-rpm", type=float, default=10)
+    ap.add_argument("--judge", default="", choices=["", "gemini"], help="optional Gemini judge (needs GEMINI_API_KEY); off by default")
+    ap.add_argument("--judge-rpm", type=float, default=8)
+    ap.add_argument("--judge-scope", default="all", choices=["all", "model"], help="judge every answered case, or only answers a model wrote")
+    ap.add_argument("--save-judge-input", action="store_true", help="store the judge payload of every model-written answer (judge it later with evals/judge_pass.py)")
+    ap.add_argument("--judge-limit", type=int, default=0, help="judge at most N answers (0 = all answered cases)")
+    ap.add_argument("--live-out", default="", help="live runs: write the full result to <out-dir>/<this name> (e.g. live_nvidia.json) "
+                                                   "instead of live_subset.json; latest.json and the timestamped file are not touched")
+    ap.add_argument("--stop-after-429", type=int, default=3, help="live runs: stop after N consecutive cases degraded by rate_limited/quota")
     ap.add_argument("--list", action="store_true", help="validate + list cases and exit (writes nothing)")
     ap.add_argument("--out-dir", default=str(RESULTS))
     ap.add_argument("--max-retries", type=int, default=3, help="retries on RATE_LIMITED")
@@ -719,11 +801,21 @@ def main():
     print(f"[banner] llm_available={llm_avail} mode={llm_mode} state={llm_meta.get('state')} -> {banner['text']}")
     print("=" * 72)
 
-    key = os.getenv("OPENROUTER_API_KEY", "")
-    judge_on = bool(key) and not args.no_judge and not live  # live runs spend 0 judge calls
-    judge_model = os.getenv("EVAL_JUDGE_MODEL", "meta-llama/llama-3.3-70b-instruct:free")  # verify model id at run time
+    try:
+        from envload import load_env  # keys come from the gitignored .env, in-process only
+        load_env(names=("GEMINI_API_KEY",))
+    except Exception:  # noqa: BLE001
+        pass
+    key = os.getenv("GEMINI_API_KEY", "")
+    if args.judge == "gemini" and not key:
+        print("[abort] --judge gemini needs GEMINI_API_KEY (env or .env).", file=sys.stderr)
+        return 4
+    judge_on = args.judge == "gemini"
+    judge_model = os.getenv("EVAL_JUDGE_GEMINI_MODEL", DEFAULT_JUDGE_MODEL)
+    jcount = {"calls": 0, "http_errors": {}}
     rubric = (HERE / "judge_rubric.md").read_text(encoding="utf-8")
     throttle, jthrottle = Throttle(args.rpm), Throttle(args.judge_rpm)
+    consec_429, stopped_early = 0, None
 
     results, latencies, ttfts = [], [], []
     confusion = defaultdict(lambda: defaultdict(int))
@@ -733,6 +825,9 @@ def main():
     for n, case in enumerate(sel, 1):
         cid = case["id"]
         base_rec = {"id": cid, "category": case["category"], "lang": case.get("lang", "en"), "split": case.get("split", "tune")}
+        if stopped_early:
+            results.append({**base_rec, "status": "skipped", "passed": None, "failures": [], "skip_reason": stopped_early})
+            continue
         if live and llm_calls + len(case.get("turns") or [1]) > args.max_llm_calls:
             budget_hit = True
             results.append({**base_rec, "status": "skipped", "passed": None, "failures": [], "skip_reason": f"--max-llm-calls {args.max_llm_calls} would be exceeded"})
@@ -790,10 +885,15 @@ def main():
                              "llm_calls": rep.trace.get("llm_calls"), "trace_latency_ms": rep.trace.get("latency_ms")})
             last_rep = rep
         jres = None
-        if case.get("judge") and judge_on and last_rep and not last_rep.error:
-            jres = judge(case_f, turns[-1]["say"], last_rep, rubric, key, judge_model, jthrottle)
-            if jres.get("judged") and not jres["pass"]:
-                failures.append(f"judge: {jres.get('reason')}")
+        jin_saved = None
+        if (args.save_judge_input and not judge_on) and last_rep and not last_rep.error and last_rep.prose.strip() and last_rep.trace.get("model"):
+            jin_saved = judge_input(case_f, user_texts, last_rep, db)
+        if judge_on and last_rep and not last_rep.error and last_rep.prose.strip() and \
+                (args.judge_scope == "all" or last_rep.trace.get("model")) and \
+                (not args.judge_limit or sum(1 for r_ in results if r_.get("judge")) < args.judge_limit):
+            jin = judge_input(case_f, user_texts, last_rep, db)
+            jres = judge(jin, rubric, key, judge_model, jthrottle, jcount)  # never touches `failures`
+            jres["input"] = jin  # exactly what the judge saw, so a human can label the same material
         rec = {**base_rec, "status": "passed" if not failures else "failed", "passed": not failures,
                "failures": failures, "latency_ms": round(lat, 1), "intent": last_rep.intent if last_rep else None,
                "path": last_rep.path if last_rep else None, "turns": turn_log,
@@ -802,11 +902,19 @@ def main():
                "split": case.get("split", "tune")}
         if jres:
             rec["judge"] = jres
+        if jin_saved:
+            rec["judge_input"] = jin_saved
         exp = (turns[-1].get("checks") or {}).get("intent")
         if exp and last_rep:
             e = last_rep.intent if last_rep.intent in exp else "|".join(exp)
             confusion[e][last_rep.intent or "none"] += 1
         results.append(rec)
+        if live:
+            degraded_429 = last_rep is not None and last_rep.trace.get("degraded_reason") in ("rate_limited", "quota")
+            consec_429 = consec_429 + 1 if degraded_429 else 0
+            if consec_429 >= args.stop_after_429:
+                stopped_early = f"stopped: {consec_429} consecutive cases degraded by rate_limited/quota (last: {cid})"
+                print(f"[stop] {stopped_early}")
         print(f"[{n}/{len(sel)}] {cid} {'PASS' if rec['passed'] else 'FAIL ' + '; '.join(failures)[:160]}")
 
     # ---- aggregates
@@ -853,8 +961,8 @@ def main():
         "crashes": tgt("crashes", crashes),
         "lighthouse_mobile": {**TARGETS["lighthouse_mobile"], "actual": None, "met": None},
     }
-    judged = [r for r in ar if (r.get("judge") or {}).get("judged")]
     ran = [r for r in results if r["status"] != "skipped"]
+    judged = [r for r in ran if (r.get("judge") or {}).get("judged")]
     n_req = len([x for x in latencies if x is not None])
 
     def kn(cat):
@@ -914,11 +1022,12 @@ def main():
         "totals": totals,
         "targets": targets,
         "latency": {"p50": pct(latencies, 0.5), "p95": pct(latencies, 0.95), "ttft_p95": ttft_p95, "ttft_p50": pct(ttfts, 0.5), "n": len([x for x in latencies if x])},
-        "cases": [{k: r.get(k) for k in ("id", "category", "lang", "split", "model", "degraded_reason", "status", "passed", "failures", "latency_ms", "intent", "path", "skip_reason", "judge", "turns") if r.get(k) is not None or k in ("passed", "failures")} for r in results],
+        "cases": [{k: r.get(k) for k in ("id", "category", "lang", "split", "model", "degraded_reason", "status", "passed", "failures", "latency_ms", "intent", "path", "skip_reason", "judge", "judge_input", "turns") if r.get(k) is not None or k in ("passed", "failures")} for r in results],
         "confusion": {k: dict(v) for k, v in confusion.items()},
         "by_language": by_lang,
         "by_split": by_split,
         "banner": banner,
+        "judge_summary": judge_summary(ran) if judge_on else None,
         "failure_types": dict(ftypes.most_common()),
         "citation_subset": {"checked": csub_n, "violations": csub_bad, **prop_stats(csub_n - csub_bad, csub_n)},
         "run_context": {
@@ -927,12 +1036,17 @@ def main():
             "llm_available": (meta or {}).get("llm_available"), "models": (meta or {}).get("models"),
             "flags": (meta or {}).get("flags"), "db_path": str(args.db) if db.ok else None, "seed": args.seed,
             "rpm": args.rpm, "planted_chunk": args.planted_chunk, "judge_used": bool(judged),
-            "judge_model": judge_model if judged else None, "wall_s": round(time.monotonic() - t_start),
+            "judge_model": judge_model if judged else None, "judge_calls": jcount["calls"] if judge_on else 0,
+            "judge_http_errors": jcount["http_errors"] if judge_on else {},
+            "llm_provider": llm_meta.get("provider") or ("mock" if llm_mode == "mock" else "openrouter" if live else None),
+            "llm_model": llm_meta.get("model"), "stopped_early": stopped_early,
+            "host": {"target": base, "machine": platform.node() and "local", "python": platform.python_version(),
+                     "os": platform.system() + " " + platform.release()}, "wall_s": round(time.monotonic() - t_start),
             "partial_selection": bool(only or cats),
             "notes": [
                 "Numbers checks use retrieved/card ids from the trace; they are a proxy for 'in context'.",
                 "live_sample cases are sampled from the DB (scraped from live sites); the runner never contacts the live sites.",
-                "Arabic judge scores appear only when OPENROUTER_API_KEY was set and the run is not live; otherwise Arabic is deterministic-only.",
+                "Judge scores (Gemini, --judge gemini) are reported separately and never change a deterministic pass/fail; without the flag every check is deterministic.",
                 "CIs: Wilson 95% for proportions, percentile bootstrap for TTFT p95. n is small, so intervals are wide.",
                 "llm_calls_counted counts every attempt (retries included) as one request: a ceiling, not a measurement.",
             ],
@@ -940,6 +1054,12 @@ def main():
     }
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+    if live and args.live_out:  # full result of a real-model run, written under the requested name only
+        ma = Counter(r["model"] for r in ran if r.get("model"))
+        out["models_answered"] = dict(ma)
+        (out_dir / args.live_out).write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
+        print(f"\npassed={totals['passed']} failed={totals['failed']} skipped={totals['skipped']}  -> {out_dir / args.live_out}")
+        return 0 if totals["failed"] == 0 else 1
     if live:  # a real-model run is its own artifact; the next full run attaches it unchanged
         ma = Counter(r["model"] for r in ran if r.get("model"))
         (out_dir / "live_subset.json").write_text(json.dumps({

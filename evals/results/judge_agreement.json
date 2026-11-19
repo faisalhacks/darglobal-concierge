@@ -1,0 +1,70 @@
+{
+ "source": "live_nvidia.json",
+ "n_answers": 20,
+ "dims": {
+  "grounded": {
+   "n": 20,
+   "agreement": 0.95,
+   "kappa": 0.0,
+   "hand_pass": 19,
+   "judge_pass": 20
+  },
+  "next_step": {
+   "n": 20,
+   "agreement": 1.0,
+   "kappa": null,
+   "hand_pass": 20,
+   "judge_pass": 20
+  },
+  "tone": {
+   "n": 20,
+   "agreement": 0.95,
+   "kappa": 0.6429,
+   "hand_pass": 19,
+   "judge_pass": 18
+  },
+  "language": {
+   "n": 20,
+   "agreement": 0.95,
+   "kappa": 0.0,
+   "hand_pass": 19,
+   "judge_pass": 20
+  }
+ },
+ "pooled": {
+  "n": 80,
+  "agreement": 0.9625,
+  "kappa": 0.3814,
+  "hand_pass": 77,
+  "judge_pass": 78
+ },
+ "disagreements": [
+  {
+   "id": "M11",
+   "dimension": "grounded",
+   "hand": false,
+   "judge": true,
+   "hand_note": "names Trump Tower Jeddah and Azure Oceanfront Villas, which appear in neither cards nor excerpts",
+   "judge_critique": "The answer contains no concrete facts, thus no grounding violation occurs."
+  },
+  {
+   "id": "O03",
+   "dimension": "tone",
+   "hand": true,
+   "judge": false,
+   "hand_note": "",
+   "judge_critique": "The tone includes hype and superlatives such as 'Middle East's first and only' and 'world's highest', violating the no-hype rule."
+  },
+  {
+   "id": "T15",
+   "dimension": "language",
+   "hand": false,
+   "judge": true,
+   "hand_note": "'لا يتوفر لديّ معلومات' is ungrammatical (agreement) and the refusal sentence is repeated",
+   "judge_critique": "The response is written in natural and correct Modern Standard Arabic."
+  }
+ ],
+ "note": "Pooled over 80 binary decisions (20 answers x 4 dimensions). Kappa is undefined for next_step (one rater, or both, gave a single constant value, so chance agreement is 1); raw agreement is given instead. 3 disagreement(s) are listed in evals/results/judge_agreement.json. With n=20 answers the kappa is a rough guide only. Labeller: the model that ran this evaluation (not an independent human); the labels follow the rubric text literally and were set from the rubric text, but they are not independent of the model family that wrote the rubric; the judge progress log was visible while labelling (see hand_labels.json method).",
+ "judge_model": "gemini-3.5-flash-lite",
+ "hand_labels_file": "evals/hand_labels.json"
+}

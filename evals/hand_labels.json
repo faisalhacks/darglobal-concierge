@@ -1,0 +1,154 @@
+{
+ "labeller": "the evaluating model, applying evals/judge_rubric.md literally",
+ "method": "labels written from evals/hand_label_sheet.json (the judge's input only, 20 answers picked by seed before any verdict was read). The judge pass was running at the time and its progress log showed ALL PASS / flags lines for some of these ids; the labels were set from the rubric text and not adjusted to those lines.",
+ "labels": {
+  "A02": {
+   "grounded": true,
+   "next_step": true,
+   "tone": true,
+   "language": true,
+   "notes": {}
+  },
+  "A06": {
+   "grounded": true,
+   "next_step": true,
+   "tone": true,
+   "language": true,
+   "notes": {}
+  },
+  "A07": {
+   "grounded": true,
+   "next_step": true,
+   "tone": true,
+   "language": true,
+   "notes": {}
+  },
+  "A20": {
+   "grounded": true,
+   "next_step": true,
+   "tone": true,
+   "language": true,
+   "notes": {}
+  },
+  "AJ02": {
+   "grounded": true,
+   "next_step": true,
+   "tone": true,
+   "language": true,
+   "notes": {
+    "grounded": "names regulators that are not in the sources, but agency names are not in the rubric's list of concrete facts; pass"
+   }
+  },
+  "B03": {
+   "grounded": true,
+   "next_step": true,
+   "tone": true,
+   "language": true,
+   "notes": {}
+  },
+  "B07": {
+   "grounded": true,
+   "next_step": true,
+   "tone": true,
+   "language": true,
+   "notes": {}
+  },
+  "F10": {
+   "grounded": true,
+   "next_step": true,
+   "tone": true,
+   "language": true,
+   "notes": {}
+  },
+  "I08": {
+   "grounded": true,
+   "next_step": true,
+   "tone": false,
+   "language": true,
+   "notes": {
+    "tone": "'extraordinary', 'opulent', 'world's first' are hype/superlatives"
+   }
+  },
+  "I11": {
+   "grounded": true,
+   "next_step": true,
+   "tone": true,
+   "language": true,
+   "notes": {}
+  },
+  "M07": {
+   "grounded": true,
+   "next_step": true,
+   "tone": true,
+   "language": true,
+   "notes": {}
+  },
+  "M11": {
+   "grounded": false,
+   "next_step": true,
+   "tone": true,
+   "language": true,
+   "notes": {
+    "grounded": "names Trump Tower Jeddah and Azure Oceanfront Villas, which appear in neither cards nor excerpts"
+   }
+  },
+  "M12": {
+   "grounded": true,
+   "next_step": true,
+   "tone": true,
+   "language": true,
+   "notes": {}
+  },
+  "O03": {
+   "grounded": true,
+   "next_step": true,
+   "tone": true,
+   "language": true,
+   "notes": {}
+  },
+  "O05": {
+   "grounded": true,
+   "next_step": true,
+   "tone": true,
+   "language": true,
+   "notes": {}
+  },
+  "R3": {
+   "grounded": true,
+   "next_step": true,
+   "tone": true,
+   "language": true,
+   "notes": {}
+  },
+  "T01": {
+   "grounded": true,
+   "next_step": true,
+   "tone": true,
+   "language": true,
+   "notes": {}
+  },
+  "T11": {
+   "grounded": true,
+   "next_step": true,
+   "tone": true,
+   "language": true,
+   "notes": {}
+  },
+  "T13": {
+   "grounded": true,
+   "next_step": true,
+   "tone": true,
+   "language": true,
+   "notes": {}
+  },
+  "T15": {
+   "grounded": true,
+   "next_step": true,
+   "tone": true,
+   "language": false,
+   "notes": {
+    "language": "'لا يتوفر لديّ معلومات' is ungrammatical (agreement) and the refusal sentence is repeated"
+   }
+  }
+ }
+}

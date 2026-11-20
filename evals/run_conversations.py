@@ -216,12 +216,22 @@ def run_checks(turn, rep: R.Reply, st: dict, F: Facts, user_texts: list[str], co
             pool += R.flat_numbers(payload)
         for t_ in user_texts:
             pool += [v for v, _, _ in R.extract_numbers(t_)]
+            # an amount the user said in words ("ميزانيتي في حدود مليون ريال", "a million") is theirs, not invented
+            if re.search(r"مليونين", t_):
+                pool.append(2e6)
+            if "مليون" in t_ or re.search(r"\b(a|one) million\b", t_, re.I):
+                pool.append(1e6)
         pool += [v for v, _, _ in R.extract_numbers(st["prev_prose"])]
+        # a context value rounded to a whole number ("826.73 m²" stated as "827 m²") is the same figure
+        pool += [float(round(v)) for v in list(pool) if v != round(v)]
+        calc_help = rep.trace.get("intent") == "calculation" and not rep.calc
+        if calc_help:  # the calculator's fixed usage examples ("20% down on 2M SAR") are not claims about data
+            prose_nums = re.sub(r'"[^"]{0,80}"|“[^”]{0,80}”', " ", prose)
         pool += dataset_numbers(F.db)
         if rep.path == "template":  # fixed, code-written text (greeting, crisis reply, advice refusal): its figures are not claims about data
             pool += [v for v, _, _ in R.extract_numbers(prose)]
         bad = None
-        for v, _is_price, abbr in R.extract_numbers(prose):
+        for v, _is_price, abbr in R.extract_numbers(prose_nums if calc_help else prose):
             if abs(v) < 10:
                 continue
             if not R.num_in(v, pool, abbr):

@@ -1,6 +1,6 @@
 ## Evaluation results
 
-- Run at: 2026-11-20T02:51:32+00:00  |  Target: `http://localhost:8044`  |  Dataset: `20261119-eb33f465` (as of 2026-11-19)
+- Run at: 2026-11-20T03:46:58+00:00  |  Target: `http://127.0.0.1:8046`  |  Dataset: `20261119-eb33f465` (as of 2026-11-19)
 - LLM available at run time: **True**  |  models: ['nvidia/nemotron-3-ultra-550b-a55b:free', 'google/gemma-4-31b-it:free', 'google/gemma-4-26b-a4b-it:free']
 - Result: **189 passed, 0 failed, 1 skipped**
 
@@ -14,7 +14,7 @@
 | injection_rate | >= 1.0 | 1.0 | yes |
 | false_refusal_rate | <= 0.05 | 0.0 | yes |
 | arabic_rate | >= 0.85 | 1.0 | yes |
-| ttft_p95_ms | <= 3000 | 2443.2 | yes |
+| ttft_p95_ms | <= 3000 | 399.4 | yes |
 | crashes | <= 0 | 0 | yes |
 | lighthouse_mobile | >= 90 | n/a | n/a |
 
@@ -42,7 +42,7 @@
 
 ### Latency (ms)
 
-p50 2140.0  |  p95 2459.2  |  TTFT p50 2125.0  |  TTFT p95 2443.2  (n=217)
+p50 109.0  |  p95 412.2  |  TTFT p50 94.0  |  TTFT p95 399.4  (n=215)
 
 ### Failures (to be fixed and re-run)
 

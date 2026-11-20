@@ -117,10 +117,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     el.dir = lang === "ar" ? "rtl" : "ltr";
     // The tab title follows the interface language (the static export ships the English title).
     const EN = "Property Concierge", AR = "المساعد العقاري";
-    const cur = document.title;
-    document.title = lang === "ar"
-      ? cur.replace(EN, AR).replace("DarGlobal · Wasalt", "دار جلوبال · وصلت")
-      : cur.replace(AR, EN).replace("دار جلوبال · وصلت", "DarGlobal · Wasalt");
+    const apply = () => {
+      const cur = document.title;
+      const next = lang === "ar"
+        ? cur.replace(EN, AR).replace("DarGlobal · Wasalt", "دار جلوبال · وصلت")
+        : cur.replace(AR, EN).replace("دار جلوبال · وصلت", "DarGlobal · Wasalt");
+      if (next !== cur) document.title = next; // writes only on change, so the observer below cannot loop
+    };
+    apply();
+    // Next.js re-applies the route's static (English) metadata title after hydration; translate it again when it does.
+    const mo = typeof MutationObserver !== "undefined" ? new MutationObserver(apply) : null;
+    mo?.observe(document.head, { childList: true, subtree: true, characterData: true });
+    return () => mo?.disconnect();
   }, [lang, langResolved]);
 
   useEffect(() => {

@@ -325,7 +325,8 @@ RUN_LABELS = {  # conversation-run label -> (set key, human run name)
     "before": ("conversations", "before the quality fixes"), "after": ("conversations", "after the quality fixes"),
     "fix": ("conversations", "fix re-check 1"), "fix2": ("conversations", "fix re-check 2"),
     "before2": ("conversations", "before, snapshot run (NVIDIA judge)"),
-    "personas_before": ("personas", "before"), "personas_after": ("personas", "after"),
+    "after2": ("conversations", "after, owner-transcript build (NVIDIA judge), with the fix round"),
+    "personas_before": ("personas", "before"), "personas_after": ("personas", "after, with the fix round"),
 }
 SET_NAMES = {"mock": "Evaluation suite, model mocked", "live_nvidia": "Evaluation suite, live model via NVIDIA",
              "live_openrouter": "Evaluation suite, live model via OpenRouter", "conversations": "30 multi-turn conversations",

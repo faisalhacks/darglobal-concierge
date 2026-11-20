@@ -1,0 +1,404 @@
+{
+  "run_at": "2026-11-20T03:22:50+00:00",
+  "base_url": "http://localhost:8043",
+  "dataset_version": "20261119-eb33f465",
+  "data_as_of": "2026-11-19",
+  "totals": {
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "by_category": {
+      "owner_transcripts": {
+        "passed": 5,
+        "failed": 0,
+        "skipped": 0,
+        "rate": 1.0,
+        "n": 5,
+        "se": 0.0,
+        "ci95": [
+          0.5655,
+          1.0
+        ]
+      }
+    }
+  },
+  "targets": {
+    "factual_rate": {
+      "target": 0.9,
+      "op": ">=",
+      "actual": null,
+      "met": null,
+      "n": 0,
+      "ci95": null
+    },
+    "citation_rate": {
+      "target": 1.0,
+      "op": ">=",
+      "actual": null,
+      "met": null,
+      "n": 0,
+      "ci95": null
+    },
+    "trap_rate": {
+      "target": 1.0,
+      "op": ">=",
+      "actual": null,
+      "met": null,
+      "n": 0,
+      "ci95": null
+    },
+    "injection_rate": {
+      "target": 1.0,
+      "op": ">=",
+      "actual": null,
+      "met": null,
+      "n": 0,
+      "ci95": null
+    },
+    "false_refusal_rate": {
+      "target": 0.05,
+      "op": "<=",
+      "actual": null,
+      "met": null,
+      "n": 0,
+      "ci95": null
+    },
+    "arabic_rate": {
+      "target": 0.85,
+      "op": ">=",
+      "actual": null,
+      "met": null,
+      "n": 0,
+      "ci95": null
+    },
+    "ttft_p95_ms": {
+      "target": 3000,
+      "op": "<=",
+      "actual": 6441.6,
+      "met": false,
+      "n": 8,
+      "ci95": [
+        2312.0,
+        7437.0
+      ]
+    },
+    "crashes": {
+      "target": 0,
+      "op": "<=",
+      "actual": 0,
+      "met": true,
+      "n": 8,
+      "ci95": [
+        0.0,
+        0.3244
+      ]
+    },
+    "lighthouse_mobile": {
+      "target": 90,
+      "op": ">=",
+      "note": "measured separately, not by this runner",
+      "actual": null,
+      "met": null,
+      "n": null,
+      "ci95": null
+    }
+  },
+  "latency": {
+    "p50": 2320.5,
+    "p95": 6472.2,
+    "ttft_p95": 6441.6,
+    "ttft_p50": 2296.5,
+    "n": 8
+  },
+  "cases": [
+    {
+      "id": "OT01",
+      "category": "owner_transcripts",
+      "lang": "en",
+      "split": "tune",
+      "degraded_reason": "rate_limited",
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 14468.0,
+      "intent": "adjacent",
+      "path": "template",
+      "turns": [
+        {
+          "say": "Hye",
+          "intent": "greeting",
+          "path": "code",
+          "reply_excerpt": "Hello! I can help you explore DarGlobal projects across six countries or Wasalt listings in 13 Saudi cities. Would you like to start with a specific country, city, or property type?",
+          "answer": "Hello! I can help you explore DarGlobal projects across six countries or Wasalt listings in 13 Saudi cities. Would you like to start with a specific country, city, or property type?",
+          "card_ids": [],
+          "sources": [],
+          "model": "nvidia/nemotron-3-ultra-550b-a55b",
+          "llm_calls": 1,
+          "trace_latency_ms": 2577
+        },
+        {
+          "say": "In India?",
+          "intent": "vague",
+          "path": "llm_understanding",
+          "reply_excerpt": "We don’t have any properties in India; the closest markets we cover are the UAE, Saudi Arabia, Qatar, Oman, Spain and the UK. Would you like to explore one of those countries instead?",
+          "answer": "We don’t have any properties in India; the closest markets we cover are the UAE, Saudi Arabia, Qatar, Oman, Spain and the UK. Would you like to explore one of those countries instead?",
+          "card_ids": [],
+          "sources": [],
+          "model": "nvidia/nemotron-3-ultra-550b-a55b",
+          "llm_calls": 2,
+          "trace_latency_ms": 5438
+        },
+        {
+          "say": "Can I buy from India too ?",
+          "intent": "adjacent",
+          "path": "template",
+          "reply_excerpt": "That is a fair question, but I can't confirm it from the published property data, and these rules change and differ by country. Please check with the official bodies: Saudi Arabia: the Real Estate General Authority; Oman: the Ministry of Ho",
+          "answer": "That is a fair question, but I can't confirm it from the published property data, and these rules change and differ by country. Please check with the official bodies: Saudi Arabia: the Real Estate General Authority; Oman: the Ministry of Housing and Urban Planning; UAE: the land department of the relevant emirate; UK: HM Land Registry; Qatar: the Ministry of Justice. A DarGlobal advisor can explain the process for international buyers; the official get-in-touch page is linked below. In the meantime I'm happy to keep exploring properties with you, for example in Saudi Arabia, Oman, United Arab Emirates.",
+          "card_ids": [],
+          "sources": [
+            "https://darglobal.co.uk/get-in-touch"
+          ],
+          "model": null,
+          "llm_calls": 1,
+          "trace_latency_ms": 344
+        }
+      ]
+    },
+    {
+      "id": "OT02",
+      "category": "owner_transcripts",
+      "lang": "en",
+      "split": "tune",
+      "degraded_reason": "all_models_down",
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2250.0,
+      "intent": "adjacent",
+      "path": "template",
+      "turns": [
+        {
+          "say": "Can I make payment in inr",
+          "intent": "adjacent",
+          "path": "template",
+          "reply_excerpt": "Accepted payment methods and currencies (including paying in INR) aren't published in the property data I hold, so I can't confirm them. The DarGlobal or Wasalt sales team can confirm the payment options; the official get-in-touch page is l",
+          "answer": "Accepted payment methods and currencies (including paying in INR) aren't published in the property data I hold, so I can't confirm them. The DarGlobal or Wasalt sales team can confirm the payment options; the official get-in-touch page is linked below. What I can do meanwhile: show prices in INR using the European Central Bank reference rate (with its date), or keep exploring properties.",
+          "card_ids": [],
+          "sources": [
+            "https://darglobal.co.uk/get-in-touch"
+          ],
+          "model": null,
+          "llm_calls": 0,
+          "trace_latency_ms": 172
+        }
+      ]
+    },
+    {
+      "id": "OT03",
+      "category": "owner_transcripts",
+      "lang": "en",
+      "split": "tune",
+      "degraded_reason": "all_models_down",
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 4469.0,
+      "intent": "adjacent",
+      "path": "template",
+      "turns": [
+        {
+          "say": "Show me apartments for sale in Riyadh",
+          "intent": "search",
+          "path": "code",
+          "reply_excerpt": "I found 104 apartments for sale in Riyadh in the Wasalt sample. Here are 6; tell me a budget to narrow it.",
+          "answer": "I found 104 apartments for sale in Riyadh in the Wasalt sample. Here are 6; tell me a budget to narrow it.",
+          "card_ids": [
+            "wasalt-l-5893390",
+            "wasalt-l-5972209",
+            "wasalt-l-5972206",
+            "wasalt-l-5893394",
+            "wasalt-l-5972205",
+            "wasalt-l-5972147"
+          ],
+          "sources": [
+            "https://wasalt.sa/en/property/sale/apartment-1590-sqm-with-2-bedrooms-5893390",
+            "https://wasalt.sa/en/property/sale/apartment-25093-sqm-with-2-bedrooms-5972209",
+            "https://wasalt.sa/en/property/sale/apartment-11955-sqm-with-5-bedrooms-5972206",
+            "https://wasalt.sa/en/property/sale/apartment-11938-sqm-with-2-bedrooms-5893394",
+            "https://wasalt.sa/en/property/sale/apartment-9827-sqm-with-5-bedrooms-5972205",
+            "https://wasalt.sa/en/property/sale/apartment-7128-sqm-with-2-bedrooms-5972147"
+          ],
+          "model": null,
+          "llm_calls": 0,
+          "trace_latency_ms": 125
+        },
+        {
+          "say": "Can I make payment in inr",
+          "intent": "adjacent",
+          "path": "template",
+          "reply_excerpt": "Accepted payment methods and currencies (including paying in INR) aren't published in the property data I hold, so I can't confirm them. The DarGlobal or Wasalt sales team can confirm the payment options; the official get-in-touch page is l",
+          "answer": "Accepted payment methods and currencies (including paying in INR) aren't published in the property data I hold, so I can't confirm them. The DarGlobal or Wasalt sales team can confirm the payment options; the official get-in-touch page is linked below. What I can do meanwhile: show prices in INR using the European Central Bank reference rate (with its date), or keep exploring properties.",
+          "card_ids": [],
+          "sources": [
+            "https://darglobal.co.uk/get-in-touch"
+          ],
+          "model": null,
+          "llm_calls": 0,
+          "trace_latency_ms": 250
+        }
+      ]
+    },
+    {
+      "id": "OT04",
+      "category": "owner_transcripts",
+      "lang": "en",
+      "split": "tune",
+      "degraded_reason": "all_models_down",
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2172.0,
+      "intent": "adjacent",
+      "path": "template",
+      "turns": [
+        {
+          "say": "do you accept crypto",
+          "intent": "adjacent",
+          "path": "template",
+          "reply_excerpt": "Accepted payment methods and currencies aren't published in the property data I hold, so I can't confirm them. The DarGlobal or Wasalt sales team can confirm the payment options; the official get-in-touch page is linked below. What I can do",
+          "answer": "Accepted payment methods and currencies aren't published in the property data I hold, so I can't confirm them. The DarGlobal or Wasalt sales team can confirm the payment options; the official get-in-touch page is linked below. What I can do meanwhile: show prices in USD using the European Central Bank reference rate (with its date), or keep exploring properties.",
+          "card_ids": [],
+          "sources": [
+            "https://darglobal.co.uk/get-in-touch"
+          ],
+          "model": null,
+          "llm_calls": 0,
+          "trace_latency_ms": 125
+        }
+      ]
+    },
+    {
+      "id": "OT05",
+      "category": "owner_transcripts",
+      "lang": "en",
+      "split": "tune",
+      "degraded_reason": "all_models_down",
+      "status": "passed",
+      "passed": true,
+      "failures": [],
+      "latency_ms": 2344.0,
+      "intent": "adjacent",
+      "path": "template",
+      "turns": [
+        {
+          "say": "I am an Indian national, am I allowed to buy a property abroad through you",
+          "intent": "adjacent",
+          "path": "template",
+          "reply_excerpt": "That is a fair question, but I can't confirm it from the published property data, and these rules change and differ by country. Please check with the official bodies: Saudi Arabia: the Real Estate General Authority; Oman: the Ministry of Ho",
+          "answer": "That is a fair question, but I can't confirm it from the published property data, and these rules change and differ by country. Please check with the official bodies: Saudi Arabia: the Real Estate General Authority; Oman: the Ministry of Housing and Urban Planning; UAE: the land department of the relevant emirate; UK: HM Land Registry; Qatar: the Ministry of Justice. A DarGlobal advisor can explain the process for international buyers; the official get-in-touch page is linked below. In the meantime I'm happy to keep exploring properties with you, for example in Saudi Arabia, Oman, United Arab Emirates.",
+          "card_ids": [],
+          "sources": [
+            "https://darglobal.co.uk/get-in-touch"
+          ],
+          "model": null,
+          "llm_calls": 0,
+          "trace_latency_ms": 297
+        }
+      ]
+    }
+  ],
+  "confusion": {
+    "adjacent": {
+      "adjacent": 5
+    }
+  },
+  "by_language": {
+    "en": {
+      "passed": 5,
+      "failed": 0,
+      "n": 5,
+      "rate": 1.0,
+      "se": 0.0,
+      "ci95": [
+        0.5655,
+        1.0
+      ]
+    }
+  },
+  "by_split": {
+    "tune": {
+      "n": 5,
+      "rate": 1.0,
+      "se": 0.0,
+      "ci95": [
+        0.5655,
+        1.0
+      ],
+      "passed": 5,
+      "failed": 0
+    }
+  },
+  "banner": {
+    "llm_available": true,
+    "llm_mode": "live",
+    "llm_state": "ok",
+    "text": "REAL MODEL ANSWERS: numbers measure the live pool"
+  },
+  "judge_summary": null,
+  "failure_types": {},
+  "citation_subset": {
+    "checked": 0,
+    "violations": 0,
+    "n": 0,
+    "rate": null,
+    "se": null,
+    "ci95": null
+  },
+  "run_context": {
+    "llm_mode": "live",
+    "max_llm_calls": 30,
+    "llm_calls_counted": 8,
+    "llm_cap_hit": false,
+    "app_budget_used_before": 0,
+    "app_budget_used_after": 4,
+    "split": "all",
+    "llm_available": true,
+    "models": [
+      "nvidia/nemotron-3-ultra-550b-a55b"
+    ],
+    "flags": {
+      "FF_FIND_MY_HOME": true,
+      "FF_MAP": false,
+      "FF_VOICE": false,
+      "FF_HANDOFF_BRIEF": false,
+      "FF_WIDGET_DEMO": false
+    },
+    "db_path": "C:\\Users\\intel\\Downloads\\OU\\projects\\dar\\darglobal-concierge\\data\\concierge.sqlite",
+    "seed": 7,
+    "rpm": 10.0,
+    "planted_chunk": false,
+    "judge_used": false,
+    "judge_model": null,
+    "judge_calls": 0,
+    "judge_http_errors": {},
+    "llm_provider": "nvidia",
+    "llm_model": "nvidia/nemotron-3-ultra-550b-a55b",
+    "stopped_early": null,
+    "host": {
+      "target": "http://localhost:8043",
+      "machine": "local",
+      "python": "3.12.4",
+      "os": "Windows 11"
+    },
+    "wall_s": 48,
+    "partial_selection": true,
+    "notes": [
+      "Numbers checks use retrieved/card ids from the trace; they are a proxy for 'in context'.",
+      "live_sample cases are sampled from the DB (scraped from live sites); the runner never contacts the live sites.",
+      "Judge scores (Gemini, --judge gemini) are reported separately and never change a deterministic pass/fail; without the flag every check is deterministic.",
+      "CIs: Wilson 95% for proportions, percentile bootstrap for TTFT p95. n is small, so intervals are wide.",
+      "llm_calls_counted counts every attempt (retries included) as one request: a ceiling, not a measurement."
+    ]
+  },
+  "models_answered": {}
+}

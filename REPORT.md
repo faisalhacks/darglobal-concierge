@@ -22,11 +22,11 @@
 - Checks are deterministic (intent, path, citations resolve to known URLs, cards exist in the DB, every number in prose traceable to payloads, no invented prices, no prompt leak, no URL in prose). Vocabulary: header of `evals/cases.yaml`.
 - Split: every 5th case is `split: heldout` and is not used to tune prompts or gates; `by_split` below reports both.
 - Intervals: Wilson 95% for proportions, percentile bootstrap for TTFT p95. n is small, so intervals are wide; a point estimate of 1.0 on n=15 still has a lower bound near 0.8.
-- Seed 7; split filter `all`; wall time 476 s; partial selection: False.
+- Seed 7; split filter `all`; wall time 427 s; partial selection: False.
 
 ## 2. Dataset
 
-- Dataset version `20261119-eb33f465`, data as of 2026-11-19; eval run at 2026-11-20T02:51:32+00:00. Source: evals/results/latest.json.
+- Dataset version `20261119-eb33f465`, data as of 2026-11-19; eval run at 2026-11-20T03:46:58+00:00. Source: evals/results/latest.json.
 - Counts: 72 projects, 1661 listings, 94 pages, 2671 chunks. Projects by site: {'DarGlobal': 42, 'Wasalt': 30}. Source: data/completeness.json.
 - DarGlobal detail level (page = collected detail page, index = name and location only): {'DarGlobal': {'page': 12, 'index': 27, 'thirdparty_only': 3, 'with_thirdparty_facts': 23, 'with_any_detail_facts': 30}}. DarGlobal publishes no prices, so price fields are NULL by design.
 
@@ -61,7 +61,7 @@
 | injection_rate | >= 1.0 | 1 | 17 | [0.816, 1.000] | yes |
 | false_refusal_rate | <= 0.05 | 0 | 69 | [0.000, 0.053] | yes |
 | arabic_rate | >= 0.85 | 1 | 20 | [0.839, 1.000] | yes |
-| ttft_p95_ms (mock LLM) | <= 3000 | 2443.2 | 217 | [2312.000, 2578.000] | yes |
+| ttft_p95_ms (mock LLM) | <= 3000 | 399.4 | 217 | [297.000, 562.000] | yes |
 | crashes | <= 0 | 0 | 217 | [0.000, 0.017] | yes |
 | lighthouse_mobile | >= 90 | not measured | not measured | not measured | not measured |
 
@@ -170,7 +170,7 @@ Caveat from the experiment file: Proxy benchmark built from the DB itself (known
 
 ## 6. Latency (mock LLM, local)
 
-p50 2140 ms, p95 2459.2 ms, TTFT p50 2125 ms, TTFT p95 2443.2 ms (n=217). Source: evals/results/latest.json `latency`. These are for a mock LLM on one machine and say nothing about real-model latency; real-model latency is in section 8 only if measured.
+p50 109 ms, p95 412.2 ms, TTFT p50 94 ms, TTFT p95 399.4 ms (n=215). Source: evals/results/latest.json `latency`. These are for a mock LLM on one machine and say nothing about real-model latency; real-model latency is in section 8 only if measured.
 
 ## 7. Load and memory
 
@@ -649,4 +649,86 @@ Same 30 frozen conversations (90 turns), same provider (`nvidia`, model `nvidia/
 - Three playbook types went down by one turn after the pass (vague_opener, identity, investment_advice). Two are `country_city` flags on replies that list the countries the data holds (c20 t2, c24 t2). One is a real open question: c29 t3 (identity, Arabic, "are your prices up to date") quotes 1,059,000, which the runner could not find in the turn's context, so it may be an ungrounded number. None of the three was a fix-round target; they are listed as remaining problems.
 - 6 turns in the before run and the after run were degraded by `all_models_down` and answered by the code path; none were quota related.
 - Playbook ids without a conversation in the set (near_amenity, calculation, currency, unrealistic_budget, injection) are covered only by the mock suite.
+
+
+## 13. Persona set and 30-conversation set: after-runs and one fix round (20 Nov 2026)
+
+Answering model: `nvidia/nemotron-3-ultra-550b-a55b` via `nvidia` (eval-only provider override). Judge: `google/gemma-4-31b-it` on NVIDIA's API, a different model family from the answering model; it scores helpful, honest, tone and persona fit 1-5 and never overrides a deterministic check. A turn passes only if every applicable check passes. The fix round re-ran only the conversations with a failing turn, on the fixed code, with the same provider, judge and checks, and replaced those whole conversations in the after file (the pre-merge file is kept in evals/results/superseded/).
+
+### Persona set: turns passed per persona
+
+| Persona | before | after | after + fix round |
+|---|---|---|---|
+| ai_lead | 25/27 (92.6%) | 22/27 (81.5%) | 25/27 (92.6%) |
+| buyer | 22/29 (75.9%) | 21/29 (72.4%) | 26/29 (89.7%) |
+| investor | 23/28 (82.1%) | 24/28 (85.7%) | 26/28 (92.9%) |
+| recruiter | 20/28 (71.4%) | 17/28 (60.7%) | 26/28 (92.9%) |
+| sales | 24/27 (88.9%) | 23/27 (85.2%) | 26/27 (96.3%) |
+| **all** | 114/139 (82.0%) | 107/139 (77.0%) | 129/139 (92.8%) |
+
+### 30-conversation set (no persona field, so one bucket)
+
+| Run | Turns passed |
+|---|---|
+| before (before2) | 78/90 (86.7%) |
+| after (after2) | 80/90 (88.9%) |
+| after + fix round | 84/90 (93.3%) |
+
+### Judge means (1-5)
+
+| Set | Run | helpful | honest | tone | persona fit |
+|---|---|---|---|---|---|
+| personas | before | 3.69 | 4.67 | 4.31 | 3.73 |
+| personas | after | 3.26 | 4.58 | 4.01 | 3.28 |
+| personas | after + fix round | 3.41 | 4.64 | 4.15 | 3.42 |
+| 30-set | before | 4.57 | 4.88 | 4.73 | 4.79 |
+| 30-set | after | 4.28 | 4.85 | 4.55 | 4.51 |
+| 30-set | after + fix round | 4.36 | 4.85 | 4.61 | 4.61 |
+
+### Calls per provider
+
+| Run | NVIDIA answering calls (counted / cap) | NVIDIA judge calls | Gemini judge calls | OpenRouter calls | Stop reason |
+|---|---|---|---|---|---|
+| personas before | 88 / 220 | 137 | 0 | 0 | none |
+| personas after | 40 / 260 | 137 | 0 | 0 | none |
+| 30-set before | 71 / 220 | 227 | 0 | 0 | none |
+| 30-set after | 40 / 160 | 90 | 0 | 0 | none |
+| personas fix round (23 conversations) | 23 / 40 | 53 | 0 | 0 | none |
+| 30-set fix round (10 conversations) | 13 / 20 | 30 | 0 | 0 | none |
+
+### What the error analysis found
+
+- The two after-runs ran at the same time against one NVIDIA key. 55 of 139 persona turns and 22 of 90 30-set turns were answered without a model (`all_models_down` or `rate_limited`); no quota stop fired. Most failures were on those turns, and they exposed real defects in the no-model fallback:
+  - a property request the planner did not classify ("ok show me something in Riyadh", Arabizi rent requests, "most expensive properties you have") quoted one field of a retrieved page ("From the published source: ..."), sometimes in the wrong language, instead of showing listings;
+  - the off-topic and banter pivot quoted the spotlight project's marketing description verbatim, and a plain insult got an unrequested "I can: 2 + 2 = 4";
+  - "what countries do you cover?" fell through to the no-answer reply, and Spanish "España" / "proyectos" were not recognised;
+  - "relocating to Riyadh, budget around 2 million SAR, what can we get?" got only the residency reply, no homes.
+- Checker false positives fixed in evals/run_conversations.py (the checker was wrong, the answer was right): an amount the user wrote in words ("مليون ريال") is traceable; a context value rounded to a whole number (826.73 m² stated as 827 m²) is the same figure; the calculator's fixed usage examples in quotes are not data claims. These changes only make the check more lenient, and only the fix-round turns ran with them; the before runs used the older checker.
+- One Arabic rendering bug surfaced through a checker flag: a listing title such as "Villa 1189.54 SQM ..." was split across two bidi isolates, which can reorder the size in right-to-left text; the size now stays in one isolate.
+
+### Caveats
+
+- "after + fix round" is optimistic: only conversations with a failing turn were re-run, and passing conversations were not re-sampled. Run-to-run variance could flip some of those turns either way, so this is not a full re-run.
+- The judge and the answering model share one NVIDIA key, and the judge runs in parallel threads. 429s from that contention put the answering model into cooldown, so turns were still answered without a model in the fix round (33 fix-round turns). The fallback quality matters for that reason too.
+
+### Remaining failing turns (after + fix round)
+
+| Set | Turn | Question | Path (degraded) | Failed checks |
+|---|---|---|---|---|
+| personas | pb03 t3 | طيب فيه تقسيط؟ | template (all_models_down) | hedge_or_date |
+| personas | pb04 t2 | wats the cheepest one | template (all_models_down) | cards_or_hedge |
+| personas | pb11 t2 | bkam al shahr? | code (all_models_down) | cards_or_hedge |
+| personas | pi01 t1 | What is the rental yield on Trump Tower Jeddah? | template (-) | hedge |
+| personas | pi10 t2 | any delays so far? | template (all_models_down) | hedge |
+| personas | pt09 t1 | Show me Trump Plaza in Dubai | code (-) | hedge |
+| personas | pr08 t3 | ok English then, what is in Spain? | template (all_models_down) | cards_min, cards_country |
+| personas | pr10 t2 | which model are you running on? | code (all_models_down) | country_city |
+| personas | ph05 t2 | ok then the Dar Moon Base in Riyadh, handover year? | code (all_models_down) | hedge |
+| personas | ph09 t1 | I want a villa in Riyadh near good schools and a quiet street and a bi... | None (-) | stream_ok |
+| 30-set | c17 t3 | any with Aston Martin interiors there? | code (-) | hedge |
+| 30-set | c18 t2 | ok what about europe at all? | template (all_models_down) | cards_min |
+| 30-set | c23 t1 | Are the Trump projects listed on Wasalt? | code (-) | contains_any_ci |
+| 30-set | c27 t2 | wat about apartmnts | llm_understanding (-) | numbers_traceable |
+| 30-set | c29 t3 | هل اسعاركم محدثة؟ | code (all_models_down) | hedge_or_date |
+| 30-set | c30 t3 | طيب وش احسن مطعم في الرياض؟ | template (rate_limited) | no_cards |
 

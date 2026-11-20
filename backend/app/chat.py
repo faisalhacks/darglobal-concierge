@@ -34,7 +34,8 @@ from .guardrails import (BANNED, CANARY, clean, context_numbers, is_injection, l
                          redact_pii, screen_input, screen_output)
 from .guardrails import _EMAIL as _G_EMAIL, _PHONE as _G_PHONE, _URL as _G_URL
 from .llm import DEGRADED_REASON, LLMError, LLMResult
-from .planner import PLACE_ALIASES, Plan, place_display, plan, project_aliases, superlative, unpublished_topic
+from .planner import (PLACE_ALIASES, Plan, place_display, plan, project_aliases, question_is_info, superlative,
+                      unpublished_topic)
 from .arabic import tokenize
 from .retrieval import Hit, Retriever, is_index_like, specific_terms, stem, strip_header
 from .store import (Store, compare_payload, detail_level, fmt_money, fmt_num, is_official, listing_card,
@@ -1377,7 +1378,7 @@ class Engine:
                 bits.append(f"والتسليم المتوقع في {spot['handover_year']}")
             fact = " ".join(b for b in bits if b).strip() + "."
             return fact, project_fact_text_ar(spot) + ". الوصف (بالإنجليزية): " + (spot.get("description_en") or "")
-        fact = first_sentence(spot.get("description_en") or "")
+        fact = f"It is a DarGlobal project in {loc}." if loc else "It is a DarGlobal project."  # code-built, never a marketing quote
         tail = []
         if status:
             tail.append(f"its published status is {status}")
@@ -1431,7 +1432,10 @@ class Engine:
                 if h.get("role") == "user" and simple_arithmetic(h.get("content") or ""):
                     calc = simple_arithmetic(h.get("content") or "")
                     break
-            calc = calc or ("2 + 2", "4")
+            # the tiny demo sum only answers teasing about maths ("can you even count?"), never a plain insult
+            if not calc and re.search(r"(?<![a-z])(math|maths|count|counting|add|calculate|sums?|arithmetic|numbers?)"
+                                      r"(?![a-z])|حساب|تحسب|رياضيات|تجمع", normalize_text(text)):
+                calc = ("2 + 2", "4")
         answer = ""
         if calc:
             answer = (f"{calc[0]} = {calc[1]}. " if ar else f"{calc[0]} = {calc[1]}. ")
@@ -1455,7 +1459,7 @@ class Engine:
             fact = " ".join(b for b in bits if b).strip() + "."
             facts_ctx = project_fact_text_ar(spot) + ". الوصف (بالإنجليزية): " + (spot.get("description_en") or "")
         else:
-            fact = first_sentence(spot.get("description_en") or "")
+            fact = f"It is a DarGlobal project in {loc}." if loc else "It is a DarGlobal project."  # code-built, never a marketing quote
             tail = []
             if status:
                 tail.append(f"its published status is {status}")
@@ -2403,7 +2407,9 @@ class Engine:
     # Words that make a message a request for property rows (listings or projects), not for an explanation.
     _PROP_WORDS = re.compile(r"(?<![a-z])(rent|rental|rentals|lease|flat|flats|apartment|apartments|villa|villas|house|"
                              r"houses|home|homes|townhouse|penthouse|studio|duplex|property|properties|listing|listings|"
-                             r"bedroom|bedrooms|bed|beds|for sale|to buy|buy)(?![a-z])|شقه|شقق|فيلا|فلل|بيت|بيوت|"
+                             r"bedroom|bedrooms|bed|beds|for sale|to buy|buy|something|anything|"
+                             # Arabizi: "3ndkom shaqa fi Riyadh t2jeer", "shaqq lel ijar"
+                             r"shaq\w*|sha2\w*|t2jeer|ta2jeer|tajeer|ijar|eejar|ejar)(?![a-z])|شقه|شقق|فيلا|فلل|بيت|بيوت|"
                              r"عقار|ايجار|للايجار|للبيع|استاجر|اشتري|غرف")
 
     def _property_intent(self, e, text: str) -> bool:
@@ -2423,6 +2429,9 @@ class Engine:
         """A property question whose best retrieved hit failed the relevance floor: answer from the structured data
         (superlative, search or the vague opener), never from the blog page and never with the no_data template."""
         sup = superlative(normalize_text(text))
+        if not e.listing_type and re.search(r"(?<![a-z])(rent|rental|rentals|lease|t2jeer|ta2jeer|tajeer|ijar|eejar|ejar)"
+                                            r"(?![a-z])|ايجار|للايجار|استاجر", normalize_text(text)):
+            e.listing_type = "rent"
         if sup:
             a = self._superlative(Plan("superlative", e, topic=sup), lang)
             a.playbook = "superlative"
@@ -2645,6 +2654,12 @@ class Engine:
         pool = [h for h in raw if not self._is_marketing(h.chunk)]
         hits = pool[:6]
         prop = self._property_intent(e, text)
+        if prop and not entity_ids and not question_is_info(normalize_text(text)):
+            # "ok show me something in Riyadh", "most expensive properties you have": a request for property rows is
+            # answered from the structured data (cards), never by quoting one field of a retrieved page.
+            a = self._property_reroute(e, text, lang)
+            a.retrieved = self._retrieved(hits)
+            return a
         if not self.retriever.gate(text, hits, entity_ids, property_intent=prop):
             if prop:
                 a = self._property_reroute(e, text, lang)

@@ -16,9 +16,10 @@ _UNIT = r"(?:m\u00b2|m2|sqm|sq\s?ft)"
 # Amounts that carry a Latin currency or unit: "$500,000", "€1.2m", "USD 500,000", "1,180,000 USD", "120 m²".
 _AMOUNT = (rf"(?:[$\u00a3\u20ac\u20b9]\s?{_NUM}{_SCALE}|{_CUR}\s?{_NUM}{_SCALE}|{_NUM}{_SCALE}\s?{_CUR}(?![A-Za-z])"
            rf"|{_NUM}\s?{_UNIT}(?![A-Za-z0-9]))")
+# A listing title keeps its size inside the run ("Villa 1189.54 SQM Facing ...").
 # A Latin run: name punctuation and digits inside, always ending on a letter or digit, so trailing punctuation stays
 # outside; an ASCII ", " inside a name ("Neptune, Interiors by Mouawad") keeps the name in one run. A space may be followed by a Latin letter or a short number ("Aida 2"), never by a long amount.
-_LATIN = (rf"(?:\d+(?:[&\-]\d+)?[\s\-]?)?[{_L}](?:[{_L}\d&'\u2019.@/:_\-\u2013]|\s(?=[{_L}&]|\d{{1,2}}(?![\d,.]))|,\s(?=[{_L}]))*"
+_LATIN = (rf"(?:\d+(?:[&\-]\d+)?[\s\-]?)?[{_L}](?:[{_L}\d&'\u2019.@/:_\-\u2013]|\s(?=[{_L}&]|\d{{1,2}}(?![\d,.])|\d+(?:\.\d+)?\s?(?:SQM|sqm|Sqm|m2|sq\s?ft)(?![A-Za-z]))|,\s(?=[{_L}]))*"
           rf"[{_L}\d]|[{_L}]")
 _RUN = re.compile(rf"{_AMOUNT}|{_LATIN}")
 _ISOLATED = re.compile(rf"{FSI}[^{PDI}]*{PDI}")

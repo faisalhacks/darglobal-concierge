@@ -1,6 +1,6 @@
 {
-  "run_at": "2026-11-20T02:51:32+00:00",
-  "base_url": "http://localhost:8044",
+  "run_at": "2026-11-20T03:46:58+00:00",
+  "base_url": "http://127.0.0.1:8046",
   "dataset_version": "20261119-eb33f465",
   "data_as_of": "2026-11-19",
   "totals": {
@@ -284,12 +284,12 @@
     "ttft_p95_ms": {
       "target": 3000,
       "op": "<=",
-      "actual": 2443.2,
+      "actual": 399.4,
       "met": true,
       "n": 217,
       "ci95": [
-        2312.0,
-        2578.0
+        297.0,
+        562.0
       ]
     },
     "crashes": {
@@ -314,11 +314,11 @@
     }
   },
   "latency": {
-    "p50": 2140.0,
-    "p95": 2459.2,
-    "ttft_p95": 2443.2,
-    "ttft_p50": 2125.0,
-    "n": 217
+    "p50": 109.0,
+    "p95": 412.2,
+    "ttft_p95": 399.4,
+    "ttft_p50": 94.0,
+    "n": 215
   },
   "cases": [
     {
@@ -329,7 +329,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2203.0,
+      "latency_ms": 109.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -355,7 +355,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 172
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -368,7 +368,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 78.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -384,7 +384,7 @@
           ],
           "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
           "llm_calls": 0,
-          "trace_latency_ms": 63
+          "trace_latency_ms": 77
         }
       ]
     },
@@ -397,7 +397,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2171.0,
+      "latency_ms": 79.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -416,7 +416,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 108
+          "trace_latency_ms": 79
         }
       ]
     },
@@ -428,7 +428,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2016.0,
+      "latency_ms": 31.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -442,7 +442,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 0
+          "trace_latency_ms": 15
         }
       ]
     },
@@ -454,7 +454,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 94.0,
       "intent": "advice",
       "path": "template",
       "turns": [
@@ -483,7 +483,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 125.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -509,7 +509,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -522,7 +522,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2313.0,
+      "latency_ms": 265.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -553,7 +553,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2110.0,
+      "latency_ms": 109.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -579,7 +579,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 93
+          "trace_latency_ms": 92
         }
       ]
     },
@@ -591,7 +591,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 94.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -617,7 +617,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 77
         }
       ]
     },
@@ -629,7 +629,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2171.0,
+      "latency_ms": 125.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -657,7 +657,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 108
+          "trace_latency_ms": 93
         }
       ]
     },
@@ -669,7 +669,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 94.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -707,7 +707,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 79.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -747,7 +747,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2078.0,
+      "latency_ms": 78.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -774,7 +774,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 63
         }
       ]
     },
@@ -786,7 +786,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 93.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -812,7 +812,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 77
         }
       ]
     },
@@ -824,7 +824,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 125.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -852,7 +852,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -864,7 +864,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 94.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -889,7 +889,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 61
+          "trace_latency_ms": 78
         }
       ]
     },
@@ -902,7 +902,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2343.0,
+      "latency_ms": 313.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -918,7 +918,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 295
+          "trace_latency_ms": 312
         }
       ]
     },
@@ -930,7 +930,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2219.0,
+      "latency_ms": 141.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -948,7 +948,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 172
+          "trace_latency_ms": 141
         }
       ]
     },
@@ -960,7 +960,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 78.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -990,7 +990,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 94.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1020,7 +1020,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 109.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1038,7 +1038,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 108
+          "trace_latency_ms": 92
         }
       ]
     },
@@ -1050,7 +1050,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2157.0,
+      "latency_ms": 125.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1068,7 +1068,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -1080,7 +1080,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 94.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1110,7 +1110,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2172.0,
+      "latency_ms": 110.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1128,7 +1128,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -1140,7 +1140,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 79.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1158,7 +1158,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 79
+          "trace_latency_ms": 62
         }
       ]
     },
@@ -1170,7 +1170,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 110.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1200,7 +1200,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 78.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1230,7 +1230,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 125.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1248,7 +1248,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 108
         }
       ]
     },
@@ -1260,7 +1260,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 110.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1278,7 +1278,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 93
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -1290,7 +1290,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 125.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1308,7 +1308,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 94
         }
       ]
     },
@@ -1320,7 +1320,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 125.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -1348,7 +1348,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -1360,7 +1360,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 94.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -1400,7 +1400,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 110.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -1428,7 +1428,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 93
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -1440,7 +1440,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2187.0,
+      "latency_ms": 172.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -1468,7 +1468,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 155
+          "trace_latency_ms": 156
         }
       ]
     },
@@ -1480,7 +1480,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2187.0,
+      "latency_ms": 171.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -1520,7 +1520,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 94.0,
       "intent": "compare",
       "path": "code",
       "turns": [
@@ -1539,7 +1539,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 94
         }
       ]
     },
@@ -1551,7 +1551,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2187.0,
+      "latency_ms": 156.0,
       "intent": "compare",
       "path": "code",
       "turns": [
@@ -1571,7 +1571,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 141
         }
       ]
     },
@@ -1583,7 +1583,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4594.0,
+      "latency_ms": 530.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1601,7 +1601,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 77
         },
         {
           "say": "How much does it start from?",
@@ -1617,7 +1617,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 469
+          "trace_latency_ms": 436
         }
       ]
     },
@@ -1629,7 +1629,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4609.0,
+      "latency_ms": 563.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1647,7 +1647,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 93
         },
         {
           "say": "When will it be ready?",
@@ -1663,7 +1663,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 437
+          "trace_latency_ms": 454
         }
       ]
     },
@@ -1675,7 +1675,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4671.0,
+      "latency_ms": 578.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1709,7 +1709,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 515
+          "trace_latency_ms": 500
         }
       ]
     },
@@ -1721,7 +1721,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4813.0,
+      "latency_ms": 797.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1755,7 +1755,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 625
+          "trace_latency_ms": 640
         }
       ]
     },
@@ -1767,7 +1767,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4718.0,
+      "latency_ms": 672.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -1793,7 +1793,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 61
+          "trace_latency_ms": 79
         },
         {
           "say": "And in Riyadh?",
@@ -1818,7 +1818,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 561
+          "trace_latency_ms": 578
         }
       ]
     },
@@ -1830,7 +1830,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4234.0,
+      "latency_ms": 235.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -1857,7 +1857,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 78
         },
         {
           "say": "Only DarGlobal ones please",
@@ -1878,7 +1878,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 140
         }
       ]
     },
@@ -1891,7 +1891,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4828.0,
+      "latency_ms": 814.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -1910,7 +1910,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 93
         },
         {
           "say": "Which one is bigger?",
@@ -1925,7 +1925,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 655
+          "trace_latency_ms": 687
         }
       ]
     },
@@ -1937,7 +1937,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4578.0,
+      "latency_ms": 531.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -1971,7 +1971,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 422
+          "trace_latency_ms": 437
         }
       ]
     },
@@ -1983,7 +1983,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4312.0,
+      "latency_ms": 250.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -2002,7 +2002,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 45
+          "trace_latency_ms": 47
         },
         {
           "say": "OK, then what projects do you have in Saudi Arabia?",
@@ -2026,7 +2026,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 171
+          "trace_latency_ms": 172
         }
       ]
     },
@@ -2038,7 +2038,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4203.0,
+      "latency_ms": 109.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -2052,7 +2052,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 0
+          "trace_latency_ms": 15
         },
         {
           "say": "Fine. Show me projects in Saudi Arabia",
@@ -2076,7 +2076,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 92
         }
       ]
     },
@@ -2089,7 +2089,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2188.0,
+      "latency_ms": 140.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -2107,7 +2107,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 141
+          "trace_latency_ms": 140
         }
       ]
     },
@@ -2120,7 +2120,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4609.0,
+      "latency_ms": 532.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -2139,7 +2139,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 250
+          "trace_latency_ms": 282
         },
         {
           "say": "What is its price?",
@@ -2156,7 +2156,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 234
+          "trace_latency_ms": 250
         }
       ]
     },
@@ -2169,7 +2169,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4734.0,
+      "latency_ms": 671.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -2197,7 +2197,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 108
         },
         {
           "say": "My budget is around 2,000,000 AED",
@@ -2211,7 +2211,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 530
+          "trace_latency_ms": 545
         }
       ]
     },
@@ -2223,7 +2223,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4531.0,
+      "latency_ms": 500.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -2237,7 +2237,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 140
         },
         {
           "say": "And if it was 150 m2?",
@@ -2249,7 +2249,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 312
+          "trace_latency_ms": 327
         }
       ]
     },
@@ -2262,7 +2262,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4875.0,
+      "latency_ms": 797.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -2288,7 +2288,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 93
         },
         {
           "say": "بالعربية من فضلك",
@@ -2303,7 +2303,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 687
+          "trace_latency_ms": 672
         }
       ]
     },
@@ -2315,7 +2315,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 94.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -2355,7 +2355,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4328.0,
+      "latency_ms": 2157.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -2371,7 +2371,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 2313
+          "trace_latency_ms": 2125
         }
       ]
     },
@@ -2384,7 +2384,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 109.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -2403,7 +2403,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -2415,7 +2415,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2062.0,
+      "latency_ms": 16.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -2441,7 +2441,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2110.0,
+      "latency_ms": 78.0,
       "intent": "advice",
       "path": "template",
       "turns": [
@@ -2458,7 +2458,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 77
         }
       ]
     },
@@ -2471,7 +2471,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2218.0,
+      "latency_ms": 187.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -2490,7 +2490,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 186
+          "trace_latency_ms": 172
         }
       ]
     },
@@ -2503,7 +2503,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 62.0,
       "intent": "greeting",
       "path": "code",
       "turns": [
@@ -2517,7 +2517,7 @@
           "sources": [],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 61
         }
       ]
     },
@@ -2529,7 +2529,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 79.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -2557,7 +2557,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 79
         }
       ]
     },
@@ -2569,7 +2569,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2110.0,
+      "latency_ms": 94.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -2597,7 +2597,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 93
+          "trace_latency_ms": 94
         }
       ]
     },
@@ -2609,7 +2609,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 78.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -2637,7 +2637,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 78
         }
       ]
     },
@@ -2649,7 +2649,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2157.0,
+      "latency_ms": 125.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -2663,7 +2663,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -2675,7 +2675,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2171.0,
+      "latency_ms": 125.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -2689,7 +2689,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 108
         }
       ]
     },
@@ -2701,7 +2701,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2110.0,
+      "latency_ms": 79.0,
       "intent": "contact_sales",
       "path": "template",
       "turns": [
@@ -2730,7 +2730,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 62.0,
       "intent": "find_my_home",
       "path": "template",
       "turns": [
@@ -2744,7 +2744,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 62
         }
       ]
     },
@@ -2756,7 +2756,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2110.0,
+      "latency_ms": 78.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -2774,7 +2774,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 77
         }
       ]
     },
@@ -2786,7 +2786,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 125.0,
       "intent": "compare",
       "path": "code",
       "turns": [
@@ -2806,7 +2806,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 79
+          "trace_latency_ms": 94
         }
       ]
     },
@@ -2818,7 +2818,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 62.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -2858,7 +2858,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2110.0,
+      "latency_ms": 78.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -2898,7 +2898,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 94.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -2930,7 +2930,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2204.0,
+      "latency_ms": 203.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -2946,7 +2946,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 172
+          "trace_latency_ms": 186
         }
       ]
     },
@@ -2959,7 +2959,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2344.0,
+      "latency_ms": 328.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -2978,7 +2978,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 297
+          "trace_latency_ms": 312
         }
       ]
     },
@@ -2991,7 +2991,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2297.0,
+      "latency_ms": 250.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -3010,7 +3010,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 266
+          "trace_latency_ms": 234
         }
       ]
     },
@@ -3023,7 +3023,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2203.0,
+      "latency_ms": 172.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -3042,7 +3042,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 155
+          "trace_latency_ms": 172
         }
       ]
     },
@@ -3055,7 +3055,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2250.0,
+      "latency_ms": 234.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -3074,7 +3074,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 202
+          "trace_latency_ms": 217
         }
       ]
     },
@@ -3087,7 +3087,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2313.0,
+      "latency_ms": 266.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -3118,7 +3118,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2140.0,
+      "latency_ms": 94.0,
       "intent": "advice",
       "path": "template",
       "turns": [
@@ -3150,7 +3150,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2140.0,
+      "latency_ms": 140.0,
       "intent": "project_info",
       "path": "template",
       "turns": [
@@ -3171,7 +3171,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 140
         }
       ]
     },
@@ -3183,7 +3183,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 94.0,
       "intent": "contact_sales",
       "path": "template",
       "turns": [
@@ -3200,7 +3200,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 92
+          "trace_latency_ms": 78
         }
       ]
     },
@@ -3212,7 +3212,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2157.0,
+      "latency_ms": 125.0,
       "intent": "contact_sales",
       "path": "template",
       "turns": [
@@ -3229,7 +3229,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -3241,7 +3241,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2140.0,
+      "latency_ms": 109.0,
       "intent": "advice",
       "path": "template",
       "turns": [
@@ -3261,7 +3261,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -3274,7 +3274,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2297.0,
+      "latency_ms": 234.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -3293,7 +3293,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 265
+          "trace_latency_ms": 234
         }
       ]
     },
@@ -3305,7 +3305,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2157.0,
+      "latency_ms": 125.0,
       "intent": "project_info",
       "path": "template",
       "turns": [
@@ -3337,7 +3337,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2110.0,
+      "latency_ms": 109.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -3354,7 +3354,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -3366,7 +3366,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 93.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -3394,7 +3394,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 92
         }
       ]
     },
@@ -3407,7 +3407,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2219.0,
+      "latency_ms": 203.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -3426,7 +3426,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 187
+          "trace_latency_ms": 202
         }
       ]
     },
@@ -3438,7 +3438,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2047.0,
+      "latency_ms": 47.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3464,7 +3464,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2078.0,
+      "latency_ms": 31.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3478,7 +3478,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 30
+          "trace_latency_ms": 16
         }
       ]
     },
@@ -3490,7 +3490,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2063.0,
+      "latency_ms": 16.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3504,7 +3504,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 16
+          "trace_latency_ms": 15
         }
       ]
     },
@@ -3516,7 +3516,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2062.0,
+      "latency_ms": 0.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3530,7 +3530,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 15
+          "trace_latency_ms": 0
         }
       ]
     },
@@ -3542,7 +3542,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2032.0,
+      "latency_ms": 16.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3568,7 +3568,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2032.0,
+      "latency_ms": 15.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3582,7 +3582,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 15
+          "trace_latency_ms": 0
         }
       ]
     },
@@ -3594,7 +3594,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2046.0,
+      "latency_ms": 0.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3608,7 +3608,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 15
+          "trace_latency_ms": 0
         }
       ]
     },
@@ -3621,7 +3621,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 93.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -3652,7 +3652,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2031.0,
+      "latency_ms": 16.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3666,7 +3666,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 0
+          "trace_latency_ms": 16
         }
       ]
     },
@@ -3678,7 +3678,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2047.0,
+      "latency_ms": 47.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3692,7 +3692,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 0
+          "trace_latency_ms": 16
         }
       ]
     },
@@ -3705,7 +3705,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2297.0,
+      "latency_ms": 266.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -3721,7 +3721,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 250
+          "trace_latency_ms": 265
         }
       ]
     },
@@ -3743,7 +3743,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2047.0,
+      "latency_ms": 16.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3769,7 +3769,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2078.0,
+      "latency_ms": 47.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3783,7 +3783,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 15
+          "trace_latency_ms": 0
         }
       ]
     },
@@ -3795,7 +3795,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2047.0,
+      "latency_ms": 15.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3809,7 +3809,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 0
+          "trace_latency_ms": 15
         }
       ]
     },
@@ -3821,7 +3821,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2047.0,
+      "latency_ms": 16.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3847,7 +3847,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2062.0,
+      "latency_ms": 15.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3861,7 +3861,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 0
+          "trace_latency_ms": 15
         }
       ]
     },
@@ -3873,7 +3873,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2063.0,
+      "latency_ms": 16.0,
       "intent": "injection",
       "path": "template",
       "turns": [
@@ -3900,7 +3900,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 94.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -3919,7 +3919,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 94
         }
       ]
     },
@@ -3932,7 +3932,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2172.0,
+      "latency_ms": 141.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -3951,7 +3951,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 140
         }
       ]
     },
@@ -3964,7 +3964,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 125.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -3983,7 +3983,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -3996,7 +3996,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 79.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -4015,7 +4015,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 79
         }
       ]
     },
@@ -4028,7 +4028,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2110.0,
+      "latency_ms": 78.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -4047,7 +4047,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 79
+          "trace_latency_ms": 77
         }
       ]
     },
@@ -4060,7 +4060,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 94.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -4092,7 +4092,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 94.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -4111,7 +4111,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 93
+          "trace_latency_ms": 94
         }
       ]
     },
@@ -4124,7 +4124,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2140.0,
+      "latency_ms": 78.0,
       "intent": "off_topic",
       "path": "code",
       "turns": [
@@ -4155,7 +4155,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2172.0,
+      "latency_ms": 157.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -4181,7 +4181,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 93.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -4195,7 +4195,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 92
         }
       ]
     },
@@ -4207,7 +4207,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 94.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -4233,7 +4233,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 62.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -4259,7 +4259,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 110.0,
       "intent": "calculation",
       "path": "code",
       "turns": [
@@ -4273,7 +4273,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 92
+          "trace_latency_ms": 93
         }
       ]
     },
@@ -4285,7 +4285,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 62.0,
       "intent": "find_my_home",
       "path": "template",
       "turns": [
@@ -4299,7 +4299,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 62
         }
       ]
     },
@@ -4311,7 +4311,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 8438.0,
+      "latency_ms": 234.0,
       "intent": "find_my_home",
       "path": "code",
       "turns": [
@@ -4337,7 +4337,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 31
+          "trace_latency_ms": 15
         },
         {
           "say": "Around 2,000,000 AED",
@@ -4349,7 +4349,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 46
+          "trace_latency_ms": 30
         },
         {
           "say": "Living",
@@ -4372,7 +4372,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -4384,7 +4384,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2328.0,
+      "latency_ms": 282.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -4412,7 +4412,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 266
+          "trace_latency_ms": 282
         }
       ]
     },
@@ -4424,7 +4424,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2093.0,
+      "latency_ms": 63.0,
       "intent": "find_my_home",
       "path": "template",
       "turns": [
@@ -4438,7 +4438,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 45
+          "trace_latency_ms": 30
         }
       ]
     },
@@ -4450,7 +4450,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 8453.0,
+      "latency_ms": 250.0,
       "intent": "find_my_home",
       "path": "code",
       "turns": [
@@ -4464,7 +4464,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 61
+          "trace_latency_ms": 47
         },
         {
           "say": "Riyadh",
@@ -4476,7 +4476,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 16
+          "trace_latency_ms": 32
         },
         {
           "say": "2,000,000 AED",
@@ -4488,7 +4488,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 30
         },
         {
           "say": "Investment",
@@ -4523,7 +4523,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 79.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4553,7 +4553,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 63.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4571,7 +4571,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 62
         }
       ]
     },
@@ -4583,7 +4583,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 93.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4601,7 +4601,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 46
         }
       ]
     },
@@ -4613,7 +4613,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 94.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4631,7 +4631,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 93
         }
       ]
     },
@@ -4643,7 +4643,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 79.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4661,7 +4661,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 79
         }
       ]
     },
@@ -4673,7 +4673,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2141.0,
+      "latency_ms": 110.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -4701,7 +4701,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -4713,7 +4713,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 110.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -4741,7 +4741,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 93
         }
       ]
     },
@@ -4753,7 +4753,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 110.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -4794,7 +4794,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2344.0,
+      "latency_ms": 344.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -4810,7 +4810,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 312
+          "trace_latency_ms": 329
         }
       ]
     },
@@ -4822,7 +4822,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2234.0,
+      "latency_ms": 203.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -4862,7 +4862,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2172.0,
+      "latency_ms": 141.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -4882,7 +4882,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -4894,7 +4894,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2172.0,
+      "latency_ms": 140.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -4920,7 +4920,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 140
         }
       ]
     },
@@ -4933,7 +4933,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2360.0,
+      "latency_ms": 313.0,
       "intent": "adjacent",
       "path": "code",
       "turns": [
@@ -4949,7 +4949,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 296
+          "trace_latency_ms": 297
         }
       ]
     },
@@ -4961,7 +4961,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2140.0,
+      "latency_ms": 109.0,
       "intent": "contact_sales",
       "path": "template",
       "turns": [
@@ -4978,7 +4978,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 92
+          "trace_latency_ms": 77
         }
       ]
     },
@@ -4990,7 +4990,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2282.0,
+      "latency_ms": 125.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -5016,7 +5016,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 202
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -5028,7 +5028,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2187.0,
+      "latency_ms": 156.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -5056,7 +5056,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 155
+          "trace_latency_ms": 140
         }
       ]
     },
@@ -5069,7 +5069,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2218.0,
+      "latency_ms": 188.0,
       "intent": "general",
       "path": "code",
       "turns": [
@@ -5087,7 +5087,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 186
+          "trace_latency_ms": 172
         }
       ]
     },
@@ -5099,7 +5099,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2234.0,
+      "latency_ms": 203.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -5127,7 +5127,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 186
+          "trace_latency_ms": 188
         }
       ]
     },
@@ -5139,7 +5139,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 78.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -5165,7 +5165,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 62
         }
       ]
     },
@@ -5177,7 +5177,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2110.0,
+      "latency_ms": 78.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -5211,7 +5211,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 93.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -5231,7 +5231,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 61
         }
       ]
     },
@@ -5243,7 +5243,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 94.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5261,7 +5261,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 77
         }
       ]
     },
@@ -5273,7 +5273,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 110.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5291,7 +5291,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -5303,7 +5303,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2172.0,
+      "latency_ms": 157.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5321,7 +5321,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -5333,7 +5333,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2157.0,
+      "latency_ms": 125.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5353,7 +5353,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 92
         }
       ]
     },
@@ -5365,7 +5365,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 47.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5383,7 +5383,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 63
+          "trace_latency_ms": 46
         }
       ]
     },
@@ -5395,7 +5395,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 110.0,
       "intent": "advice",
       "path": "template",
       "turns": [
@@ -5427,7 +5427,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2140.0,
+      "latency_ms": 79.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -5453,7 +5453,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 92
+          "trace_latency_ms": 79
         }
       ]
     },
@@ -5465,7 +5465,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 94.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5485,7 +5485,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 93
+          "trace_latency_ms": 94
         }
       ]
     },
@@ -5497,7 +5497,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 63.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5527,7 +5527,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2078.0,
+      "latency_ms": 62.0,
       "intent": "contact_sales",
       "path": "template",
       "turns": [
@@ -5544,7 +5544,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 47
         }
       ]
     },
@@ -5556,7 +5556,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2110.0,
+      "latency_ms": 78.0,
       "intent": "contact_sales",
       "path": "template",
       "turns": [
@@ -5573,7 +5573,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 47
         }
       ]
     },
@@ -5585,7 +5585,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2140.0,
+      "latency_ms": 94.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -5605,7 +5605,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 92
+          "trace_latency_ms": 93
         }
       ]
     },
@@ -5617,7 +5617,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2234.0,
+      "latency_ms": 187.0,
       "intent": "steering",
       "path": "template",
       "turns": [
@@ -5643,7 +5643,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2172.0,
+      "latency_ms": 172.0,
       "intent": "steering",
       "path": "template",
       "turns": [
@@ -5657,7 +5657,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 140
         }
       ]
     },
@@ -5669,7 +5669,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2219.0,
+      "latency_ms": 188.0,
       "intent": "steering",
       "path": "template",
       "turns": [
@@ -5683,7 +5683,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 172
+          "trace_latency_ms": 187
         }
       ]
     },
@@ -5695,7 +5695,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 125.0,
       "intent": "steering",
       "path": "template",
       "turns": [
@@ -5709,7 +5709,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 92
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -5721,7 +5721,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2250.0,
+      "latency_ms": 203.0,
       "intent": "steering",
       "path": "template",
       "turns": [
@@ -5735,7 +5735,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 172
+          "trace_latency_ms": 203
         }
       ]
     },
@@ -5747,7 +5747,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2172.0,
+      "latency_ms": 156.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -5771,7 +5771,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 155
         }
       ]
     },
@@ -5783,7 +5783,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 78.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5801,7 +5801,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 77
         }
       ]
     },
@@ -5813,7 +5813,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2172.0,
+      "latency_ms": 125.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5831,7 +5831,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 109
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -5843,7 +5843,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 79.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5861,7 +5861,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 79
         }
       ]
     },
@@ -5873,7 +5873,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2140.0,
+      "latency_ms": 94.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5893,7 +5893,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 92
+          "trace_latency_ms": 94
         }
       ]
     },
@@ -5905,7 +5905,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2125.0,
+      "latency_ms": 110.0,
       "intent": "project_info",
       "path": "code",
       "turns": [
@@ -5923,7 +5923,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 63
+          "trace_latency_ms": 79
         }
       ]
     },
@@ -5936,7 +5936,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2140.0,
+      "latency_ms": 78.0,
       "intent": "identity",
       "path": "code",
       "turns": [
@@ -5950,7 +5950,7 @@
           "sources": [],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 79
+          "trace_latency_ms": 77
         }
       ]
     },
@@ -5962,7 +5962,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2094.0,
+      "latency_ms": 78.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -5984,7 +5984,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 61
         }
       ]
     },
@@ -5996,7 +5996,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2110.0,
+      "latency_ms": 78.0,
       "intent": "advice",
       "path": "template",
       "turns": [
@@ -6013,7 +6013,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 77
         }
       ]
     },
@@ -6025,7 +6025,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2140.0,
+      "latency_ms": 140.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -6053,7 +6053,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 94
+          "trace_latency_ms": 125
         }
       ]
     },
@@ -6066,7 +6066,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 6656.0,
+      "latency_ms": 594.0,
       "intent": "adjacent",
       "path": "code",
       "turns": [
@@ -6080,7 +6080,7 @@
           "sources": [],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 47
         },
         {
           "say": "ok, i am planning to relocate to",
@@ -6094,7 +6094,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 187
+          "trace_latency_ms": 202
         },
         {
           "say": "sure, before tell which country visa can i get faster",
@@ -6108,7 +6108,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 281
+          "trace_latency_ms": 280
         }
       ]
     },
@@ -6121,7 +6121,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2203.0,
+      "latency_ms": 172.0,
       "intent": "adjacent",
       "path": "code",
       "turns": [
@@ -6137,7 +6137,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 187
+          "trace_latency_ms": 172
         }
       ]
     },
@@ -6150,7 +6150,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2188.0,
+      "latency_ms": 157.0,
       "intent": "adjacent",
       "path": "code",
       "turns": [
@@ -6166,7 +6166,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 140
+          "trace_latency_ms": 157
         }
       ]
     },
@@ -6179,7 +6179,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2157.0,
+      "latency_ms": 109.0,
       "intent": "adjacent",
       "path": "code",
       "turns": [
@@ -6195,7 +6195,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 109
         }
       ]
     },
@@ -6207,7 +6207,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2343.0,
+      "latency_ms": 312.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -6235,7 +6235,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 280
+          "trace_latency_ms": 297
         }
       ]
     },
@@ -6248,7 +6248,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2296.0,
+      "latency_ms": 188.0,
       "intent": "adjacent",
       "path": "code",
       "turns": [
@@ -6264,7 +6264,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 202
+          "trace_latency_ms": 187
         }
       ]
     },
@@ -6277,7 +6277,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2079.0,
+      "latency_ms": 62.0,
       "intent": "greeting",
       "path": "code",
       "turns": [
@@ -6291,7 +6291,7 @@
           "sources": [],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 47
+          "trace_latency_ms": 62
         }
       ]
     },
@@ -6303,7 +6303,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2109.0,
+      "latency_ms": 94.0,
       "intent": "general",
       "path": "template",
       "turns": [
@@ -6319,7 +6319,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 63
+          "trace_latency_ms": 61
         }
       ]
     },
@@ -6331,7 +6331,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4578.0,
+      "latency_ms": 469.0,
       "intent": "superlative",
       "path": "code",
       "turns": [
@@ -6347,7 +6347,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 62
+          "trace_latency_ms": 47
         },
         {
           "say": "most expensive one??",
@@ -6373,7 +6373,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 452
+          "trace_latency_ms": 405
         }
       ]
     },
@@ -6385,7 +6385,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4406.0,
+      "latency_ms": 328.0,
       "intent": "superlative",
       "path": "code",
       "turns": [
@@ -6413,7 +6413,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 77
+          "trace_latency_ms": 94
         },
         {
           "say": "الأرخص",
@@ -6439,7 +6439,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 250
+          "trace_latency_ms": 234
         }
       ]
     },
@@ -6451,7 +6451,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2031.0,
+      "latency_ms": 16.0,
       "intent": "safety",
       "path": "template",
       "turns": [
@@ -6477,7 +6477,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2031.0,
+      "latency_ms": 31.0,
       "intent": "safety",
       "path": "template",
       "turns": [
@@ -6491,7 +6491,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 16
+          "trace_latency_ms": 31
         }
       ]
     },
@@ -6503,7 +6503,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4218.0,
+      "latency_ms": 156.0,
       "intent": "location_overview",
       "path": "code",
       "turns": [
@@ -6517,7 +6517,7 @@
           "sources": [],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 15
+          "trace_latency_ms": 30
         },
         {
           "say": "show me projects in Saudi Arabia",
@@ -6553,7 +6553,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2281.0,
+      "latency_ms": 328.0,
       "intent": "search",
       "path": "code",
       "turns": [
@@ -6581,7 +6581,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 218
+          "trace_latency_ms": 312
         }
       ]
     },
@@ -6594,7 +6594,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 6954.0,
+      "latency_ms": 969.0,
       "intent": "adjacent",
       "path": "code",
       "turns": [
@@ -6608,7 +6608,7 @@
           "sources": [],
           "model": "mock/echo",
           "llm_calls": 0,
-          "trace_latency_ms": 32
+          "trace_latency_ms": 30
         },
         {
           "say": "In India?",
@@ -6620,7 +6620,7 @@
           "sources": [],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 579
+          "trace_latency_ms": 641
         },
         {
           "say": "Can I buy from India too ?",
@@ -6634,7 +6634,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 218
+          "trace_latency_ms": 250
         }
       ]
     },
@@ -6647,7 +6647,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2172.0,
+      "latency_ms": 140.0,
       "intent": "adjacent",
       "path": "code",
       "turns": [
@@ -6663,7 +6663,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 140
         }
       ]
     },
@@ -6676,7 +6676,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 4390.0,
+      "latency_ms": 376.0,
       "intent": "adjacent",
       "path": "code",
       "turns": [
@@ -6704,7 +6704,7 @@
           ],
           "model": null,
           "llm_calls": 0,
-          "trace_latency_ms": 125
+          "trace_latency_ms": 141
         },
         {
           "say": "Can I make payment in inr",
@@ -6718,7 +6718,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 172
+          "trace_latency_ms": 218
         }
       ]
     },
@@ -6731,7 +6731,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2156.0,
+      "latency_ms": 94.0,
       "intent": "adjacent",
       "path": "code",
       "turns": [
@@ -6760,7 +6760,7 @@
       "status": "passed",
       "passed": true,
       "failures": [],
-      "latency_ms": 2313.0,
+      "latency_ms": 313.0,
       "intent": "adjacent",
       "path": "code",
       "turns": [
@@ -6776,7 +6776,7 @@
           ],
           "model": "mock/echo",
           "llm_calls": 1,
-          "trace_latency_ms": 265
+          "trace_latency_ms": 297
         }
       ]
     }
@@ -6936,12 +6936,12 @@
     "llm_model": null,
     "stopped_early": null,
     "host": {
-      "target": "http://localhost:8044",
+      "target": "http://127.0.0.1:8046",
       "machine": "local",
       "python": "3.12.4",
       "os": "Windows 11"
     },
-    "wall_s": 476,
+    "wall_s": 427,
     "partial_selection": false,
     "notes": [
       "Numbers checks use retrieved/card ids from the trace; they are a proxy for 'in context'.",

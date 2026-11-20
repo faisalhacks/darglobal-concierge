@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-20T02:53:34+00:00",
+  "generated_at": "2026-11-20T04:02:02+00:00",
   "generator": "evals/make_showcase.py",
   "excerpt_chars": 220,
   "rail_order": [
@@ -22,7 +22,7 @@
     },
     {
       "file": "evals/results/latest.json",
-      "run_at": "2026-11-20T02:51:32+00:00",
+      "run_at": "2026-11-20T03:46:58+00:00",
       "llm_mode": "mock",
       "dataset_version": "20261119-eb33f465"
     }

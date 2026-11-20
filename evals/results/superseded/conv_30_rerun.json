@@ -1,0 +1,4196 @@
+{
+ "label": "30_rerun",
+ "run_at": "2026-11-20T03:57:31+00:00",
+ "base_url": "http://127.0.0.1:8046",
+ "conversation_file": "conversations_30.yaml",
+ "dataset_version": "20261119-eb33f465",
+ "provider": "nvidia",
+ "model": "nvidia/nemotron-3-ultra-550b-a55b",
+ "llm_mode": "live",
+ "max_llm_calls": 20,
+ "nvidia_probe_before": null,
+ "conversations": [
+  {
+   "id": "c06",
+   "persona": null,
+   "category": "superlative",
+   "playbook": "superlative",
+   "lang": "ar",
+   "tags": [
+    "ar"
+   ],
+   "turns": [
+    {
+     "n": 1,
+     "say": "ايش اغلى فيلا عندكم؟",
+     "playbook": "superlative",
+     "payload_last_entities": [],
+     "answer": "أغلى فيلا للبيع في عيّنة وصلت هو ⁨Villa 1189.54 SQM Facing 3 Streets on 40m Width Street⁩ في ⁨Hay Al Mubaoth, Madinah⁩ بسعر 11,000,000 ر.س؛ يُعرض أفضل 6.",
+     "trace": {
+      "intent": "superlative",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 92,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "رتّبت الصفوف المنشورة لإيجاد الأول",
+       "عرضت 6 من البطاقات",
+       "كتبت الإجابة برمجياً من البيانات",
+       "دليل الإجابة: superlative"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 92,
+     "ttft_ms": 108.99999993853271,
+     "cards": [
+      {
+       "id": "wasalt-l-5958693",
+       "name": "Villa 1189.54 SQM Facing 3 Streets on 40m Width Street",
+       "city": "Madinah",
+       "price": {
+        "amount": 11000000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5764186",
+       "name": "Villa 350 SQM",
+       "city": "Riyadh",
+       "price": {
+        "amount": 10178420.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5976406",
+       "name": "Villa 900 SQM Facing South on 15m Width Street",
+       "city": "Riyadh",
+       "price": {
+        "amount": 10000000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5955090",
+       "name": "Villa 1673.46 SQM Facing North East on 20m Width Street",
+       "city": "Madinah",
+       "price": {
+        "amount": 9000000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5840314",
+       "name": "Villa 350 SQM",
+       "city": "Riyadh",
+       "price": {
+        "amount": 7100556.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-240455",
+       "name": "Villa 300 SQM",
+       "city": "Riyadh",
+       "price": {
+        "amount": 6985637.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "الأرخص فلل للبيع",
+      "الأغلى فلل للبيع",
+      "الأكبر فلل للبيع"
+     ],
+     "sources": [
+      {
+       "title": "Villa 1189.54 SQM Facing 3 Streets on 40m Width Street",
+       "url": "https://wasalt.sa/en/property/sale/villa-118954-sqm-facing-3-streets-on-40m-width-street-5958693"
+      },
+      {
+       "title": "Villa 350 SQM",
+       "url": "https://wasalt.sa/en/property/sale/villa-350-sqm-5764186"
+      },
+      {
+       "title": "Villa 900 SQM Facing South on 15m Width Street",
+       "url": "https://wasalt.sa/en/property/sale/villa-900-sqm-facing-south-on-15m-width-street-5976406"
+      },
+      {
+       "title": "Villa 1673.46 SQM Facing North East on 20m Width Street",
+       "url": "https://wasalt.sa/en/property/sale/villa-167346-sqm-facing-north-east-on-20m-width-street-5955090"
+      },
+      {
+       "title": "Villa 350 SQM",
+       "url": "https://wasalt.sa/en/property/sale/villa-350-sqm-5840314"
+      },
+      {
+       "title": "Villa 300 SQM",
+       "url": "https://wasalt.sa/en/property/sale/villa-300-sqm-240455"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_min": {
+       "pass": true,
+       "detail": ""
+      },
+      "sorted": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_blog_source": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Accurately identifies the most expensive villa from the provided data with a clear price.",
+      "helpful": 5,
+      "honest": 5,
+      "tone": 4,
+      "persona_fit": 5,
+      "helpfulness": 5
+     }
+    },
+    {
+     "n": 2,
+     "say": "طيب وارخص شقة بالرياض؟",
+     "playbook": "superlative",
+     "payload_last_entities": [
+      "wasalt-l-5958693",
+      "wasalt-l-5764186",
+      "wasalt-l-5976406",
+      "wasalt-l-5955090",
+      "wasalt-l-5840314",
+      "wasalt-l-240455"
+     ],
+     "answer": "وجدت 104 من شقق للبيع ضمن عيّنة وصلت في الرياض. يُعرض منها 6، الأرخص أولاً؛ أخبرني بميزانية لتضييق النتائج.",
+     "trace": {
+      "intent": "search",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 155,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "بحثت في عروض وصلت",
+       "عرضت 6 من البطاقات",
+       "كتبت الإجابة برمجياً من البيانات",
+       "دليل الإجابة: filtered_search"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 155,
+     "ttft_ms": 155.9999999590218,
+     "cards": [
+      {
+       "id": "wasalt-l-5972147",
+       "name": "Apartment 71.28 SQM with 2 Bedrooms",
+       "city": "Riyadh",
+       "price": {
+        "amount": 380000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5890074",
+       "name": "Apartment 95.51 SQM with 3 Bedrooms",
+       "city": "Riyadh",
+       "price": {
+        "amount": 380000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5807848",
+       "name": "Apartment with 3 Bedrooms",
+       "city": "Riyadh",
+       "price": {
+        "amount": 420000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5898259",
+       "name": "Apartment 95.51 SQM with 3 Bedrooms",
+       "city": "Riyadh",
+       "price": {
+        "amount": 480000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5972092",
+       "name": "Apartment 106.26 SQM with 3 Bedrooms",
+       "city": "Riyadh",
+       "price": {
+        "amount": 500000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5969666",
+       "name": "Apartment 116.04 SQM with 3 Bedrooms",
+       "city": "Riyadh",
+       "price": {
+        "amount": 530000.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "شقق للبيع في الرياض حتى 1,100,000 ر.س",
+      "شقق للبيع في الرياض حتى 1,800,000 ر.س",
+      "المشاريع في الرياض"
+     ],
+     "sources": [
+      {
+       "title": "Apartment 71.28 SQM with 2 Bedrooms",
+       "url": "https://wasalt.sa/en/property/sale/apartment-7128-sqm-with-2-bedrooms-5972147"
+      },
+      {
+       "title": "Apartment 95.51 SQM with 3 Bedrooms",
+       "url": "https://wasalt.sa/en/property/sale/apartment-9551-sqm-with-3-bedrooms-5890074"
+      },
+      {
+       "title": "Apartment with 3 Bedrooms",
+       "url": "https://wasalt.sa/en/property/sale/apartment-with-3-bedrooms-5807848"
+      },
+      {
+       "title": "Apartment 95.51 SQM with 3 Bedrooms",
+       "url": "https://wasalt.sa/en/property/sale/apartment-9551-sqm-with-3-bedrooms-5898259"
+      },
+      {
+       "title": "Apartment 106.26 SQM with 3 Bedrooms",
+       "url": "https://wasalt.sa/en/property/sale/apartment-10626-sqm-with-3-bedrooms-5972092"
+      },
+      {
+       "title": "Apartment 116.04 SQM with 3 Bedrooms",
+       "url": "https://wasalt.sa/en/property/sale/apartment-11604-sqm-with-3-bedrooms-5969666"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_min": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "sorted": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_blog_source": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "The bot correctly identified the cheapest options and provided a clear path to refine the search.",
+      "helpful": 5,
+      "honest": 5,
+      "tone": 5,
+      "persona_fit": 5,
+      "helpfulness": 5
+     }
+    },
+    {
+     "n": 3,
+     "say": "كم مساحتها؟",
+     "playbook": "followup_reference",
+     "payload_last_entities": [
+      "wasalt-l-5972147",
+      "wasalt-l-5890074",
+      "wasalt-l-5807848",
+      "wasalt-l-5898259",
+      "wasalt-l-5972092",
+      "wasalt-l-5969666"
+     ],
+     "answer": "مساحة الشقة 71.28 م2.  هل تود معرفة تفاصيل أخرى أو حجز زيارة؟",
+     "trace": {
+      "intent": "general",
+      "path": "llm_understanding",
+      "tool": null,
+      "llm_calls": 2,
+      "model": "nvidia/nemotron-3-ultra-550b-a55b",
+      "provider": "openrouter",
+      "latency_ms": 3750,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "قرأ نموذج ذكاء اصطناعي السؤال وربطه بالبيانات",
+       "بحثت في الصفحات المجمّعة",
+       "عرضت 1 من البطاقات",
+       "كتب نموذج ذكاء اصطناعي الصياغة من هذه المعلومات فقط",
+       "دليل الإجابة: single_attribute"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 3750,
+     "ttft_ms": 3765.999999945052,
+     "cards": [
+      {
+       "id": "wasalt-l-5972147",
+       "name": "Apartment 71.28 SQM with 2 Bedrooms",
+       "city": "Riyadh",
+       "price": {
+        "amount": 380000.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "المشاريع في عُمان",
+      "شقق للإيجار في الرياض",
+      "المشاريع ذات العلامات التجارية",
+      "دفعة مقدمة 20% على 2,000,000 ريال"
+     ],
+     "sources": [
+      {
+       "title": "Apartment 71.28 SQM with 2 Bedrooms",
+       "url": "https://wasalt.sa/en/property/sale/apartment-7128-sqm-with-2-bedrooms-5972147"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_or_hedge": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Accurate answer based on the provided card with a helpful follow-up.",
+      "helpful": 5,
+      "honest": 5,
+      "tone": 5,
+      "persona_fit": 5,
+      "helpfulness": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "c08",
+   "persona": null,
+   "category": "superlative",
+   "playbook": "best_value",
+   "lang": "en",
+   "tags": [],
+   "turns": [
+    {
+     "n": 1,
+     "say": "newest project you have in Dubai",
+     "playbook": "superlative",
+     "payload_last_entities": [],
+     "answer": "The DarGlobal project with the latest handover is Trump International Hotel & Tower Dubai (2031); here are the top 2.",
+     "trace": {
+      "intent": "superlative",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 108,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "Sorted the published rows to find the top one",
+       "Showed 2 result cards",
+       "Wrote the answer in code from the data",
+       "Answer guide: superlative"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 108,
+     "ttft_ms": 108.99999993853271,
+     "cards": [
+      {
+       "id": "dg-trump-international-hotel-and-tower-dubai",
+       "name": "Trump International Hotel & Tower Dubai",
+       "city": "Dubai",
+       "price": null
+      },
+      {
+       "id": "dg-d-villas-at-jumeirah-golf-estates",
+       "name": "D-Villas At Jumeirah Golf Estates",
+       "city": "Dubai",
+       "price": null
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Largest by area",
+      "Latest handover"
+     ],
+     "sources": [
+      {
+       "title": "Trump International Hotel & Tower Dubai",
+       "url": "https://darglobal.co.uk/trump-international-hotel-and-tower-dubai"
+      },
+      {
+       "title": "D-Villas At Jumeirah Golf Estates",
+       "url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_min": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_country": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Direct answer provided with relevant project cards.",
+      "helpful": 4,
+      "honest": 5,
+      "tone": 4,
+      "persona_fit": 5,
+      "helpfulness": 4
+     }
+    },
+    {
+     "n": 2,
+     "say": "largest villa listing in Dammam",
+     "playbook": "superlative",
+     "payload_last_entities": [
+      "dg-trump-international-hotel-and-tower-dubai",
+      "dg-d-villas-at-jumeirah-golf-estates"
+     ],
+     "answer": "The largest villa for sale in Dammam in the Wasalt sample is Villa 826.73 SQM Facing East on 25m Width Street in Al Muntazah, Dammam at 827 m²; here are the top 6.",
+     "trace": {
+      "intent": "superlative",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 93,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "Sorted the published rows to find the top one",
+       "Showed 6 result cards",
+       "Wrote the answer in code from the data",
+       "Answer guide: superlative"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 93,
+     "ttft_ms": 93.99999992456287,
+     "cards": [
+      {
+       "id": "wasalt-l-5960922",
+       "name": "Villa 826.73 SQM Facing East on 25m Width Street",
+       "city": "Dammam",
+       "price": {
+        "amount": 5950000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5960744",
+       "name": "Villa 743.45 SQM",
+       "city": "Dammam",
+       "price": {
+        "amount": 6300000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5971738",
+       "name": "Villa 694.5 SQM Facing South West on 25m Width Street",
+       "city": "Dammam",
+       "price": {
+        "amount": 5000000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5960923",
+       "name": "Villa 450 SQM Facing West on 18m Width Street",
+       "city": "Dammam",
+       "price": {
+        "amount": 2750000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5971255",
+       "name": "Villa 428.1 SQM Facing East on 18m Width Street",
+       "city": "Dammam",
+       "price": {
+        "amount": 3000000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5971155",
+       "name": "Villa 406.25 SQM Facing North on 20m Width Street",
+       "city": "Dammam",
+       "price": {
+        "amount": 1550000.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Cheapest villas for sale in Dammam",
+      "Most expensive villas for sale in Dammam",
+      "Largest villas for sale in Dammam"
+     ],
+     "sources": [
+      {
+       "title": "Villa 826.73 SQM Facing East on 25m Width Street",
+       "url": "https://wasalt.sa/en/property/sale/villa-82673-sqm-facing-east-on-25m-width-street-5960922"
+      },
+      {
+       "title": "Villa 743.45 SQM",
+       "url": "https://wasalt.sa/en/property/sale/villa-74345-sqm-5960744"
+      },
+      {
+       "title": "Villa 694.5 SQM Facing South West on 25m Width Street",
+       "url": "https://wasalt.sa/en/property/sale/villa-6945-sqm-facing-south-west-on-25m-width-street-5971738"
+      },
+      {
+       "title": "Villa 450 SQM Facing West on 18m Width Street",
+       "url": "https://wasalt.sa/en/property/sale/villa-450-sqm-facing-west-on-18m-width-street-5960923"
+      },
+      {
+       "title": "Villa 428.1 SQM Facing East on 18m Width Street",
+       "url": "https://wasalt.sa/en/property/sale/villa-4281-sqm-facing-east-on-18m-width-street-5971255"
+      },
+      {
+       "title": "Villa 406.25 SQM Facing North on 20m Width Street",
+       "url": "https://wasalt.sa/en/property/sale/villa-40625-sqm-facing-north-on-20m-width-street-5971155"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_min": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_blog_source": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Accurately identifies the largest villa and provides a relevant list.",
+      "helpful": 5,
+      "honest": 5,
+      "tone": 5,
+      "persona_fit": 5,
+      "helpfulness": 5
+     }
+    },
+    {
+     "n": 3,
+     "say": "which one gives the best value for money?",
+     "playbook": "best_value",
+     "payload_last_entities": [
+      "wasalt-l-5960922",
+      "wasalt-l-5960744",
+      "wasalt-l-5971738",
+      "wasalt-l-5960923",
+      "wasalt-l-5971255",
+      "wasalt-l-5971155"
+     ],
+     "answer": "Based on the data I have, the **Villa 826.73 SQM Facing East on 25m Width Street in Al Muntazah, Dammam** is the only Dammam villa listing available for comparison.\n\n**Value calculation:**\n- **Price:** 5,950,000 SAR\n- **Built-up area:** 826.73 m2\n- **Bedrooms:** 6\n\nSince no other Dammam villa listings are in the current context, I cannot rank this against alternatives. \n**Next step:** Would you like me to check for additional Dammam villa listings, or would you prefer to compare this against a specific budget or size requirement?",
+     "trace": {
+      "intent": "general",
+      "path": "llm_understanding",
+      "tool": null,
+      "llm_calls": 2,
+      "model": "nvidia/nemotron-3-ultra-550b-a55b",
+      "provider": "openrouter",
+      "latency_ms": 4750,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "An AI model read the question and mapped it to the data",
+       "Searched the collected pages",
+       "Showed 1 result card",
+       "An AI model wrote the wording from these facts only",
+       "Removed a sentence that failed an output check",
+       "Answer guide: best_value"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 4750,
+     "ttft_ms": 3827.999999979511,
+     "cards": [
+      {
+       "id": "wasalt-l-5960922",
+       "name": "Villa 826.73 SQM Facing East on 25m Width Street",
+       "city": "Dammam",
+       "price": {
+        "amount": 5950000.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Projects in Oman",
+      "Apartments for rent in Riyadh",
+      "Branded residences",
+      "20% down on 2,000,000 SAR"
+     ],
+     "sources": [
+      {
+       "title": "Villa 826.73 SQM Facing East on 25m Width Street",
+       "url": "https://wasalt.sa/en/property/sale/villa-82673-sqm-facing-east-on-25m-width-street-5960922"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_promise": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "The bot correctly identifies it lacks a comparison set and avoids guessing, providing a clear path forward.",
+      "helpful": 5,
+      "honest": 5,
+      "tone": 5,
+      "persona_fit": 5,
+      "helpfulness": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "c17",
+   "persona": null,
+   "category": "false_premise",
+   "playbook": "invented_or_false_premise",
+   "lang": "en",
+   "tags": [],
+   "turns": [
+    {
+     "n": 1,
+     "say": "The Astera in Oman, right?",
+     "playbook": "invented_or_false_premise",
+     "payload_last_entities": [],
+     "answer": "The Astera, Interiors by Aston Martin is a DarGlobal project in Ras Al Khaimah, United Arab Emirates (Beach Residences and Villas), with brand partner Aston Martin [1]. Published unit types: 1 to 3-bedroom residences & 3-bedroom beach villas; unit sizes range from 61 to 265 m² [1]. Status: Under Development; handover 2028; prices are not published, so the sales team can confirm them [1].",
+     "trace": {
+      "intent": "project_info",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 108,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "Read the project's published page",
+       "Showed 1 result card",
+       "Wrote the answer in code from the data",
+       "Answer guide: project_facts"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 108,
+     "ttft_ms": 93.99999992456287,
+     "cards": [
+      {
+       "id": "dg-the-astera-interiors-by-aston-martin",
+       "name": "The Astera, Interiors by Aston Martin",
+       "city": "Ras Al Khaimah",
+       "price": null
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Unit types at The Astera, Interiors by Aston Martin",
+      "Unit sizes at The Astera, Interiors by Aston Martin",
+      "Contact sales"
+     ],
+     "sources": [
+      {
+       "title": "The Astera, Interiors by Aston Martin",
+       "url": "https://darglobal.co.uk/the-astera"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "contains_any_ci": {
+       "pass": true,
+       "detail": ""
+      },
+      "not_regex": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Corrects the location error politely and provides comprehensive project details.",
+      "helpful": 5,
+      "honest": 5,
+      "tone": 5,
+      "persona_fit": 5,
+      "helpfulness": 5
+     }
+    },
+    {
+     "n": 2,
+     "say": "so what do you have in Oman then?",
+     "playbook": "filtered_search",
+     "payload_last_entities": [
+      "dg-the-astera-interiors-by-aston-martin"
+     ],
+     "answer": "DarGlobal has 16 published projects in Oman: ⁨Marriott Residences⁩, ⁨Trump Furnished Residences⁩, ⁨Aida⁩, ⁨Amour Sans Detour⁩, ⁨Amour Sans Detour 2⁩, ⁨Azure Oceanfront Villas Interiors by Fendi Casa⁩ and more. Prices are not published for some of these; the sales team can confirm them.",
+     "trace": {
+      "intent": "location_overview",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 155,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "Looked up the published projects",
+       "Showed 6 result cards",
+       "Wrote the answer in code from the data",
+       "Answer guide: country_overview"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 155,
+     "ttft_ms": 155.9999999590218,
+     "cards": [
+      {
+       "id": "dg-marriott-residences",
+       "name": "Marriott Residences",
+       "city": "Muscat",
+       "price": null
+      },
+      {
+       "id": "dg-trump-furnished-residences",
+       "name": "Trump Furnished Residences",
+       "city": "Muscat",
+       "price": null
+      },
+      {
+       "id": "dg-aida",
+       "name": "Aida",
+       "city": "Muscat",
+       "price": null
+      },
+      {
+       "id": "dg-amour-sans-detour",
+       "name": "Amour Sans Detour",
+       "city": "Muscat",
+       "price": null
+      },
+      {
+       "id": "dg-amour-sans-detour-2",
+       "name": "Amour Sans Detour 2",
+       "city": "Muscat",
+       "price": null
+      },
+      {
+       "id": "dg-azure-oceanfront-villas-interiors-by-fendi-casa",
+       "name": "Azure Oceanfront Villas Interiors by Fendi Casa",
+       "city": "Muscat",
+       "price": null
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Tell me about the first one",
+      "Which countries do you cover?",
+      "Projects in Riyadh"
+     ],
+     "sources": [
+      {
+       "title": "Marriott Residences",
+       "url": "https://darglobal.co.uk/marriott-residences-aida-oman"
+      },
+      {
+       "title": "Trump Furnished Residences",
+       "url": "https://darglobal.co.uk/aida-trump-international-apartments"
+      },
+      {
+       "title": "Aida",
+       "url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+      },
+      {
+       "title": "Amour Sans Detour",
+       "url": "https://darglobal.co.uk/projects"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_min": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_country": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Accurate list provided with clear next steps regarding pricing.",
+      "helpful": 5,
+      "honest": 5,
+      "tone": 5,
+      "persona_fit": 5,
+      "helpfulness": 5
+     }
+    },
+    {
+     "n": 3,
+     "say": "any with Aston Martin interiors there?",
+     "playbook": "invented_or_false_premise",
+     "payload_last_entities": [
+      "dg-marriott-residences",
+      "dg-trump-furnished-residences",
+      "dg-aida",
+      "dg-amour-sans-detour",
+      "dg-amour-sans-detour-2",
+      "dg-azure-oceanfront-villas-interiors-by-fendi-casa"
+     ],
+     "answer": "There is 1 published branded project: The Astera, Interiors by Aston Martin (Aston Martin).",
+     "trace": {
+      "intent": "brand_partner",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 1,
+      "model": null,
+      "provider": null,
+      "latency_ms": 515,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "Looked up the branded projects",
+       "Showed 1 result card",
+       "Wrote the answer in code from the data",
+       "Answer guide: brand_partner"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 515,
+     "ttft_ms": 500.0,
+     "cards": [
+      {
+       "id": "dg-the-astera-interiors-by-aston-martin",
+       "name": "The Astera, Interiors by Aston Martin",
+       "city": "Ras Al Khaimah",
+       "price": null
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Which brands do you have?",
+      "Tell me about the first one",
+      "Projects in Riyadh"
+     ],
+     "sources": [
+      {
+       "title": "The Astera, Interiors by Aston Martin",
+       "url": "https://darglobal.co.uk/the-astera"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "hedge": {
+       "pass": false,
+       "detail": "no honest not-found / not-published statement"
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Accurate and concise answer based on the available data.",
+      "helpful": 4,
+      "honest": 5,
+      "tone": 5,
+      "persona_fit": 5,
+      "helpfulness": 4
+     }
+    }
+   ]
+  },
+  {
+   "id": "c18",
+   "persona": null,
+   "category": "false_premise",
+   "playbook": "invented_or_false_premise",
+   "lang": "en",
+   "tags": [
+    "typo"
+   ],
+   "turns": [
+    {
+     "n": 1,
+     "say": "do u have anyhting in Paris?",
+     "playbook": "invented_or_false_premise",
+     "payload_last_entities": [],
+     "answer": "No DarGlobal or Wasalt entries in Paris in this dataset, so I will not guess. The countries it holds are: Saudi Arabia, Oman, United Arab Emirates, Spain, United Kingdom, Qatar. Since you're here, may I show you W Residences? It is a DarGlobal project in Dubai, United Arab Emirates. Its published status is Completed and Sold out. If you'd like details or availability, a DarGlobal advisor can help through the official contact page linked below.",
+     "trace": {
+      "intent": "general",
+      "path": "template",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 186,
+      "cache_hit": false,
+      "degraded": true,
+      "degraded_reason": "all_models_down",
+      "fallback_hops": 0,
+      "steps": [
+       "Searched the collected pages",
+       "Showed 1 result card",
+       "Wrote the answer in code from the data",
+       "Answer guide: invented_or_false_premise"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 186,
+     "ttft_ms": 155.9999999590218,
+     "cards": [
+      {
+       "id": "dg-w-residences",
+       "name": "W Residences",
+       "city": "Dubai",
+       "price": null
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Tell me more about W Residences",
+      "Projects in Dubai",
+      "Speak to a DarGlobal advisor"
+     ],
+     "sources": [
+      {
+       "title": "W Residences",
+       "url": "https://darglobal.co.uk/w-residences"
+      },
+      {
+       "title": "DarGlobal official contact page",
+       "url": "https://darglobal.co.uk/get-in-touch"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "hedge": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Honest about lack of Paris properties, but suggests a sold-out project which is not helpful.",
+      "helpful": 3,
+      "honest": 5,
+      "tone": 3,
+      "persona_fit": 4,
+      "helpfulness": 3
+     }
+    },
+    {
+     "n": 2,
+     "say": "ok what about europe at all?",
+     "playbook": "country_overview",
+     "payload_last_entities": [
+      "dg-w-residences"
+     ],
+     "answer": "I have no verified information on that in the published DarGlobal or Wasalt data I hold, so I will not guess. You may want to try a different project name, city or budget.",
+     "trace": {
+      "intent": "general",
+      "path": "template",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 420,
+      "cache_hit": false,
+      "degraded": true,
+      "degraded_reason": "all_models_down",
+      "fallback_hops": 0,
+      "steps": [
+       "Searched the collected pages",
+       "Wrote the answer in code from the data",
+       "Answer guide: generic"
+      ],
+      "retrieved": [
+       {
+        "id": "wasalt-pg-fdd639bda5#0",
+        "score": 0.0164,
+        "title": "Expat Housing in Riyadh: Your Complete 2026 Rental Guide",
+        "site": "Wasalt"
+       },
+       {
+        "id": "dg-7and8-albert-hall-mansions#fact-ar",
+        "score": 0.0164,
+        "title": "7&8 Albert Hall Mansions",
+        "site": "DarGlobal"
+       },
+       {
+        "id": "dg-les-vagues-by-elie-saab#sec-en-4",
+        "score": 0.0161,
+        "title": "Les Vagues by Elie Saab",
+        "site": "DarGlobal"
+       },
+       {
+        "id": "wasalt-pg-1c2ca92cc5#16",
+        "score": 0.0159,
+        "title": "موقع وصلت | عقارات للبيع و للايجار في السعودية",
+        "site": "Wasalt"
+       },
+       {
+        "id": "wasalt-pg-a6402ede75#1",
+        "score": 0.0159,
+        "title": "How to Buy a House in Saudi Arabia: First-Time Buyer’s Guide",
+        "site": "Wasalt"
+       },
+       {
+        "id": "wasalt-pg-fe924bd382#0",
+        "score": 0.0156,
+        "title": "Lands for Sale in Riyadh — area guide",
+        "site": "Wasalt"
+       }
+      ]
+     },
+     "trace_latency_ms": 420,
+     "ttft_ms": 421.9999999040738,
+     "cards": [],
+     "compare": false,
+     "chips": [
+      "Speak to a DarGlobal advisor",
+      "Projects in Riyadh",
+      "2-bed to buy in Riyadh under 1M SAR"
+     ],
+     "sources": [
+      {
+       "title": "DarGlobal official contact page",
+       "url": "https://darglobal.co.uk/get-in-touch"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_min": {
+       "pass": false,
+       "detail": "0 cards"
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Accurately admits lack of data and provides clear alternatives.",
+      "helpful": 4,
+      "honest": 5,
+      "tone": 4,
+      "persona_fit": 5,
+      "helpfulness": 4
+     }
+    },
+    {
+     "n": 3,
+     "say": "london flats?",
+     "playbook": "filtered_search",
+     "payload_last_entities": [],
+     "answer": "DarGlobal has 1 published project in London: ⁨The Mulliner⁩. Prices are not published for some of these; the sales team can confirm them.",
+     "trace": {
+      "intent": "search",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 109,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "Searched the Wasalt listings",
+       "Showed 1 result card",
+       "Wrote the answer in code from the data",
+       "Answer guide: filtered_search"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 109,
+     "ttft_ms": 92.99999999348074,
+     "cards": [
+      {
+       "id": "dg-the-mulliner",
+       "name": "The Mulliner",
+       "city": "London",
+       "price": null
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Only the ones ready to move in",
+      "Show cheaper ones",
+      "Projects in Riyadh"
+     ],
+     "sources": [
+      {
+       "title": "The Mulliner",
+       "url": "https://darglobal.co.uk/the-mulliner"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_min": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_city": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Accurate, concise, and provides the only available option based on the data.",
+      "helpful": 5,
+      "honest": 5,
+      "tone": 5,
+      "persona_fit": 5,
+      "helpfulness": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "c19",
+   "persona": null,
+   "category": "false_premise",
+   "playbook": "country_overview",
+   "lang": "en",
+   "tags": [],
+   "turns": [
+    {
+     "n": 1,
+     "say": "I want an apartment in Cairo, Egypt",
+     "playbook": "invented_or_false_premise",
+     "payload_last_entities": [],
+     "answer": "No DarGlobal or Wasalt entries in Cairo in this dataset, so I will not guess. The countries it holds are: Saudi Arabia, Oman, United Arab Emirates, Spain, United Kingdom, Qatar. Since you're here, may I show you Urban Oasis by Missoni? It is a DarGlobal project in Dubai, United Arab Emirates. Its published status is Completed and Sold out. If you'd like details or availability, a DarGlobal advisor can help through the official contact page linked below.",
+     "trace": {
+      "intent": "general",
+      "path": "template",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 219,
+      "cache_hit": false,
+      "degraded": true,
+      "degraded_reason": "all_models_down",
+      "fallback_hops": 0,
+      "steps": [
+       "Searched the collected pages",
+       "Showed 1 result card",
+       "Wrote the answer in code from the data",
+       "Answer guide: invented_or_false_premise"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 219,
+     "ttft_ms": 202.9999999795109,
+     "cards": [
+      {
+       "id": "dg-urban-oasis-by-missoni",
+       "name": "Urban Oasis by Missoni",
+       "city": "Dubai",
+       "price": null
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Tell me more about Urban Oasis by Missoni",
+      "Projects in Dubai",
+      "Speak to a DarGlobal advisor"
+     ],
+     "sources": [
+      {
+       "title": "Urban Oasis by Missoni",
+       "url": "https://darglobal.co.uk/urban-oasis-by-missoni"
+      },
+      {
+       "title": "DarGlobal official contact page",
+       "url": "https://darglobal.co.uk/get-in-touch"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "hedge": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Honest about lack of Cairo properties, but suggests a sold-out project which is not a helpful next step.",
+      "helpful": 3,
+      "honest": 5,
+      "tone": 4,
+      "persona_fit": 4,
+      "helpfulness": 3
+     }
+    },
+    {
+     "n": 2,
+     "say": "what countries do you cover?",
+     "playbook": "country_overview",
+     "payload_last_entities": [
+      "dg-urban-oasis-by-missoni"
+     ],
+     "answer": "DarGlobal and Wasalt have 72 published projects in this data: Saudi Arabia (40), Oman (16), United Arab Emirates (9), Spain (3), United Kingdom (2), Qatar (2). Here are 6; pick a country to see them all.",
+     "trace": {
+      "intent": "location_overview",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 359,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "Looked up the published projects",
+       "Showed 6 result cards",
+       "Wrote the answer in code from the data",
+       "Answer guide: country_overview"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 359,
+     "ttft_ms": 390.00000001396984,
+     "cards": [
+      {
+       "id": "wasalt-p-100523",
+       "name": "مشروع فلل للبيع",
+       "city": "Jeddah",
+       "price": {
+        "amount": 3860000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-p-100330",
+       "name": "Lolia Villa",
+       "city": "Al Khobar",
+       "price": {
+        "amount": 2300000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-p-100564",
+       "name": "مشروع الصدفة ريزيدنس 34",
+       "city": "Al Khobar",
+       "price": {
+        "amount": 550000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-p-100331",
+       "name": "Ramz Tharwa",
+       "city": "Al Khobar",
+       "price": {
+        "amount": 580000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-p-100581",
+       "name": "مشروع أميليا ريزيدنس",
+       "city": "Madinah",
+       "price": {
+        "amount": 699000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-p-100277",
+       "name": "مشروع بدر 2 - فلل للبيع",
+       "city": "Madinah",
+       "price": {
+        "amount": 693595.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Projects in Saudi Arabia",
+      "Projects in Oman",
+      "Projects in United Arab Emirates"
+     ],
+     "sources": [
+      {
+       "title": "مشروع فلل للبيع",
+       "url": "https://wasalt.sa/en/project/Jeddah/mshrwa-fll-llbya-100523"
+      },
+      {
+       "title": "Lolia Villa",
+       "url": "https://wasalt.sa/en/project/Khobar/lolia-villa-100330"
+      },
+      {
+       "title": "مشروع الصدفة ريزيدنس 34",
+       "url": "https://wasalt.sa/en/project/Khobar/mshrwa-alsdfh-ryzydns-34-100564"
+      },
+      {
+       "title": "Ramz Tharwa",
+       "url": "https://wasalt.sa/en/project/Khobar/ramz-tharwa-100331"
+      },
+      {
+       "title": "مشروع أميليا ريزيدنس",
+       "url": "https://wasalt.sa/en/project/Madinah/%D9%85%D8%B4%D8%B1%D9%88%D8%B9-%D8%A3%D9%85%D9%8A%D9%84%D9%8A%D8%A7-%D8%B1%D9%8A%D8%B2%D9%8A%D8%AF%D9%86%D8%B3-100581"
+      },
+      {
+       "title": "مشروع بدر 2 - فلل للبيع",
+       "url": "https://wasalt.sa/en/project/Madinah/%D9%85%D8%B4%D8%B1%D9%88%D8%B9-%D8%A8%D8%AF%D8%B1-2-%D9%81%D9%84%D9%84-%D9%84%D9%84%D8%A8%D9%8A%D8%B9-100277"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "contains_any_ci": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Accurately lists covered countries and provides clear next steps via chips.",
+      "helpful": 4,
+      "honest": 5,
+      "tone": 5,
+      "persona_fit": 5,
+      "helpfulness": 4
+     }
+    },
+    {
+     "n": 3,
+     "say": "ok then Dubai",
+     "playbook": "filtered_search",
+     "payload_last_entities": [
+      "wasalt-p-100523",
+      "wasalt-p-100330",
+      "wasalt-p-100564",
+      "wasalt-p-100331",
+      "wasalt-p-100581",
+      "wasalt-p-100277"
+     ],
+     "answer": "DarGlobal has 7 published projects in Dubai: ⁨Da Vinci Tower, Interiors By Pagani⁩, ⁨Trump International Hotel & Tower Dubai⁩, ⁨Urban Oasis by Missoni⁩, ⁨W Residences⁩, ⁨D-Villas At Jumeirah Golf Estates⁩, ⁨DG1⁩ and more. Prices are not published for some of these; the sales team can confirm them.",
+     "trace": {
+      "intent": "location_overview",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 125,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "Looked up the published projects",
+       "Showed 6 result cards",
+       "Wrote the answer in code from the data",
+       "Answer guide: country_overview"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 125,
+     "ttft_ms": 125.0,
+     "cards": [
+      {
+       "id": "dg-da-vinci-tower-interiors-by-pagani",
+       "name": "Da Vinci Tower, Interiors By Pagani",
+       "city": "Dubai",
+       "price": null
+      },
+      {
+       "id": "dg-trump-international-hotel-and-tower-dubai",
+       "name": "Trump International Hotel & Tower Dubai",
+       "city": "Dubai",
+       "price": null
+      },
+      {
+       "id": "dg-urban-oasis-by-missoni",
+       "name": "Urban Oasis by Missoni",
+       "city": "Dubai",
+       "price": null
+      },
+      {
+       "id": "dg-w-residences",
+       "name": "W Residences",
+       "city": "Dubai",
+       "price": null
+      },
+      {
+       "id": "dg-d-villas-at-jumeirah-golf-estates",
+       "name": "D-Villas At Jumeirah Golf Estates",
+       "city": "Dubai",
+       "price": null
+      },
+      {
+       "id": "dg-dg1",
+       "name": "DG1",
+       "city": "Dubai",
+       "price": null
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Tell me about the first one",
+      "Which countries do you cover?",
+      "Projects in Riyadh"
+     ],
+     "sources": [
+      {
+       "title": "Da Vinci Tower, Interiors By Pagani",
+       "url": "https://darglobal.co.uk/davinci-tower-by-pagani"
+      },
+      {
+       "title": "Trump International Hotel & Tower Dubai",
+       "url": "https://darglobal.co.uk/trump-international-hotel-and-tower-dubai"
+      },
+      {
+       "title": "Urban Oasis by Missoni",
+       "url": "https://darglobal.co.uk/urban-oasis-by-missoni"
+      },
+      {
+       "title": "W Residences",
+       "url": "https://darglobal.co.uk/w-residences"
+      },
+      {
+       "title": "D-Villas At Jumeirah Golf Estates",
+       "url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+      },
+      {
+       "title": "DG1",
+       "url": "https://darglobal.co.uk/projects"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_min": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_country": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Accurately lists projects and transparently mentions missing price data.",
+      "helpful": 4,
+      "honest": 5,
+      "tone": 5,
+      "persona_fit": 5,
+      "helpfulness": 4
+     }
+    }
+   ]
+  },
+  {
+   "id": "c23",
+   "persona": null,
+   "category": "site_confusion",
+   "playbook": "site_confusion",
+   "lang": "en",
+   "tags": [],
+   "turns": [
+    {
+     "n": 1,
+     "say": "Are the Trump projects listed on Wasalt?",
+     "playbook": "site_confusion",
+     "payload_last_entities": [],
+     "answer": "Wasalt has 30 published projects in this data: Saudi Arabia (30). Here are 6; pick a country to see them all.",
+     "trace": {
+      "intent": "location_overview",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 155,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "Looked up the published projects",
+       "Showed 6 result cards",
+       "Wrote the answer in code from the data",
+       "Answer guide: country_overview"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 155,
+     "ttft_ms": 155.9999999590218,
+     "cards": [
+      {
+       "id": "wasalt-p-100523",
+       "name": "مشروع فلل للبيع",
+       "city": "Jeddah",
+       "price": {
+        "amount": 3860000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-p-100330",
+       "name": "Lolia Villa",
+       "city": "Al Khobar",
+       "price": {
+        "amount": 2300000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-p-100564",
+       "name": "مشروع الصدفة ريزيدنس 34",
+       "city": "Al Khobar",
+       "price": {
+        "amount": 550000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-p-100331",
+       "name": "Ramz Tharwa",
+       "city": "Al Khobar",
+       "price": {
+        "amount": 580000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-p-100581",
+       "name": "مشروع أميليا ريزيدنس",
+       "city": "Madinah",
+       "price": {
+        "amount": 699000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-p-100277",
+       "name": "مشروع بدر 2 - فلل للبيع",
+       "city": "Madinah",
+       "price": {
+        "amount": 693595.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Projects in Saudi Arabia"
+     ],
+     "sources": [
+      {
+       "title": "مشروع فلل للبيع",
+       "url": "https://wasalt.sa/en/project/Jeddah/mshrwa-fll-llbya-100523"
+      },
+      {
+       "title": "Lolia Villa",
+       "url": "https://wasalt.sa/en/project/Khobar/lolia-villa-100330"
+      },
+      {
+       "title": "مشروع الصدفة ريزيدنس 34",
+       "url": "https://wasalt.sa/en/project/Khobar/mshrwa-alsdfh-ryzydns-34-100564"
+      },
+      {
+       "title": "Ramz Tharwa",
+       "url": "https://wasalt.sa/en/project/Khobar/ramz-tharwa-100331"
+      },
+      {
+       "title": "مشروع أميليا ريزيدنس",
+       "url": "https://wasalt.sa/en/project/Madinah/%D9%85%D8%B4%D8%B1%D9%88%D8%B9-%D8%A3%D9%85%D9%8A%D9%84%D9%8A%D8%A7-%D8%B1%D9%8A%D8%B2%D9%8A%D8%AF%D9%86%D8%B3-100581"
+      },
+      {
+       "title": "مشروع بدر 2 - فلل للبيع",
+       "url": "https://wasalt.sa/en/project/Madinah/%D9%85%D8%B4%D8%B1%D9%88%D8%B9-%D8%A8%D8%AF%D8%B1-2-%D9%81%D9%84%D9%84-%D9%84%D9%84%D8%A8%D9%8A%D8%B9-100277"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "contains_any_ci": {
+       "pass": false,
+       "detail": "none of ['DarGlobal']"
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "The bot completely ignored the specific question about Trump projects and gave a generic list instead.",
+      "helpful": 1,
+      "honest": 2,
+      "tone": 3,
+      "persona_fit": 1,
+      "helpfulness": 1
+     }
+    },
+    {
+     "n": 2,
+     "say": "and Lolia Villa, which brand is that?",
+     "playbook": "single_attribute",
+     "payload_last_entities": [
+      "wasalt-p-100523",
+      "wasalt-p-100330",
+      "wasalt-p-100564",
+      "wasalt-p-100331",
+      "wasalt-p-100581",
+      "wasalt-p-100277"
+     ],
+     "answer": "Lolia Villa is a Wasalt project in Al Khobar, Saudi Arabia (Villa) [1]. Published unit types: 5 BR; unit size 487 m² [1]. Status: Ready to Move-in; prices start from 2,300,000 SAR [1].",
+     "trace": {
+      "intent": "project_info",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 109,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "Read the project's published page",
+       "Showed 1 result card",
+       "Wrote the answer in code from the data",
+       "Answer guide: project_facts"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 109,
+     "ttft_ms": 109.00000005494803,
+     "cards": [
+      {
+       "id": "wasalt-p-100330",
+       "name": "Lolia Villa",
+       "city": "Al Khobar",
+       "price": {
+        "amount": 2300000.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Prices at Lolia Villa",
+      "Unit types at Lolia Villa",
+      "Contact sales"
+     ],
+     "sources": [
+      {
+       "title": "Lolia Villa",
+       "url": "https://wasalt.sa/en/project/Khobar/lolia-villa-100330"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "contains_any_ci": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Accurately identifies the brand and provides relevant project details.",
+      "helpful": 5,
+      "honest": 5,
+      "tone": 5,
+      "persona_fit": 5,
+      "helpfulness": 5
+     }
+    },
+    {
+     "n": 3,
+     "say": "show me DarGlobal projects in Saudi Arabia",
+     "playbook": "filtered_search",
+     "payload_last_entities": [
+      "wasalt-p-100330"
+     ],
+     "answer": "DarGlobal has 10 published projects in Saudi Arabia: ⁨Neptune, Interiors by Mouawad⁩, ⁨Trump Tower Jeddah⁩, ⁨Amaya⁩, ⁨DarGlobal Mansions Interiors by Fendi Casa⁩, ⁨Padel Living Residences⁩, ⁨Rayana⁩ and more. Prices are not published for some of these; the sales team can confirm them.",
+     "trace": {
+      "intent": "location_overview",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 265,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "Looked up the published projects",
+       "Showed 6 result cards",
+       "Wrote the answer in code from the data",
+       "Answer guide: country_overview"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 265,
+     "ttft_ms": 250.0,
+     "cards": [
+      {
+       "id": "dg-neptune-interiors-by-mouawad",
+       "name": "Neptune, Interiors by Mouawad",
+       "city": "Riyadh",
+       "price": null
+      },
+      {
+       "id": "dg-trump-tower-jeddah",
+       "name": "Trump Tower Jeddah",
+       "city": "Jeddah",
+       "price": null
+      },
+      {
+       "id": "dg-amaya",
+       "name": "Amaya",
+       "city": "Jeddah",
+       "price": null
+      },
+      {
+       "id": "dg-darglobal-mansions-interiors-by-fendi-casa",
+       "name": "DarGlobal Mansions Interiors by Fendi Casa",
+       "city": "Riyadh",
+       "price": null
+      },
+      {
+       "id": "dg-padel-living-residences",
+       "name": "Padel Living Residences",
+       "city": "Jeddah",
+       "price": null
+      },
+      {
+       "id": "dg-rayana",
+       "name": "Rayana",
+       "city": "Riyadh",
+       "price": null
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Tell me about the first one",
+      "Which countries do you cover?",
+      "Projects in Riyadh"
+     ],
+     "sources": [
+      {
+       "title": "Neptune, Interiors by Mouawad",
+       "url": "https://darglobal.co.uk/neptune"
+      },
+      {
+       "title": "Trump Tower Jeddah",
+       "url": "https://darglobal.co.uk/trump-tower-jeddah"
+      },
+      {
+       "title": "Amaya",
+       "url": "https://darglobal.co.uk/projects"
+      },
+      {
+       "title": "Rayana",
+       "url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_min": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_country": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_site": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Accurately lists projects with appropriate cards and handles missing price data honestly.",
+      "helpful": 5,
+      "honest": 5,
+      "tone": 5,
+      "persona_fit": 5,
+      "helpfulness": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "c27",
+   "persona": null,
+   "category": "typo_translit",
+   "playbook": "filtered_search",
+   "lang": "en",
+   "tags": [
+    "typo"
+   ],
+   "turns": [
+    {
+     "n": 1,
+     "say": "show me vilas in jedda unde 2 milion",
+     "playbook": "filtered_search",
+     "payload_last_entities": [],
+     "answer": "I found 65 villas in Jeddah in the Wasalt sample. Here are 6; tell me a budget to narrow it.",
+     "trace": {
+      "intent": "search",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 125,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "Searched the Wasalt listings",
+       "Showed 6 result cards",
+       "Wrote the answer in code from the data",
+       "Answer guide: filtered_search"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 125,
+     "ttft_ms": 109.00000005494803,
+     "cards": [
+      {
+       "id": "wasalt-l-5873202",
+       "name": "Villa 312 SQM Facing West, North",
+       "city": "Jeddah",
+       "price": {
+        "amount": 3860000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5873201",
+       "name": "Villa 312 SQM Facing West, North",
+       "city": "Jeddah",
+       "price": {
+        "amount": 3860000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5873198",
+       "name": "Villa 312 SQM Facing West, North",
+       "city": "Jeddah",
+       "price": {
+        "amount": 3860000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5873197",
+       "name": "Villa 312 SQM Facing West, North",
+       "city": "Jeddah",
+       "price": {
+        "amount": 3860000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5873193",
+       "name": "Villa 312 SQM Facing East, North",
+       "city": "Jeddah",
+       "price": {
+        "amount": 3860000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5873196",
+       "name": "Villa 312 SQM Facing East, North",
+       "city": "Jeddah",
+       "price": {
+        "amount": 3860000.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Projects in Jeddah"
+     ],
+     "sources": [
+      {
+       "title": "Villa 312 SQM Facing West, North",
+       "url": "https://wasalt.sa/en/property/sale/villa-312-sqm-facing-west,-north-5873202"
+      },
+      {
+       "title": "Villa 312 SQM Facing West, North",
+       "url": "https://wasalt.sa/en/property/sale/villa-312-sqm-facing-west,-north-5873201"
+      },
+      {
+       "title": "Villa 312 SQM Facing West, North",
+       "url": "https://wasalt.sa/en/property/sale/villa-312-sqm-facing-west,-north-5873198"
+      },
+      {
+       "title": "Villa 312 SQM Facing West, North",
+       "url": "https://wasalt.sa/en/property/sale/villa-312-sqm-facing-west,-north-5873197"
+      },
+      {
+       "title": "Villa 312 SQM Facing East, North",
+       "url": "https://wasalt.sa/en/property/sale/villa-312-sqm-facing-east,-north-5873193"
+      },
+      {
+       "title": "Villa 312 SQM Facing East, North",
+       "url": "https://wasalt.sa/en/property/sale/villa-312-sqm-facing-east,-north-5873196"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_min": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_city": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "The bot completely ignored the 'under 2 million' budget constraint and showed villas priced at 3.86 million.",
+      "helpful": 1,
+      "honest": 2,
+      "tone": 4,
+      "persona_fit": 1,
+      "helpfulness": 1
+     }
+    },
+    {
+     "n": 2,
+     "say": "wat about apartmnts",
+     "playbook": "refine",
+     "payload_last_entities": [
+      "wasalt-l-5873202",
+      "wasalt-l-5873201",
+      "wasalt-l-5873198",
+      "wasalt-l-5873197",
+      "wasalt-l-5873193",
+      "wasalt-l-5873196"
+     ],
+     "answer": "I found 33 apartments for sale in Jeddah in the Wasalt sample, up to 2,000,000 SAR. Here are 6:\n\n- Apartment 247.9 SQM with 6 Bedrooms | Al Rabbwah, Jeddah | 1,180,000 SAR | 6 bedrooms\n- Apartment | Al Naeem, Jeddah | 1,050,000 SAR | bedrooms not published\n- Apartment with 3 Bedrooms | Al Faiha A, Jeddah | 340,000 SAR | 3 bedrooms\n- Apartment with 2 Bedrooms | Al Bawadi, Jeddah | 280,000 SAR | 2 bedrooms\n- Apartment 170.37 SQM with 4 Bedrooms | Al Safa, Jeddah | 640,000 SAR | 4 bedrooms\n- Apartment with 3 Bedrooms | Al Safa, Jeddah | 349,000 SAR | 3 bedrooms\n\nAll 33 are under your 2,000,000 SAR budget. Want me to filter by bedroom count, district, or a tighter price range?",
+     "trace": {
+      "intent": "search",
+      "path": "llm_understanding",
+      "tool": null,
+      "llm_calls": 2,
+      "model": "nvidia/nemotron-3-ultra-550b-a55b",
+      "provider": "openrouter",
+      "latency_ms": 5670,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "An AI model read the question and mapped it to the data",
+       "Searched the Wasalt listings",
+       "Showed 6 result cards",
+       "An AI model wrote the wording from these facts only",
+       "Answer guide: filtered_search"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 5670,
+     "ttft_ms": 4140.00000001397,
+     "cards": [
+      {
+       "id": "wasalt-l-5934631",
+       "name": "Apartment 247.9 SQM with 6 Bedrooms",
+       "city": "Jeddah",
+       "price": {
+        "amount": 1180000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5972831",
+       "name": "Apartment",
+       "city": "Jeddah",
+       "price": {
+        "amount": 1050000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5972197",
+       "name": "Apartment with 3 Bedrooms",
+       "city": "Jeddah",
+       "price": {
+        "amount": 340000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5972081",
+       "name": "Apartment with 2 Bedrooms",
+       "city": "Jeddah",
+       "price": {
+        "amount": 280000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5934355",
+       "name": "Apartment 170.37 SQM with 4 Bedrooms",
+       "city": "Jeddah",
+       "price": {
+        "amount": 640000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5972073",
+       "name": "Apartment with 3 Bedrooms",
+       "city": "Jeddah",
+       "price": {
+        "amount": 349000.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Projects in Jeddah"
+     ],
+     "sources": [
+      {
+       "title": "Apartment 247.9 SQM with 6 Bedrooms",
+       "url": "https://wasalt.sa/en/property/sale/apartment-2479-sqm-with-6-bedrooms-5934631"
+      },
+      {
+       "title": "Apartment",
+       "url": "https://wasalt.sa/en/property/sale/apartment-5972831"
+      },
+      {
+       "title": "Apartment with 3 Bedrooms",
+       "url": "https://wasalt.sa/en/property/sale/apartment-with-3-bedrooms-5972197"
+      },
+      {
+       "title": "Apartment with 2 Bedrooms",
+       "url": "https://wasalt.sa/en/property/sale/apartment-with-2-bedrooms-5972081"
+      },
+      {
+       "title": "Apartment 170.37 SQM with 4 Bedrooms",
+       "url": "https://wasalt.sa/en/property/sale/apartment-17037-sqm-with-4-bedrooms-5934355"
+      },
+      {
+       "title": "Apartment with 3 Bedrooms",
+       "url": "https://wasalt.sa/en/property/sale/apartment-with-3-bedrooms-5972073"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": false,
+       "detail": "2e+06 not in context"
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_min": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "The bot correctly inferred the budget and location from the previous turn and provided relevant options.",
+      "helpful": 5,
+      "honest": 5,
+      "tone": 5,
+      "persona_fit": 5,
+      "helpfulness": 5
+     }
+    },
+    {
+     "n": 3,
+     "say": "tell me abt the frist one",
+     "playbook": "followup_reference",
+     "payload_last_entities": [
+      "wasalt-l-5934631",
+      "wasalt-l-5972831",
+      "wasalt-l-5972197",
+      "wasalt-l-5972081",
+      "wasalt-l-5934355",
+      "wasalt-l-5972073"
+     ],
+     "answer": "Apartment 247.9 SQM with 6 Bedrooms, for sale in Al Rabbwah, Jeddah: price 1,180,000 SAR, 6 bedrooms, built-up area 247.9 m².",
+     "trace": {
+      "intent": "general",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 280,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "Searched the collected pages",
+       "Showed 1 result card",
+       "Wrote the answer in code from the data",
+       "Answer guide: followup_reference"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 280,
+     "ttft_ms": 265.00000001396984,
+     "cards": [
+      {
+       "id": "wasalt-l-5934631",
+       "name": "Apartment 247.9 SQM with 6 Bedrooms",
+       "city": "Jeddah",
+       "price": {
+        "amount": 1180000.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Projects in Oman",
+      "Apartments for rent in Riyadh",
+      "Branded residences",
+      "20% down on 2,000,000 SAR"
+     ],
+     "sources": [
+      {
+       "title": "Apartment 247.9 SQM with 6 Bedrooms",
+       "url": "https://wasalt.sa/en/property/sale/apartment-2479-sqm-with-6-bedrooms-5934631"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "ref": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Accurately provides details for the first result matching the user's request.",
+      "helpful": 5,
+      "honest": 5,
+      "tone": 5,
+      "persona_fit": 5,
+      "helpfulness": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "c28",
+   "persona": null,
+   "category": "typo_translit",
+   "playbook": "filtered_search",
+   "lang": "arabizi",
+   "tags": [
+    "typo"
+   ],
+   "turns": [
+    {
+     "n": 1,
+     "say": "3andkom shaqq lel ijar fi Riyadh?",
+     "playbook": "filtered_search",
+     "payload_last_entities": [],
+     "answer": "Yes — I have 40 apartments for rent in Riyadh in the current sample.  \nSix are shown here, ranging from 4,600 SAR (50 m2, 1 bed in Al-Aqeek) to 60,000 SAR (60 m2, 1 bed in Al-Malqa or Al-Murooj). What monthly budget should I filter by?",
+     "trace": {
+      "intent": "search",
+      "path": "llm_understanding",
+      "tool": null,
+      "llm_calls": 2,
+      "model": "nvidia/nemotron-3-ultra-550b-a55b",
+      "provider": "openrouter",
+      "latency_ms": 3342,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "An AI model read the question and mapped it to the data",
+       "Searched the Wasalt listings",
+       "Showed 6 result cards",
+       "An AI model wrote the wording from these facts only",
+       "Answer guide: filtered_search"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 3342,
+     "ttft_ms": 3155.999999959022,
+     "cards": [
+      {
+       "id": "wasalt-l-5966841",
+       "name": "Apartment 500 SQM with 2 Bedrooms",
+       "city": "Riyadh",
+       "price": {
+        "amount": 38000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5972170",
+       "name": "Furnished Apartment 60 SQM with 1 Bedroom",
+       "city": "Riyadh",
+       "price": {
+        "amount": 50000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5972172",
+       "name": "Furnished Apartment with 1 Bedroom",
+       "city": "Riyadh",
+       "price": {
+        "amount": 60000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5972169",
+       "name": "Furnished Apartment with 1 Bedroom",
+       "city": "Riyadh",
+       "price": {
+        "amount": 60000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5967091",
+       "name": "Apartment 312 SQM with 1 Bedroom",
+       "city": "Riyadh",
+       "price": {
+        "amount": 26400.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5975130",
+       "name": "Apartment 50 SQM with 1 Bedroom",
+       "city": "Riyadh",
+       "price": {
+        "amount": 4600.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "Apartments for rent in Riyadh under 25,000 SAR",
+      "Apartments for rent in Riyadh under 54,000 SAR",
+      "Projects in Riyadh"
+     ],
+     "sources": [
+      {
+       "title": "Apartment 500 SQM with 2 Bedrooms",
+       "url": "https://wasalt.sa/en/property/rent/apartment-500-sqm-with-2-bedrooms-5966841"
+      },
+      {
+       "title": "Furnished Apartment 60 SQM with 1 Bedroom",
+       "url": "https://wasalt.sa/en/property/rent/furnished-apartment-60-sqm-with-1-bedroom-5972170"
+      },
+      {
+       "title": "Furnished Apartment with 1 Bedroom",
+       "url": "https://wasalt.sa/en/property/rent/furnished-apartment-with-1-bedroom-5972172"
+      },
+      {
+       "title": "Furnished Apartment with 1 Bedroom",
+       "url": "https://wasalt.sa/en/property/rent/furnished-apartment-with-1-bedroom-5972169"
+      },
+      {
+       "title": "Apartment 312 SQM with 1 Bedroom",
+       "url": "https://wasalt.sa/en/property/rent/apartment-312-sqm-with-1-bedroom-5967091"
+      },
+      {
+       "title": "Apartment 50 SQM with 1 Bedroom",
+       "url": "https://wasalt.sa/en/property/rent/apartment-50-sqm-with-1-bedroom-5975130"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_min": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_city": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "The bot answers the question and provides options, though it switches from Arabizi to English.",
+      "helpful": 4,
+      "honest": 5,
+      "tone": 4,
+      "persona_fit": 5,
+      "helpfulness": 4
+     }
+    },
+    {
+     "n": 2,
+     "say": "abgha ar5as wahda",
+     "playbook": "superlative",
+     "payload_last_entities": [
+      "wasalt-l-5966841",
+      "wasalt-l-5972170",
+      "wasalt-l-5972172",
+      "wasalt-l-5972169",
+      "wasalt-l-5967091",
+      "wasalt-l-5975130"
+     ],
+     "answer": "I have 19 one-bedroom apartments for rent in Riyadh in the current sample. The cheapest are 2,000 SAR/month: a 60 m2 unit in Al-Muanisiyah and a 1,000 m2 unit in East An-Naseem. Would you like me to filter by a maximum budget (e.g., ≤ 2,500 SAR) or by district?",
+     "trace": {
+      "intent": "search",
+      "path": "llm_understanding",
+      "tool": null,
+      "llm_calls": 2,
+      "model": "nvidia/nemotron-3-ultra-550b-a55b",
+      "provider": "openrouter",
+      "latency_ms": 3859,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "An AI model read the question and mapped it to the data",
+       "Searched the Wasalt listings",
+       "Showed 6 result cards",
+       "An AI model wrote the wording from these facts only",
+       "Answer guide: filtered_search"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 3859,
+     "ttft_ms": 3217.9999999934807,
+     "cards": [
+      {
+       "id": "wasalt-l-5974376",
+       "name": "Apartment 60 SQM with 1 Bedroom",
+       "city": "Riyadh",
+       "price": {
+        "amount": 2000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5971527",
+       "name": "Apartment 1000 SQM with 1 Bedroom",
+       "city": "Riyadh",
+       "price": {
+        "amount": 2000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5975119",
+       "name": "Apartment 70 SQM with 1 Bedroom",
+       "city": "Riyadh",
+       "price": {
+        "amount": 2500.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5975072",
+       "name": "Apartment 750 SQM with 1 Bedroom",
+       "city": "Riyadh",
+       "price": {
+        "amount": 2500.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5975121",
+       "name": "Apartment 50 SQM with 1 Bedroom",
+       "city": "Riyadh",
+       "price": {
+        "amount": 3000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5974374",
+       "name": "Apartment 60 SQM with 1 Bedroom",
+       "city": "Riyadh",
+       "price": {
+        "amount": 3000.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "1-bed apartment for rent in Riyadh under 3,500 SAR",
+      "1-bed apartment for rent in Riyadh under 32,000 SAR",
+      "Projects in Riyadh"
+     ],
+     "sources": [
+      {
+       "title": "Apartment 60 SQM with 1 Bedroom",
+       "url": "https://wasalt.sa/en/property/rent/apartment-60-sqm-with-1-bedroom-5974376"
+      },
+      {
+       "title": "Apartment 1000 SQM with 1 Bedroom",
+       "url": "https://wasalt.sa/en/property/rent/apartment-1000-sqm-with-1-bedroom-5971527"
+      },
+      {
+       "title": "Apartment 70 SQM with 1 Bedroom",
+       "url": "https://wasalt.sa/en/property/rent/apartment-70-sqm-with-1-bedroom-5975119"
+      },
+      {
+       "title": "Apartment 750 SQM with 1 Bedroom",
+       "url": "https://wasalt.sa/en/property/rent/apartment-750-sqm-with-1-bedroom-5975072"
+      },
+      {
+       "title": "Apartment 50 SQM with 1 Bedroom",
+       "url": "https://wasalt.sa/en/property/rent/apartment-50-sqm-with-1-bedroom-5975121"
+      },
+      {
+       "title": "Apartment 60 SQM with 1 Bedroom",
+       "url": "https://wasalt.sa/en/property/rent/apartment-60-sqm-with-1-bedroom-5974374"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_min": {
+       "pass": true,
+       "detail": ""
+      },
+      "sorted": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Accurately identifies the cheapest options from the data and provides clear next steps.",
+      "helpful": 5,
+      "honest": 5,
+      "tone": 5,
+      "persona_fit": 5,
+      "helpfulness": 5
+     }
+    },
+    {
+     "n": 3,
+     "say": "shukran",
+     "playbook": "thanks_goodbye",
+     "payload_last_entities": [
+      "wasalt-l-5974376",
+      "wasalt-l-5971527",
+      "wasalt-l-5975119",
+      "wasalt-l-5975072",
+      "wasalt-l-5975121",
+      "wasalt-l-5974374"
+     ],
+     "answer": "You're very welcome! Is there anything else I can look up for you?",
+     "trace": {
+      "intent": "thanks",
+      "path": "template",
+      "tool": null,
+      "llm_calls": 1,
+      "model": null,
+      "provider": null,
+      "latency_ms": 1000,
+      "cache_hit": false,
+      "degraded": true,
+      "degraded_reason": "rate_limited",
+      "fallback_hops": 0,
+      "steps": [
+       "Wrote the answer in code from the data",
+       "Answer guide: thanks_goodbye"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 1000,
+     "ttft_ms": 1015.0000000139698,
+     "cards": [],
+     "compare": false,
+     "chips": [
+      "Projects in Oman",
+      "Apartments for rent in Riyadh",
+      "Branded residences",
+      "20% down on 2,000,000 SAR"
+     ],
+     "sources": [],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Polite and appropriate closing response to a thank you.",
+      "helpful": 5,
+      "honest": 5,
+      "tone": 5,
+      "persona_fit": 5,
+      "helpfulness": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "c29",
+   "persona": null,
+   "category": "meta_trust",
+   "playbook": "identity",
+   "lang": "ar",
+   "tags": [
+    "ar"
+   ],
+   "turns": [
+    {
+     "n": 1,
+     "say": "انت بوت ولا شخص؟",
+     "playbook": "identity",
+     "payload_last_entities": [],
+     "answer": "تحدٍّ مقبول ولا مشكلة. أنا مساعد عقاري بالذكاء الاصطناعي، والعقارات هي ما أجيده حقاً. وبما أنك هنا، هل تودّ التعرّف على ⁨Les Vagues by Elie Saab⁩؟ يقع في الدوحة، قطر وحالته المنشورة: قيد التطوير والتسليم المتوقع في 2027. إذا رغبت في التفاصيل أو التوفر، يمكن لمستشاري دار جلوبال مساعدتك عبر صفحة التواصل الرسمية المرفقة أدناه.",
+     "trace": {
+      "intent": "banter",
+      "path": "template",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 109,
+      "cache_hit": false,
+      "degraded": true,
+      "degraded_reason": "all_models_down",
+      "fallback_hops": 0,
+      "steps": [
+       "أبقيت الحديث خفيفاً وعدنا إلى العقارات",
+       "عرضت 1 من البطاقات",
+       "كتبت الإجابة برمجياً من البيانات",
+       "دليل الإجابة: banter"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 109,
+     "ttft_ms": 77.9999999795109,
+     "cards": [
+      {
+       "id": "dg-les-vagues-by-elie-saab",
+       "name": "Les Vagues by Elie Saab",
+       "city": "Doha",
+       "price": null
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "المزيد عن Les Vagues by Elie Saab",
+      "المشاريع في عُمان",
+      "قارن بين مشروعين",
+      "تحدّث مع مستشار دار جلوبال"
+     ],
+     "sources": [
+      {
+       "title": "Les Vagues by Elie Saab",
+       "url": "https://darglobal.co.uk/les-vagues"
+      },
+      {
+       "title": "DarGlobal official contact page",
+       "url": "https://darglobal.co.uk/get-in-touch"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "contains_any_ci": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Directly answers the identity question and provides a relevant property suggestion.",
+      "helpful": 4,
+      "honest": 5,
+      "tone": 4,
+      "persona_fit": 5,
+      "helpfulness": 4
+     }
+    },
+    {
+     "n": 2,
+     "say": "من وين تجيب المعلومات؟",
+     "playbook": "capabilities",
+     "payload_last_entities": [
+      "dg-les-vagues-by-elie-saab"
+     ],
+     "answer": "يسعدني ذلك. هل يمكنك توضيح طلبك قليلاً؟ لديّ مشاريع في السعودية (40)، عُمان (16)، الإمارات (9)، إسبانيا (3)، المملكة المتحدة (2)، قطر (2)، إضافة إلى 1,661 عرضاً من وصلت في الرياض، المدينة المنورة، جدة. اختر مكاناً أدناه أو أخبرني بميزانيتك.",
+     "trace": {
+      "intent": "vague",
+      "path": "template",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 327,
+      "cache_hit": false,
+      "degraded": true,
+      "degraded_reason": "all_models_down",
+      "fallback_hops": 0,
+      "steps": [
+       "كتبت الإجابة برمجياً من البيانات",
+       "دليل الإجابة: vague_opener"
+      ],
+      "retrieved": [
+       {
+        "id": "dg-rayana#fact-ar",
+        "score": 0.0311,
+        "title": "Rayana",
+        "site": "LSE filing via ticker.app"
+       },
+       {
+        "id": "dg-aida#fact-ar",
+        "score": 0.0301,
+        "title": "Aida",
+        "site": "DarGlobal"
+       },
+       {
+        "id": "wasalt-p-100322#fact-ar",
+        "score": 0.0164,
+        "title": "Calma GH220",
+        "site": "Wasalt"
+       },
+       {
+        "id": "dg-trump-signature-villas#fact-ar",
+        "score": 0.0164,
+        "title": "Trump Signature Villas",
+        "site": "The National (news)"
+       },
+       {
+        "id": "wasalt-p-100329#fact-ar",
+        "score": 0.0161,
+        "title": "Qurtubah Residence 17",
+        "site": "Wasalt"
+       },
+       {
+        "id": "wasalt-p-100584#fact-ar",
+        "score": 0.0159,
+        "title": "كوريو",
+        "site": "Wasalt"
+       }
+      ]
+     },
+     "trace_latency_ms": 327,
+     "ttft_ms": 312.00000003445894,
+     "cards": [],
+     "compare": false,
+     "chips": [
+      "المشاريع في السعودية",
+      "المشاريع في عُمان",
+      "المشاريع في الإمارات",
+      "شقق للإيجار في الرياض"
+     ],
+     "sources": [],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "The bot completely ignored the user's question about its data source and gave a generic sales pitch.",
+      "helpful": 1,
+      "honest": 2,
+      "tone": 3,
+      "persona_fit": 1,
+      "helpfulness": 1
+     }
+    },
+    {
+     "n": 3,
+     "say": "هل اسعاركم محدثة؟",
+     "playbook": "identity",
+     "payload_last_entities": [],
+     "answer": "لا تجيب البيانات العقارية المنشورة عن ذلك مباشرة، لذا لن أقتبس نصوصاً تسويقية أو من المدونة كأنها حقائق. أقرب الصفحات مرفقة أدناه، ويمكنني عرض ما تتضمنه البيانات: 42 مشروعاً لدار جلوبال في 6 دول، و30 مشروعاً لوصلت، و1,661 عرضاً عقارياً من وصلت في 13 مدينة.",
+     "trace": {
+      "intent": "general",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 687,
+      "cache_hit": false,
+      "degraded": true,
+      "degraded_reason": "all_models_down",
+      "fallback_hops": 0,
+      "steps": [
+       "بحثت في الصفحات المجمّعة",
+       "كتبت الإجابة برمجياً من البيانات",
+       "دليل الإجابة: generic"
+      ],
+      "retrieved": [
+       {
+        "id": "dg-7and8-albert-hall-mansions#fact-ar",
+        "score": 0.0164,
+        "title": "7&8 Albert Hall Mansions",
+        "site": "DarGlobal"
+       },
+       {
+        "id": "dg-rayana#fact-ar",
+        "score": 0.0161,
+        "title": "Rayana",
+        "site": "LSE filing via ticker.app"
+       },
+       {
+        "id": "wasalt-pg-1696d27245#17",
+        "score": 0.0159,
+        "title": "Terms and Conditions",
+        "site": "Wasalt"
+       },
+       {
+        "id": "wasalt-p-100582#desc-ar-0",
+        "score": 0.0156,
+        "title": "مشروع مشيد 10",
+        "site": "Wasalt"
+       },
+       {
+        "id": "wasalt-pg-5e9a279e80#13",
+        "score": 0.0152,
+        "title": "Riyadh's Real Estate Market Forecast 2026: Expert Guide",
+        "site": "Wasalt"
+       }
+      ]
+     },
+     "trace_latency_ms": 687,
+     "ttft_ms": 687.0000000344589,
+     "cards": [],
+     "compare": false,
+     "chips": [
+      "المشاريع في الرياض",
+      "شقة غرفتين للبيع في الرياض",
+      "شقق للإيجار في جدة"
+     ],
+     "sources": [
+      {
+       "title": "7&8 Albert Hall Mansions",
+       "url": "https://darglobal.co.uk/projects"
+      },
+      {
+       "title": "Rayana",
+       "url": "https://www.ticker.app/lse/DAR/rns/2026-03-11/Full-Year-Results/1301W"
+      },
+      {
+       "title": "Terms and Conditions",
+       "url": "https://wasalt.sa/en/s/terms-n-conditions-for-auction"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "hedge_or_date": {
+       "pass": false,
+       "detail": "neither a hedge nor a date"
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "The bot completely failed to answer the yes/no question about price updates and provided a confusing, irrelevant response.",
+      "helpful": 1,
+      "honest": 2,
+      "tone": 2,
+      "persona_fit": 1,
+      "helpfulness": 1
+     }
+    }
+   ]
+  },
+  {
+   "id": "c30",
+   "persona": null,
+   "category": "meta_trust",
+   "playbook": "banter",
+   "lang": "ar",
+   "tags": [
+    "ar",
+    "switch"
+   ],
+   "turns": [
+    {
+     "n": 1,
+     "say": "ما فهمت علي! ابغى فلل في الرياض",
+     "playbook": "filtered_search",
+     "payload_last_entities": [],
+     "answer": "وجدت 103 من فلل ضمن عيّنة وصلت في الرياض. يُعرض منها 6؛ أخبرني بميزانية لتضييق النتائج.",
+     "trace": {
+      "intent": "search",
+      "path": "code",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 125,
+      "cache_hit": false,
+      "degraded": false,
+      "degraded_reason": null,
+      "fallback_hops": 0,
+      "steps": [
+       "بحثت في عروض وصلت",
+       "عرضت 6 من البطاقات",
+       "كتبت الإجابة برمجياً من البيانات",
+       "دليل الإجابة: filtered_search"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 125,
+     "ttft_ms": 125.0,
+     "cards": [
+      {
+       "id": "wasalt-l-5805372",
+       "name": "Villa 414 SQM",
+       "city": "Riyadh",
+       "price": {
+        "amount": 2459000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5805371",
+       "name": "Villa 414 SQM",
+       "city": "Riyadh",
+       "price": {
+        "amount": 2459000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5805370",
+       "name": "Villa 414 SQM",
+       "city": "Riyadh",
+       "price": {
+        "amount": 2459000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5805369",
+       "name": "Villa 414 SQM",
+       "city": "Riyadh",
+       "price": {
+        "amount": 2459000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5805368",
+       "name": "Villa 414 SQM",
+       "city": "Riyadh",
+       "price": {
+        "amount": 2459000.0,
+        "currency": "SAR"
+       }
+      },
+      {
+       "id": "wasalt-l-5805367",
+       "name": "Villa 414 SQM",
+       "city": "Riyadh",
+       "price": {
+        "amount": 2459000.0,
+        "currency": "SAR"
+       }
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "المشاريع في الرياض"
+     ],
+     "sources": [
+      {
+       "title": "Villa 414 SQM",
+       "url": "https://wasalt.sa/en/property/sale/villa-414-sqm-5805372"
+      },
+      {
+       "title": "Villa 414 SQM",
+       "url": "https://wasalt.sa/en/property/sale/villa-414-sqm-5805371"
+      },
+      {
+       "title": "Villa 414 SQM",
+       "url": "https://wasalt.sa/en/property/sale/villa-414-sqm-5805370"
+      },
+      {
+       "title": "Villa 414 SQM",
+       "url": "https://wasalt.sa/en/property/sale/villa-414-sqm-5805369"
+      },
+      {
+       "title": "Villa 414 SQM",
+       "url": "https://wasalt.sa/en/property/sale/villa-414-sqm-5805368"
+      },
+      {
+       "title": "Villa 414 SQM",
+       "url": "https://wasalt.sa/en/property/sale/villa-414-sqm-5805367"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_min": {
+       "pass": true,
+       "detail": ""
+      },
+      "cards_city": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Directly addresses the user's request with results and a clear next step for filtering.",
+      "helpful": 5,
+      "honest": 5,
+      "tone": 4,
+      "persona_fit": 5,
+      "helpfulness": 5
+     }
+    },
+    {
+     "n": 2,
+     "say": "ردك غلط",
+     "playbook": "banter",
+     "payload_last_entities": [
+      "wasalt-l-5805372",
+      "wasalt-l-5805371",
+      "wasalt-l-5805370",
+      "wasalt-l-5805369",
+      "wasalt-l-5805368",
+      "wasalt-l-5805367"
+     ],
+     "answer": "يسعدني ذلك. هل يمكنك توضيح طلبك قليلاً؟ لديّ مشاريع في السعودية (40)، عُمان (16)، الإمارات (9)، إسبانيا (3)، المملكة المتحدة (2)، قطر (2)، إضافة إلى 1,661 عرضاً من وصلت في الرياض، المدينة المنورة، جدة. اختر مكاناً أدناه أو أخبرني بميزانيتك.",
+     "trace": {
+      "intent": "vague",
+      "path": "template",
+      "tool": null,
+      "llm_calls": 0,
+      "model": null,
+      "provider": null,
+      "latency_ms": 217,
+      "cache_hit": false,
+      "degraded": true,
+      "degraded_reason": "all_models_down",
+      "fallback_hops": 0,
+      "steps": [
+       "كتبت الإجابة برمجياً من البيانات",
+       "دليل الإجابة: vague_opener"
+      ],
+      "retrieved": [
+       {
+        "id": "wasalt-p-100584#fact-ar",
+        "score": 0.0164,
+        "title": "كوريو",
+        "site": "Wasalt"
+       },
+       {
+        "id": "dg-the-mulliner#fact-ar",
+        "score": 0.0161,
+        "title": "The Mulliner",
+        "site": "DarGlobal"
+       },
+       {
+        "id": "wasalt-p-100246#fact-ar",
+        "score": 0.0159,
+        "title": "مشروع نبتون بتصاميم من معوض - فلل للبيع",
+        "site": "Wasalt"
+       },
+       {
+        "id": "wasalt-p-100585#fact-ar",
+        "score": 0.0156,
+        "title": "مشروع عين أسس - شقق للبيع",
+        "site": "Wasalt"
+       },
+       {
+        "id": "wasalt-p-100277#fact-ar",
+        "score": 0.0154,
+        "title": "مشروع بدر 2 - فلل للبيع",
+        "site": "Wasalt"
+       },
+       {
+        "id": "wasalt-p-100159#fact-ar",
+        "score": 0.0152,
+        "title": "مشروع فلل إتوال",
+        "site": "Wasalt"
+       }
+      ]
+     },
+     "trace_latency_ms": 217,
+     "ttft_ms": 202.9999999795109,
+     "cards": [],
+     "compare": false,
+     "chips": [
+      "المشاريع في السعودية",
+      "المشاريع في عُمان",
+      "المشاريع في الإمارات",
+      "شقق للإيجار في الرياض"
+     ],
+     "sources": [],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "The bot ignores the user's correction and provides a generic list instead of focusing on Riyadh villas.",
+      "helpful": 3,
+      "honest": 5,
+      "tone": 4,
+      "persona_fit": 3,
+      "helpfulness": 3
+     }
+    },
+    {
+     "n": 3,
+     "say": "طيب وش احسن مطعم في الرياض؟",
+     "playbook": "off_topic",
+     "payload_last_entities": [],
+     "answer": "هذا خارج نطاقي قليلاً، فأنا مساعد عقاري لدار جلوبال ووصلت. وبما أنك هنا، هل تودّ التعرّف على ⁨Urban Oasis by Missoni⁩؟ يقع في دبي، الإمارات وحالته المنشورة: مكتمل ومباع بالكامل. إذا رغبت في التفاصيل أو التوفر، يمكن لمستشاري دار جلوبال مساعدتك عبر صفحة التواصل الرسمية المرفقة أدناه.",
+     "trace": {
+      "intent": "off_topic",
+      "path": "template",
+      "tool": null,
+      "llm_calls": 1,
+      "model": null,
+      "provider": null,
+      "latency_ms": 202,
+      "cache_hit": false,
+      "degraded": true,
+      "degraded_reason": "rate_limited",
+      "fallback_hops": 0,
+      "steps": [
+       "التزمت بموضوعات العقارات",
+       "عرضت 1 من البطاقات",
+       "كتبت الإجابة برمجياً من البيانات",
+       "دليل الإجابة: off_topic"
+      ],
+      "retrieved": []
+     },
+     "trace_latency_ms": 202,
+     "ttft_ms": 187.00000003445894,
+     "cards": [
+      {
+       "id": "dg-urban-oasis-by-missoni",
+       "name": "Urban Oasis by Missoni",
+       "city": "Dubai",
+       "price": null
+      }
+     ],
+     "compare": false,
+     "chips": [
+      "المزيد عن Urban Oasis by Missoni",
+      "المشاريع في عُمان",
+      "قارن بين مشروعين",
+      "تحدّث مع مستشار دار جلوبال"
+     ],
+     "sources": [
+      {
+       "title": "Urban Oasis by Missoni",
+       "url": "https://darglobal.co.uk/urban-oasis-by-missoni"
+      },
+      {
+       "title": "DarGlobal official contact page",
+       "url": "https://darglobal.co.uk/get-in-touch"
+      }
+     ],
+     "checks": {
+      "stream_ok": {
+       "pass": true,
+       "detail": ""
+      },
+      "empty_content": {
+       "pass": true,
+       "detail": ""
+      },
+      "numbers_traceable": {
+       "pass": true,
+       "detail": ""
+      },
+      "country_city": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_dead_end": {
+       "pass": true,
+       "detail": ""
+      },
+      "lang_match": {
+       "pass": true,
+       "detail": ""
+      },
+      "no_cards": {
+       "pass": false,
+       "detail": "1 cards on an off-topic turn"
+      }
+     },
+     "judge": {
+      "judged": true,
+      "model": "google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "note": "Correctly declines non-real estate query but pivots to a sold-out project in a different city.",
+      "helpful": 3,
+      "honest": 5,
+      "tone": 4,
+      "persona_fit": 3,
+      "helpfulness": 3
+     }
+    }
+   ]
+  }
+ ],
+ "judge": {
+  "mode": "nvidia",
+  "model": "google/gemma-4-31b-it",
+  "calls": {
+   "nvidia": 30,
+   "gemini": 0
+  },
+  "note": null,
+  "nvidia_judge_disabled": false
+ },
+ "llm_calls_counted": 13,
+ "stop_reason": null,
+ "judge_calls": 30,
+ "summary": {
+  "turns": 30,
+  "turn_pass_by_persona": {},
+  "turn_pass_by_persona_category": {},
+  "judge_means": {
+   "helpful": 3.97,
+   "honest": 4.6,
+   "tone": 4.37,
+   "persona_fit": 4.27
+  },
+  "judge_means_by_persona": {
+   "-": {
+    "helpful": 3.97,
+    "honest": 4.6,
+    "tone": 4.37,
+    "persona_fit": 4.27
+   }
+  },
+  "turn_pass_by_category": {
+   "false_premise": {
+    "passed": 7,
+    "n": 9,
+    "rate": 0.7778
+   },
+   "meta_trust": {
+    "passed": 4,
+    "n": 6,
+    "rate": 0.6667
+   },
+   "site_confusion": {
+    "passed": 2,
+    "n": 3,
+    "rate": 0.6667
+   },
+   "superlative": {
+    "passed": 6,
+    "n": 6,
+    "rate": 1.0
+   },
+   "typo_translit": {
+    "passed": 5,
+    "n": 6,
+    "rate": 0.8333
+   }
+  },
+  "turn_pass_by_check": {
+   "cards_city": {
+    "passed": 6,
+    "n": 6,
+    "rate": 1.0
+   },
+   "cards_country": {
+    "passed": 4,
+    "n": 4,
+    "rate": 1.0
+   },
+   "cards_min": {
+    "passed": 13,
+    "n": 14,
+    "rate": 0.9286
+   },
+   "cards_or_hedge": {
+    "passed": 1,
+    "n": 1,
+    "rate": 1.0
+   },
+   "cards_site": {
+    "passed": 1,
+    "n": 1,
+    "rate": 1.0
+   },
+   "contains_any_ci": {
+    "passed": 4,
+    "n": 5,
+    "rate": 0.8
+   },
+   "country_city": {
+    "passed": 30,
+    "n": 30,
+    "rate": 1.0
+   },
+   "empty_content": {
+    "passed": 30,
+    "n": 30,
+    "rate": 1.0
+   },
+   "hedge": {
+    "passed": 2,
+    "n": 3,
+    "rate": 0.6667
+   },
+   "hedge_or_date": {
+    "passed": 0,
+    "n": 1,
+    "rate": 0.0
+   },
+   "lang_match": {
+    "passed": 30,
+    "n": 30,
+    "rate": 1.0
+   },
+   "no_blog_source": {
+    "passed": 3,
+    "n": 3,
+    "rate": 1.0
+   },
+   "no_cards": {
+    "passed": 0,
+    "n": 1,
+    "rate": 0.0
+   },
+   "no_dead_end": {
+    "passed": 29,
+    "n": 29,
+    "rate": 1.0
+   },
+   "no_promise": {
+    "passed": 1,
+    "n": 1,
+    "rate": 1.0
+   },
+   "not_regex": {
+    "passed": 1,
+    "n": 1,
+    "rate": 1.0
+   },
+   "numbers_traceable": {
+    "passed": 29,
+    "n": 30,
+    "rate": 0.9667
+   },
+   "ref": {
+    "passed": 1,
+    "n": 1,
+    "rate": 1.0
+   },
+   "sorted": {
+    "passed": 3,
+    "n": 3,
+    "rate": 1.0
+   },
+   "stream_ok": {
+    "passed": 30,
+    "n": 30,
+    "rate": 1.0
+   }
+  },
+  "turn_pass_by_playbook": {
+   "banter": {
+    "passed": 1,
+    "n": 1,
+    "rate": 1.0
+   },
+   "best_value": {
+    "passed": 1,
+    "n": 1,
+    "rate": 1.0
+   },
+   "capabilities": {
+    "passed": 1,
+    "n": 1,
+    "rate": 1.0
+   },
+   "country_overview": {
+    "passed": 1,
+    "n": 2,
+    "rate": 0.5
+   },
+   "filtered_search": {
+    "passed": 7,
+    "n": 7,
+    "rate": 1.0
+   },
+   "followup_reference": {
+    "passed": 2,
+    "n": 2,
+    "rate": 1.0
+   },
+   "identity": {
+    "passed": 1,
+    "n": 2,
+    "rate": 0.5
+   },
+   "invented_or_false_premise": {
+    "passed": 3,
+    "n": 4,
+    "rate": 0.75
+   },
+   "off_topic": {
+    "passed": 0,
+    "n": 1,
+    "rate": 0.0
+   },
+   "refine": {
+    "passed": 0,
+    "n": 1,
+    "rate": 0.0
+   },
+   "single_attribute": {
+    "passed": 1,
+    "n": 1,
+    "rate": 1.0
+   },
+   "site_confusion": {
+    "passed": 0,
+    "n": 1,
+    "rate": 0.0
+   },
+   "superlative": {
+    "passed": 5,
+    "n": 5,
+    "rate": 1.0
+   },
+   "thanks_goodbye": {
+    "passed": 1,
+    "n": 1,
+    "rate": 1.0
+   }
+  },
+  "turn_pass_by_tag": {
+   "ar": {
+    "passed": 7,
+    "n": 9,
+    "rate": 0.7778
+   },
+   "switch": {
+    "passed": 2,
+    "n": 3,
+    "rate": 0.6667
+   },
+   "typo": {
+    "passed": 7,
+    "n": 9,
+    "rate": 0.7778
+   }
+  },
+  "share_path_llm_understanding": 0.1667,
+  "empty_content_rate": 0.0,
+  "latency_trace_ms": {
+   "p50": 209.5,
+   "p95": 4349.0,
+   "n": 30
+  },
+  "ttft_ms": {
+   "p50": 195.0,
+   "p95": 3800.1,
+   "n": 30
+  },
+  "judge": {
+   "n": 30,
+   "helpfulness_mean": 3.97,
+   "tone_mean": 4.37,
+   "limit": "Gemini judge is weak on Gulf dialect; reported separately, never overrides a check"
+  }
+ },
+ "nvidia_probe_after": null,
+ "server_budget_used": {
+  "start": 21,
+  "end": 34,
+  "delta": 13
+ }
+}

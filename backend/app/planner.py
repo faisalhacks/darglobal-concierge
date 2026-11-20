@@ -38,7 +38,7 @@ PLACE_ALIASES: dict[str, list[str]] = {
     "London": ["london", "لندن"],
     "United Kingdom": ["uk", "united kingdom", "england", "britain", "بريطانيا", "المملكه المتحده"],
     "Marbella": ["marbella", "ماربيا", "ماربيلا"],
-    "Spain": ["spain", "اسبانيا", "اسبانيه"],
+    "Spain": ["spain", "españa", "espana", "اسبانيا", "اسبانيه"],
     "Benahavís": ["benahavis", "benahavís", "بيناهافيس"],
     "Cortesin": ["cortesin", "كورتيسين"],
     "Simaisma": ["simaisma", "سميسمه"],
@@ -277,7 +277,7 @@ def _ar_amount_words(norm: str) -> str:
 def extract_budget(norm: str) -> tuple[float | None, float | None]:
     norm = _ar_amount_words(norm)
     lo = hi = None
-    m = re.search(rf"(under|below|less than|up to|upto|max|maximum|within|budget|اقل من|تحت|حتى|حتي|بحدود|في حدود|ميزانيتي|ميزانيه)\s*(?:[a-z$£€]{{0,4}}\s*)?{_AMOUNT}", norm)
+    m = re.search(rf"(under|below|less than|up to|upto|max|maximum|within|budget(?:\s+(?:of|is|around|about|approx\w*|roughly))?|اقل من|تحت|حتى|حتي|بحدود|في حدود|ميزانيتي|ميزانيه)\s*(?:[a-z$£€]{{0,4}}\s*)?{_AMOUNT}", norm)
     if m:
         hi = parse_amount(m.group(2), m.group(3))
     lo_src = re.sub(r"(?:اقل|ادني|اقصي) من", " ", norm)  # "أقل من مليون" is a maximum, not "from a million"
@@ -552,7 +552,7 @@ COMPARE = [r"\bcompare\b", r"\bcomparison\b", r"\bvs\.?\b", r"\bversus\b", r"\bd
 SEARCH = [r"\b(apartment|apartments|flat|flats|villa|villas|townhouse|penthouse|studio|listing|listings|homes?|properties|property)\b.{0,40}\b(in|under|below|for)\b",
           r"\b\d+\s*[- ]?(bed|beds|bedroom|br)\b", r"\b(for rent|for sale|to rent)\b", r"\bunder\s*\d",
           r"شقق|شقه|فيلا|فلل|للايجار|للبيع|عقارات"]
-LOCATION = [r"\bprojects?\b", r"\bdevelopments?\b", r"\bwhat (do you have|is available)\b", r"\bwhere\b",
+LOCATION = [r"\bprojects?\b", r"\bproyectos?\b", r"\bdevelopments?\b", r"\bwhat (do you have|is available)\b", r"\bwhere\b",
             r"\bwhat (does|do) [a-z ]{2,20} have\b", r"\bwhat('s| is) (there|available)\b",
             r"مشاريع|مشروع|ماذا لديكم|المتوفره|المتوفر"]
 BRAND = [r"\bbranded\b", r"\bbrand partners?\b", r"\bpartners?\b", r"\bpartnership",
@@ -800,7 +800,9 @@ def _property_request(norm: str, ent: "Entities") -> bool:
     """True when the message also asks for properties (a project, a listing filter, a place to browse)."""
     if ent.project_ids or ent.listing_signal() or ent.property_type:
         return True
-    return bool((ent.city or ent.country) and (_any(SEARCH, norm) or _any(LOCATION, norm) or _any(PLACE_BROWSE, norm)))
+    # "relocating to Riyadh, budget around 2 million SAR, what can we get?": a stated budget with a place is a search
+    return bool((ent.city or ent.country) and (_any(SEARCH, norm) or _any(LOCATION, norm) or _any(PLACE_BROWSE, norm)
+                                              or re.search(r"(?<![a-z])budget(?![a-z])|ميزاني|what can (i|we) get", norm)))
 
 
 BANTER = [r"\b(are|r) (you|u|ya) (so |really |just |a bit )?(dumb|stupid|useless|slow|silly|an? idiot|bad|broken|"
@@ -1112,7 +1114,11 @@ def _plan(message: str, store: Store, history: list[dict] | None, flags: dict | 
                      or (ent.property_type is not None and (has_place or ent.listing_type is not None))
                      or (ent.listing_type is not None and has_place and not question))
     project_level = (_any(PROJECT_WORDS, norm) or ent.site == "DarGlobal" or ent.handover_year is not None
-                     or bool(re.search(r"(?<![a-z])how many (projects|developments)(?![a-z])|كم مشروع", norm)))
+                     or bool(re.search(r"(?<![a-z])how many (projects|developments)(?![a-z])|كم مشروع", norm))
+                     # "what countries do you cover?", "which countries have the most?": the per-country overview
+                     or bool(re.search(r"(?<![a-z])(what|which|how many) countr(y|ies)(?![a-z])|"
+                                       r"(?<![a-z])countries (do )?(you|u) (cover|have|operate|are in)(?![a-z])|"
+                                       r"في اي (دوله|دول)|ما الدول|اي الدول|كم دوله", norm)))
     if project_level and not (ent.beds is not None or ent.baths is not None):
         # "handover 2027 projects", "cheapest darglobal project", "how many projects does darglobal have"
         return Plan("location_overview", ent)

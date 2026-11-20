@@ -537,6 +537,10 @@ def build():
         _q = _qbuild()
         if _q:
             L.append(_q)
+        from after_runs_section import build_after_runs as _arbuild  # (13) persona + 30-set after-runs, fix round
+        _a = _arbuild()
+        if _a:
+            L.append(_a)
     except Exception as e_:  # noqa: BLE001
         print("quality section skipped:", type(e_).__name__, e_)
     report = "\n".join(L) + "\n"
@@ -558,6 +562,20 @@ def build():
     if load_r:
         mem = load_r.get("memory_mib")
         rb.append(f"Load (mock LLM): {load_r['total_requests']} requests, {load_r['total_crashes']} crashes" + (f", peak {mem['peak']} MiB." if isinstance(mem, dict) else "; memory not measured."))
+    try:  # persona set + 30-set multi-turn runs (REPORT section 13), read from evals/results/conv_*.json
+        from after_runs_section import _load as _cl, _passed as _cp, _pre_fix as _cpf, _turns as _ct
+        _pb, _pa, _cb, _ca = _cl("personas_before"), _cl("personas_after"), _cl("before2"), _cl("after2")
+        if _pb and _pa:
+            def _r(d):
+                p_, n_ = _cp(_ct(d))
+                return f"{p_}/{n_}"
+            _s = (f"Multi-turn runs (live `{_pa.get('model')}` via NVIDIA, judge `{(_pa.get('judge') or {}).get('model')}`): "
+                  f"persona set turns passed {_r(_pb)} before, {_r(_cpf(_pa))} after, {_r(_pa)} after one fix round")
+            if _cb and _ca:
+                _s += f"; 30-conversation set {_r(_cb)} before, {_r(_cpf(_ca))} after, {_r(_ca)} after the fix round"
+            rb.append(_s + " (REPORT.md section 13).")
+    except Exception as e_:  # noqa: BLE001
+        print("multi-turn line skipped:", type(e_).__name__, e_)
     rb.append("Full detail: [REPORT.md](REPORT.md).")
     rb.append("<!-- /AUTOGEN:numbers -->")
     F = facts(latest, comp, live, e1)

@@ -53,6 +53,15 @@
 @container turnactions (max-width: 420px) {
   .asof time { font-size: 0; }
   .asof time::after { content: attr(data-short); font-size: var(--fs-meta, 0.875rem); }
+  /* Phone width: the buttons leave too little room, so the date takes its own line instead of an ellipsis. */
+  .wrap .row { flex-wrap: wrap; max-block-size: none; row-gap: 0; }
+  .row .asof {
+    flex-basis: 100%;
+    margin-inline-start: 0;
+    padding-inline-start: var(--sp-8, 8px);
+    overflow: visible;
+    text-overflow: clip;
+  }
 }
 
 .wrap .panel {

@@ -1622,7 +1622,8 @@ class Engine:
                {"_label": "advisor", "text": advisor},
                {"_label": "back to properties", "text": back}]
         if topic == "payment":
-            ctx = [{"_label": "payment gap", "text": ack}, {"_label": "what I can do", "text": advisor}]
+            # Fixed wording: with the model, earlier turns (e.g. land registries) leaked into a payment answer.
+            return Answer("adjacent", path="template", text=fb, chips=chips, sources=srcs, cacheable=False)
         return Answer("adjacent", path="code", context=ctx, facts=[fb], chips=chips, prompt="adjacent",
                       sources=srcs, cacheable=False)
 

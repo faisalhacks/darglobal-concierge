@@ -1,0 +1,29 @@
+/* /evals: "Every measured case" explorer. Reuses the .stress__* and .gal__* parts of StressTested.css. */
+.ac { margin-block-start: var(--sp-48); }
+.ac__total { margin-block-end: var(--sp-8); }
+.ac__table { margin-block-end: var(--sp-8); }
+.ac__table td:first-child { white-space: normal; overflow-wrap: anywhere; }
+.ac__link { background: none; border: 0; padding: 0; min-height: 44px; font: inherit; color: var(--text); text-align: start; cursor: pointer; text-decoration: underline; text-decoration-color: var(--border-strong); text-underline-offset: 4px; }
+.ac__link:hover { text-decoration-color: var(--gold); }
+.ac__stop { display: block; }
+.ac__filters { display: grid; gap: var(--sp-12) var(--sp-16); margin-block: var(--sp-24) 0; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); align-items: end; }
+.ac__field { display: grid; gap: var(--sp-4); min-width: 0; }
+.ac__field--search { grid-column: 1 / -1; }
+.ac__field label { font-size: var(--fs-meta-xs); color: var(--text-muted); font-weight: 600; }
+.ac__field input, .ac__field select {
+  width: 100%; min-width: 0; min-height: 44px; padding: 0 var(--sp-12); border: 1px solid var(--border-strong); border-radius: var(--r-control);
+  background: var(--surface); color: var(--text); font: inherit; font-size: var(--fs-control);
+}
+.ac__field select { text-overflow: ellipsis; }
+.ac__field input:focus-visible, .ac__field select:focus-visible, .ac__link:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.ac__clear { justify-self: start; }
+.ac__card .stress__reply { white-space: normal; }
+.ac__skip { color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+.ac__fails { display: grid; gap: var(--sp-4); }
+.ac__fails code, .ac__card code { font-size: var(--fs-12); overflow-wrap: anywhere; }
+.ac__why { margin: 0; font-size: var(--fs-12); color: var(--text-muted); overflow-wrap: anywhere; }
+.ac__src { color: var(--text); font-weight: 600; }
+.ac__j { margin-inline-start: var(--sp-8); font-variant-numeric: tabular-nums; }
+.ac__j:first-of-type { margin-inline-start: var(--sp-4); }
+.ac__more { margin-block-start: var(--sp-24); }
+@media (max-width: 380px) { .ac__filters { grid-template-columns: 1fr; } }

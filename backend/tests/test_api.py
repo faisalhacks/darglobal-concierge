@@ -249,8 +249,10 @@ def test_output_screen_on_llm(make_client, ask):
     c = make_client(llm=MockLLM(extra="Units start at 999,999 AED with guaranteed returns, see https://x.y/z ."))
     d = ask(c, "Tell me about Fixture Marina Tower")
     assert_contract(d)
-    assert "999,999" not in d["_text"] and "not published" in d["_text"] and "https" not in d["_text"]
-    assert "with guaranteed" not in d["_text"]
+    # repair, not replace: the offending sentence is dropped whole, the rest of the writer's reply stands
+    assert "999,999" not in d["_text"] and "https" not in d["_text"] and "Units start at" not in d["_text"]
+    assert "guaranteed" not in d["_text"] and "Fixture Marina Tower" in d["_text"]
+    assert any("failed an output check" in s for s in d["trace"][0]["steps"])
 
 
 def test_leak_blocked(make_client, ask):

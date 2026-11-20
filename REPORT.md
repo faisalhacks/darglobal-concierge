@@ -18,15 +18,15 @@
 
 ## 1. Methodology
 
-- Suite: `evals/cases.yaml`, 181 cases (180 run, 1 skipped). Facts are never hard-coded: factual cases are templates bound at run time from `data/concierge.sqlite` (read-only). A case whose bind returns no row is **SKIPPED, never counted as passed**.
+- Suite: `evals/cases.yaml`, 190 cases (189 run, 1 skipped). Facts are never hard-coded: factual cases are templates bound at run time from `data/concierge.sqlite` (read-only). A case whose bind returns no row is **SKIPPED, never counted as passed**.
 - Checks are deterministic (intent, path, citations resolve to known URLs, cards exist in the DB, every number in prose traceable to payloads, no invented prices, no prompt leak, no URL in prose). Vocabulary: header of `evals/cases.yaml`.
 - Split: every 5th case is `split: heldout` and is not used to tune prompts or gates; `by_split` below reports both.
 - Intervals: Wilson 95% for proportions, percentile bootstrap for TTFT p95. n is small, so intervals are wide; a point estimate of 1.0 on n=15 still has a lower bound near 0.8.
-- Seed 7; split filter `all`; wall time 430 s; partial selection: False.
+- Seed 7; split filter `all`; wall time 476 s; partial selection: False.
 
 ## 2. Dataset
 
-- Dataset version `20261119-eb33f465`, data as of 2026-11-19; eval run at 2026-11-19T19:40:16+00:00. Source: evals/results/latest.json.
+- Dataset version `20261119-eb33f465`, data as of 2026-11-19; eval run at 2026-11-20T02:51:32+00:00. Source: evals/results/latest.json.
 - Counts: 72 projects, 1661 listings, 94 pages, 2671 chunks. Projects by site: {'DarGlobal': 42, 'Wasalt': 30}. Source: data/completeness.json.
 - DarGlobal detail level (page = collected detail page, index = name and location only): {'DarGlobal': {'page': 12, 'index': 27, 'thirdparty_only': 3, 'with_thirdparty_facts': 23, 'with_any_detail_facts': 30}}. DarGlobal publishes no prices, so price fields are NULL by design.
 
@@ -61,8 +61,8 @@
 | injection_rate | >= 1.0 | 1 | 17 | [0.816, 1.000] | yes |
 | false_refusal_rate | <= 0.05 | 0 | 69 | [0.000, 0.053] | yes |
 | arabic_rate | >= 0.85 | 1 | 20 | [0.839, 1.000] | yes |
-| ttft_p95_ms (mock LLM) | <= 3000 | 2232.6 | 204 | [2168.900, 2310.600] | yes |
-| crashes | <= 0 | 0 | 204 | [0.000, 0.018] | yes |
+| ttft_p95_ms (mock LLM) | <= 3000 | 2443.2 | 217 | [2312.000, 2578.000] | yes |
+| crashes | <= 0 | 0 | 217 | [0.000, 0.017] | yes |
 | lighthouse_mobile | >= 90 | not measured | not measured | not measured | not measured |
 
 Source: evals/results/latest.json `targets`. `lighthouse_mobile` is measured separately: not measured.
@@ -71,15 +71,15 @@ Source: evals/results/latest.json `targets`. `lighthouse_mobile` is measured sep
 
 | Language | Passed | Failed | Rate | 95% CI |
 |---|---|---|---|---|
-| en | 140 | 0 | 1 | [0.973, 1.000] |
-| ar | 35 | 0 | 1 | [0.901, 1.000] |
+| en | 148 | 0 | 1 | [0.975, 1.000] |
+| ar | 36 | 0 | 1 | [0.904, 1.000] |
 | mixed | 5 | 0 | 1 | [0.566, 1.000] |
 
 ### By split (tune vs heldout)
 
 | Split | Passed | Failed | Rate | 95% CI |
 |---|---|---|---|---|
-| tune | 146 | 0 | 1 | [0.974, 1.000] |
+| tune | 155 | 0 | 1 | [0.976, 1.000] |
 | heldout | 34 | 0 | 1 | [0.898, 1.000] |
 
 ### By category
@@ -97,7 +97,9 @@ Source: evals/results/latest.json `targets`. `lighthouse_mobile` is measured sep
 | multi_turn | 15 | 0 | 0 | 1 | [0.796, 1.000] |
 | out_of_scope | 8 | 0 | 0 | 1 | [0.676, 1.000] |
 | over_blocking | 9 | 0 | 0 | 1 | [0.701, 1.000] |
+| owner_transcripts | 5 | 0 | 0 | 1 | [0.566, 1.000] |
 | reviewer | 7 | 0 | 0 | 1 | [0.646, 1.000] |
+| safety | 4 | 0 | 0 | 1 | [0.510, 1.000] |
 | search | 2 | 0 | 0 | 1 | [0.342, 1.000] |
 | showcase | 5 | 0 | 0 | 1 | [0.566, 1.000] |
 | trap | 20 | 0 | 0 | 1 | [0.839, 1.000] |
@@ -115,7 +117,7 @@ None.
 
 None.
 
-Citation-subset check (every cited card id and source URL is known to the database): 0 violations in 135 replies checked; clean-reply rate 1, 95% CI [0.972, 1.000]. Source: evals/results/latest.json `citation_subset`.
+Citation-subset check (every cited card id and source URL is known to the database): 0 violations in 145 replies checked; clean-reply rate 1, 95% CI [0.974, 1.000]. Source: evals/results/latest.json `citation_subset`.
 
 Cause analysis for each miss is in section 10 when `evals/results/fixes.json` exists; otherwise causes are not recorded here.
 
@@ -127,23 +129,24 @@ Cause analysis for each miss is in section 10 when `evals/results/fixes.json` ex
 
 ## 4. Intent confusion matrix
 
-| expected \ actual | adjacent | advice | calculation | compare | contact_sales | find_my_home | general | greeting | injection | location_overview | off_topic | project_info | superlative |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| adjacent | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| advice | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| calculation | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| compare | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| contact_sales | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| find_my_home | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| general | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |
-| greeting | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |
-| injection | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 17 | 0 | 0 | 0 | 0 |
-| location_overview | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
-| off_topic | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 12 | 0 | 0 |
-| project_info | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
-| superlative | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 |
+| expected \ actual | adjacent | advice | calculation | compare | contact_sales | find_my_home | general | greeting | injection | location_overview | off_topic | project_info | safety | superlative |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| adjacent | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| advice | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| calculation | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| compare | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| contact_sales | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| find_my_home | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| general | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| greeting | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |
+| injection | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 17 | 0 | 0 | 0 | 0 | 0 |
+| location_overview | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 |
+| off_topic | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 12 | 0 | 0 | 0 |
+| project_info | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 |
+| safety | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 |
+| superlative | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 |
 
-Diagonal 60 of 60 routed cases (rows with a multi-intent expectation count off-diagonal here). Source: evals/results/latest.json `confusion`.
+Diagonal 67 of 67 routed cases (rows with a multi-intent expectation count off-diagonal here). Source: evals/results/latest.json `confusion`.
 
 ## 5. Retrieval experiment (E1)
 
@@ -167,7 +170,7 @@ Caveat from the experiment file: Proxy benchmark built from the DB itself (known
 
 ## 6. Latency (mock LLM, local)
 
-p50 2078 ms, p95 2232.6 ms, TTFT p50 2078 ms, TTFT p95 2232.6 ms (n=204). Source: evals/results/latest.json `latency`. These are for a mock LLM on one machine and say nothing about real-model latency; real-model latency is in section 8 only if measured.
+p50 2140 ms, p95 2459.2 ms, TTFT p50 2125 ms, TTFT p95 2443.2 ms (n=217). Source: evals/results/latest.json `latency`. These are for a mock LLM on one machine and say nothing about real-model latency; real-model latency is in section 8 only if measured.
 
 ## 7. Load and memory
 

@@ -298,6 +298,7 @@ entries:
     policy:
       - "Offer in two lines what exists, such as the countries and property types held."
       - "Ask exactly one question, and put the options in chips."
+      - "If the message is a name, a test or an unusual request rather than a search, reply to what was actually said first."
     chips_en:
       - "Show me villas"
       - "Show me apartments"
@@ -397,6 +398,7 @@ entries:
     policy:
       - "If no price is published, say so in the first sentence; never estimate or quote a market range."
       - "Offer the official contact page for a price, and one published fact that does exist."
+      - "Name the project whose price is missing, and offer a similar project that does publish a price as the next step."
     chips_en:
       - "Contact sales"
       - "When is handover?"
@@ -413,6 +415,7 @@ entries:
     policy:
       - "Say plainly that nothing in the data matches that budget, without judging the user."
       - "Give the lowest real price that exists for that kind of property and offer to show it."
+      - "For something free or impossible, say specifically that DarGlobal and Wasalt do not offer it, then name the lowest-priced real homes."
     chips_en:
       - "Show the cheapest ones"
       - "Show rentals instead"
@@ -446,6 +449,7 @@ entries:
       - "Answer only from a held page that clearly covers the topic, and name that source."
       - "Otherwise say you cannot confirm rules from the property data, name the official bodies to check and offer the advisor contact."
       - "Never state a rule, fee, eligibility or processing time from general knowledge."
+      - "Never say which country is faster or easier; offer to show the properties in the countries the user named instead."
     chips_en:
       - "Contact sales"
       - "Show me projects"
@@ -545,6 +549,7 @@ entries:
     policy:
       - "Say that you cannot see live inventory or book viewings, and give the date the data was collected."
       - "Point to the official contact page for availability and viewings."
+      - "Offer to show similar published options while the user checks availability with sales."
     chips_en:
       - "Contact sales"
       - "Show similar options"
@@ -560,6 +565,7 @@ entries:
     policy:
       - "Answer from the published sources only and say what is missing in one clause."
       - "Offer the nearest thing the data holds as the next step."
+      - "Never fall back to a generic line: name what the user asked for when saying it is not in the data."
     chips_en:
       - "Show me projects"
       - "What can you do?"

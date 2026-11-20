@@ -49,13 +49,10 @@
   text-overflow: ellipsis;
 }
 .asof time { color: var(--text); }
-.asof .asofShort { display: none; }
-
+/* One date in the DOM; on narrow turns the short form is painted from data-short so the text is never duplicated. */
 @container turnactions (max-width: 420px) {
-  .asof .asofShort { display: inline; }
-  .asof .asofLong {
-    position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
-  }
+  .asof time { font-size: 0; }
+  .asof time::after { content: attr(data-short); font-size: var(--fs-meta, 0.875rem); }
 }
 
 .wrap .panel {

@@ -13,11 +13,13 @@ export default function Privacy() {
         <p className="lede">هذا نموذج تجريبي أعدّه متقدّم للوظيفة، وليس قناة رسمية لدار جلوبال أو وصلت.</p>
         <section>
           <h2>ما الذي يُعالَج</h2>
+          <p><strong>أسئلتك تُرسل إلى مزوّدي الذكاء الاصطناعي لتوليد الإجابة.</strong> يُرسل سؤالك وآخر ثماني رسائل من المحادثة، مع المقاطع المسترجعة من البيانات المنشورة، إلى <bdi lang="en">OpenRouter</bdi> (نماذج مجانية)، وعند تعذّره إلى <bdi lang="en">NVIDIA</bdi> كمزوّد احتياطي. قد يسجّل هؤلاء المزوّدون الطلبات وفق سياساتهم الخاصة، ولا نتحكم في ذلك.</p>
           <ul>
-            <li>يُرسل سؤالك وآخر ثماني رسائل من المحادثة إلى الخادم للإجابة، ولا تُحفظ.</li>
-            <li>لا توجد حسابات ولا ملفات تعريف ارتباط للتتبع، ولا تُخزَّن عناوين <bdi lang="en">IP</bdi>.</li>
-            <li>تسجّل السجلات بيانات وصفية فقط (المدة، المسار، النية)، وليس نص الرسالة.</li>
-            <li>عند توفر النموذج اللغوي، يُرسل السؤال والمقاطع المسترجعة إلى <bdi lang="en">OpenRouter</bdi> بصفته معالجاً خارجياً لنموذج مجاني.</li>
+            <li>لا يخزّن التطبيق نفسه محادثاتك: لا حفظ لنص الأسئلة أو الأجوبة.</li>
+            <li>لا حسابات، ولا ملفات تعريف ارتباط للتتبع، ولا تُخزَّن عناوين <bdi lang="en">IP</bdi>.</li>
+            <li>تسجّل سجلات التطبيق بيانات وصفية فقط (المدة، المسار، النية)، وليس نص الرسالة.</li>
+            <li>تُحذف أرقام الهاتف وعناوين البريد الإلكتروني من الرسالة قبل إرسالها إلى مزوّد الذكاء الاصطناعي.</li>
+            <li>لا تشارك بيانات شخصية في المحادثة (اسمك الكامل أو رقم هويتك أو بيانات مصرفية). الحذف التلقائي يلتقط الأنماط الشائعة فقط وليس مضمونًا.</li>
             <li>تفضيلاتك (اللغة والمظهر وحجم الخط) وتقييماتك للإجابات تبقى في متصفحك وحده.</li>
           </ul>
         </section>
@@ -40,11 +42,13 @@ export default function Privacy() {
       <p className="lede">This is a candidate&apos;s prototype for a job application. It is not an official DarGlobal or Wasalt channel.</p>
       <section>
         <h2>What is processed</h2>
+        <p><strong>Your questions are sent to AI providers to generate the answer.</strong> Your question and up to the last eight messages of the conversation, plus the passages retrieved from the published data, are sent to OpenRouter (free models) and, when OpenRouter is unavailable, to NVIDIA as the backup provider. Those providers may log requests under their own policies; we do not control that.</p>
         <ul>
-          <li>Your question and up to the last eight messages of the conversation are sent to the server to produce an answer. They are not stored.</li>
+          <li>The app itself stores no chats: question and answer text is not saved.</li>
           <li>There are no accounts, no tracking cookies and no stored IP addresses.</li>
-          <li>Logs hold metadata only (timing, path, intent), never message text.</li>
-          <li>When the language model is available, the question and the retrieved passages are sent to OpenRouter, acting as a third-party processor for a free model. Some free model endpoints may log prompts under their own terms; the model in use is listed on the How it works page.</li>
+          <li>The app&apos;s logs hold metadata only (timing, path, intent), never message text.</li>
+          <li>Phone numbers and email addresses are stripped from your message before it is sent to an AI provider.</li>
+          <li>Please do not share personal details in the chat (full name, ID number, bank details). The automatic stripping catches common patterns only and is not a guarantee.</li>
           <li>Your preferences (language, theme, text size) and any answer ratings stay in your own browser.</li>
         </ul>
       </section>

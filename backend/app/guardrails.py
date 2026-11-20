@@ -285,3 +285,41 @@ def _screen_output(text: str, allowed_numbers: set[str], lang: str = "en") -> st
         t = rx.sub(rep, t)
     t = number_check(t, allowed_numbers, "غير منشور" if lang == "ar" else "not published")
     return re.sub(r"[ \t]{2,}", " ", t)
+
+
+# ---------------- privacy: what the model is never sent ----------------
+# Phone numbers, e-mail addresses and ID-like numbers in the user's message (and the client-supplied history) are
+# replaced before any LLM call. The code planner still reads the original message (budgets are numbers too), and
+# nothing here is stored or logged. A name is kept for the current reply only: earlier turns lose it.
+_PII_EMAIL = re.compile(r"[\w.+-]+\s*(?:@|\[at\]|\(at\))\s*[\w-]+(?:\s*(?:\.|\[\.\]|\(\.\)|\[dot\])\s*[\w-]+)+", re.I)
+_PII_PHONE = re.compile(
+    r"(?<![\w+])(?:\+|00)\d{1,3}[\s.-]?\(?\d{1,4}\)?(?:[\s.-]?\d{2,4}){2,4}(?!\w)"   # +971 50 123 4567, 00966...
+    r"|(?<![\w,.])0\d{1,2}[\s.-]?\d{3}[\s.-]?\d{3,4}(?!\w|[,.]\d)"                      # 050 123 4567, 0501234567
+    r"|(?<![\w,.])(?:800|9200)[\s-]?\d{3}[\s-]?\d{3,4}(?!\w|[,.]\d)")
+_PII_ID = re.compile(
+    r"(?<![\w,.])784[\s-]?\d{4}[\s-]?\d{7}[\s-]?\d(?!\w|[,.]\d)"      # Emirates ID
+    r"|(?<![\w,.])[12]\d{9}(?!\w|[,.]\d)"                              # Saudi national ID / Iqama (10 digits)
+    r"|\b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b"                            # IBAN
+    r"|\b[A-Z]{1,2}\d{7,8}\b"                                       # passport-like
+    r"|(?<![\w,.])\d{11,}(?!\w|[,.]\d)", re.I)                         # any other long digit run
+_PII_NAME = re.compile(r"(?i)\b(my\s+(?:nam\w*|name'?s?)\s*e?\s*(?:is|'s|s)?|call\s+me)\s+[a-z][a-z'-]{1,20}"
+                       r"|(اسمي|انا اسمي)\s+\S{2,20}"
+                       r"|(nice to meet you,?|تشرفت بمعرفتك يا)\s+[^\s.,!?؟]{2,20}")
+
+
+def redact_pii(text: str) -> str:
+    """The message as the model may see it: e-mails -> [email], phone numbers -> [phone], ID-like numbers -> [id]."""
+    t = _PII_EMAIL.sub("[email]", text or "")
+    t = _PII_ID.sub("[id]", t)
+    return _PII_PHONE.sub("[phone]", t)
+
+
+def redact_history(history: list[dict]) -> list[dict]:
+    """Client-supplied history for a model prompt: contact details and IDs replaced, and a name given in an earlier
+    turn replaced by [name] (a name is used only in the reply to the message that gave it)."""
+    out = []
+    for h in history or []:
+        c = redact_pii(str(h.get("content") or ""))
+        c = _PII_NAME.sub(lambda m: next(g for g in m.groups() if g) + " [name]", c)
+        out.append({**h, "content": c})
+    return out

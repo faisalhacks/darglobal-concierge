@@ -290,6 +290,26 @@ TEMPLATES: dict[str, dict[str, str]] = {
               "التمويل أو الضرائب من بيانات العقارات المنشورة، وهذه الأنظمة تتغير وتختلف من دولة إلى أخرى، لذا يُرجى "
               "الرجوع إلى الجهات الرسمية: {bodies}.",
     },
+    # Payment methods / accepted currencies: a specific gap, the sales team, and what the concierge CAN do (convert).
+    "payment_ack": {
+        "en": "Accepted payment methods and currencies{cur} aren't published in the property data I hold, so I can't "
+              "confirm them. The DarGlobal or Wasalt sales team can confirm the payment options; the official "
+              "get-in-touch page is linked below.",
+        "ar": "طرق الدفع والعملات المقبولة{cur} غير منشورة في بيانات العقارات التي لديّ، لذلك لا أستطيع تأكيدها. "
+              "يمكن لفريق مبيعات دار جلوبال أو وصلت تأكيد خيارات الدفع؛ وصفحة التواصل الرسمية مرفقة أدناه.",
+    },
+    "payment_cur": {"en": " (including paying in {code})", "ar": " (بما في ذلك الدفع بعملة {code})"},
+    "payment_can": {
+        "en": "What I can do meanwhile: show prices in {code} using the European Central Bank reference rate (with its "
+              "date), or keep exploring properties.",
+        "ar": "ما أستطيع فعله في الأثناء: عرض الأسعار بعملة {code} بحسب سعر البنك المركزي الأوروبي المرجعي (مع تاريخه)، "
+              "أو متابعة استكشاف العقارات.",
+    },
+    "adjacent_advisor_buyers": {
+        "en": "A DarGlobal advisor can explain the process for international buyers; the official get-in-touch page is "
+              "linked below.",
+        "ar": "يمكن لمستشار دار جلوبال شرح الإجراءات للمشترين الدوليين؛ وصفحة التواصل الرسمية مرفقة أدناه.",
+    },
     "adjacent_bodies_generic": {
         "en": "the official immigration, tax or financial authority of the country concerned",
         "ar": "الجهة الرسمية المختصة بالهجرة أو الضرائب أو التمويل في الدولة المعنية",
@@ -322,6 +342,50 @@ TEMPLATES: dict[str, dict[str, str]] = {
               "genuinely useful. Since you're here, may I show you {name}? {fact}",
         "ar": "{answer}تحدٍّ مقبول ولا مشكلة. أنا مساعد عقاري بالذكاء الاصطناعي، والعقارات هي ما أجيده حقاً. وبما أنك "
               "هنا، هل تودّ التعرّف على {name}؟ {fact}",
+    },
+    # Hostility aimed at the assistant ("i will kill u", insults): a calm, brief boundary and an offer to continue.
+    # Not the crisis template (that is for self-harm or harming others) and not a sales pitch.
+    "hostile": {
+        "en": "I'd like to keep this respectful, so I won't respond to threats or insults. If something about my "
+              "answers frustrated you, tell me what you were looking for and I'll try again; I'm happy to continue "
+              "whenever you are.",
+        "ar": "أودّ أن يبقى حديثنا محترماً، لذا لن أردّ على التهديد أو الإهانة. إن أزعجك شيء في إجاباتي فأخبرني بما "
+              "تبحث عنه وسأحاول مجدداً؛ ويسعدني أن نكمل متى شئت.",
+    },
+    # Name introduction ("my name is Rahul"): the name is used in this reply only, never stored.
+    "name_hello": {
+        "en": "Nice to meet you, {name}. I'm the DarGlobal and Wasalt property concierge, and I can tell you about "
+              "{holdings}. What would you like to explore?",
+        "ar": "تشرفت بمعرفتك يا {name}. أنا مساعدك العقاري لدار جلوبال ووصلت، ويمكنني أن أحدّثك عن {holdings}. "
+              "بماذا تودّ أن نبدأ؟",
+    },
+    # Specific "don't know / not offered" answers (honest gap + the nearest real options + a concrete next step).
+    "gap_free": {
+        "en": "Free properties aren't something DarGlobal or Wasalt offer, so I won't pretend otherwise. The "
+              "lowest-priced homes in my data are {options}. Tell me your budget and city and I'll narrow it down.",
+        "ar": "العقارات المجانية ليست مما تقدّمه دار جلوبال أو وصلت، ولن أدّعي غير ذلك. أقل العقارات سعراً في بياناتي: "
+              "{options}. أخبرني بميزانيتك والمدينة وسأضيّق لك الخيارات.",
+    },
+    "gap_free_none": {
+        "en": "Free properties aren't something DarGlobal or Wasalt offer, and no prices are published in the data I "
+              "hold. I can show you the projects I have and how to reach the official sales teams for prices.",
+        "ar": "العقارات المجانية ليست مما تقدّمه دار جلوبال أو وصلت، ولا توجد أسعار منشورة في البيانات التي لديّ. يمكنني "
+              "عرض المشاريع المتوفرة وطريقة التواصل مع فرق المبيعات الرسمية لمعرفة الأسعار.",
+    },
+    # Retrieval found only blog/guide/home pages for the question: no raw marketing or blog quote, an honest line.
+    "no_quote": {
+        "en": "The published property data doesn't answer that directly, so I won't quote marketing or blog text "
+              "as fact. The closest pages are linked below, and I can show you what the data holds: {holdings}.",
+        "ar": "لا تجيب البيانات العقارية المنشورة عن ذلك مباشرة، لذا لن أقتبس نصوصاً تسويقية أو من المدونة كأنها حقائق. "
+              "أقرب الصفحات مرفقة أدناه، ويمكنني عرض ما تتضمنه البيانات: {holdings}.",
+    },
+    "gap_availability": {
+        "en": "I can't see live availability or book viewings: my data is a snapshot of the published pages "
+              "(collected {as_of}). The official sales team can confirm what is available and arrange a viewing; "
+              "their contact page is linked below. Meanwhile I can show you what the published data holds.",
+        "ar": "لا أستطيع رؤية التوفر المباشر أو حجز المعاينات: بياناتي لقطة من الصفحات المنشورة (جُمعت في {as_of}). "
+              "يمكن لفريق المبيعات الرسمي تأكيد المتاح وترتيب معاينة، وصفحة التواصل الرسمية مرفقة أدناه. وفي الأثناء "
+              "يمكنني عرض ما تتضمنه البيانات المنشورة.",
     },
     "fmh_q1": {"en": "Which city or country interests you?", "ar": "ما المدينة أو الدولة التي تهتم بها؟"},
     "fmh_q2": {"en": "What budget range do you have in mind?", "ar": "ما نطاق الميزانية الذي تفكر فيه؟"},

@@ -683,7 +683,7 @@ def last_price_in(history: list[dict] | None, store: Store) -> tuple[float, str]
     return None
 
 
-def fx_follow_up(message: str, history: list[dict] | None, store: Store) -> str | None:
+def fx_follow_up(message: str, history: list[dict] | None, store: Store, last_entities: list[str] | None = None) -> str | None:
     """"How much is that in dollars?" / "in USD?" / "\u0628\u0627\u0644\u062f\u0648\u0644\u0627\u0631": a conversion request without an
     amount. Returns the full request ("convert 1180000 SAR to USD") built from the last price in the conversation."""
     norm = normalize_text(message)
@@ -693,6 +693,14 @@ def fx_follow_up(message: str, history: list[dict] | None, store: Store) -> str 
     if not target or not (_FX_ASK.search(norm) or len(norm.split()) <= 4):
         return None
     price = last_price_in(history, store)
+    if not price:  # "show these prices in INR" after cards with no price in the prose: the first carried price
+        for i in validate_entity_ids(last_entities or [], store):
+            r = store.project_by_id(i) or store.listing_by_id(i)
+            amt = r and (r.get("price_from_amount") or r.get("price_amount"))
+            cur = r and (r.get("price_from_currency") or r.get("price_currency"))
+            if amt and cur:
+                price = (float(amt), str(cur).upper())
+                break
     if not price:
         return None
     amount, src = price
@@ -717,7 +725,34 @@ def _ambiguous_names(message: str, store: Store) -> list[list[str]]:
 # ---------------- property-adjacent topics (visa, finance, tax, ownership rules, living costs) ----------------
 # Outside the dataset but not off-topic: the concierge says so honestly, names the official bodies and offers the human
 # route. Patterns run on normalize_text() output (Arabic letters folded: ة->ه, أ/إ->ا, ى->ي) and tolerate typos.
+_NATIONALITIES = (r"(indian|pakistani|bangladeshi|sri lankan|nepali|filipino|british|american|canadian|australian|egyptian|"
+                  r"nigerian|chinese|russian|turkish|iranian|lebanese|jordanian|syrian|sudanese|kenyan|european|german|"
+                  r"french|italian|spanish|irish|south african|ukrainian)")
+# Buying from abroad / as a given nationality: an eligibility question the data cannot answer (never "everyone can buy").
+_ELIGIBILITY = [r"\b(buy|purchase|own|invest)\w*\b.{0,15}\bfrom\s+(abroad|overseas|outside|remotely|afar|(?!dar\b|darglobal|wasalt|you\b|your\b|the\b|a\b|an\b|this\b|that\b|them\b|it\b|my\b|our\b|here\b|there\b|home\b|now\b|scratch\b|plan\b|off\b)[a-z]{3,})",
+                r"\bnris?\b", r"\bnon[- ]?resident (indian|national|citizen)s?\b",
+                r"\b(overseas|international|foreign|remote|offshore)\s+(buyers?|investors?|purchas\w+|nationals?|clients?)\b",
+                r"\b(buy|purchase|own|invest)\w*\b.{0,40}\b(without (visiting|travel\w*|being (there|present))|remotely|while (living|abroad|overseas))\b",
+                r"\b(i am|i'm|im|as|being)\s+(an?\s+)?" + _NATIONALITIES + r"\b.{0,60}\b(buy|purchase|own|invest)\w*\b",
+                r"\b(buy|purchase|own|invest)\w*\b.{0,60}\b(as|being|if i am|if i'm)\s+(an?\s+)?" + _NATIONALITIES + r"\b",
+                r"\b" + _NATIONALITIES + r"\s+(nationals?|citizens?|passports?|buyers?|investors?|residents?)\b.{0,40}\b(buy|purchase|own|invest|allowed|eligible)\w*\b",
+                r"\b(eligib\w+|allowed|permitted)\b.{0,30}\b(buy|purchase|own|invest)\w*\b",
+                r"\b(buy|purchase|own|invest)\w*\b.{0,30}\b(eligib\w+|allowed|permitted)\b"]
+_ELIG_RX = re.compile("|".join(_ELIGIBILITY))
+
+
+_CUR_OR_METHOD = (r"(inr|rupees?|usd|dollars?|eur|euros?|gbp|pounds?|aed|dirhams?|sar|riyals?|cash|crypto\w*|bitcoin|btc|usdt|"
+                  r"cards?|credit cards?|debit cards?|cheques?|checks?|bank transfers?|wire|upi|western union|paypal|"
+                  r"foreign currenc\w+|other currenc\w+|my currency|local currency|multiple currenc\w+)")
 ADJACENT_TOPICS: dict[str, list[str]] = {
+    # payment methods / accepted currencies: not in the data; the sales team confirms. Narrow on purpose: "down payment",
+    # "monthly payment" and "payment plan" stay with the calculator and the project facts.
+    "payment": [r"\b(pay|paying|payment|payments|paid|settle)\b.{0,30}\b(in|with|using|by|via|through)\b\s*(an?\s+)?" + _CUR_OR_METHOD + r"\b",
+                r"\baccept\w*\b.{0,30}\b(" + _CUR_OR_METHOD + r"|payments?|currenc\w+)\b",
+                r"\b(payment|accepted) (methods?|options?|currenc\w+|modes?)\b", r"\bwhich currenc\w+.{0,25}\b(pay|accept)\w*\b",
+                r"\b(can|could|may) (i|we) pay\b", r"\bhow (do|can|should) (i|we) pay\b", r"\bcrypto(currency)?\b",
+                r"\bbitcoin\b",
+                r"(?<![\w])(?:ب|ل)?الدفع(?![\w])", r"طرق الدفع", r"وسايل الدفع", r"وسائل الدفع", r"تقبلون", r"كريبتو"],
     "visa": [r"\bvi[sz]a+s?\b", r"\bvisas\b", r"\bresiden(cy|ce|t|ts)\b", r"\bresidence (permit|card|visa)\b",
              r"\bi[qck]+a+m+a+h?\b", r"\bgolden (visa|residen\w*)\b", r"\bpremium residen\w*\b", r"\bgreen card\b",
              r"\bwork permit\b", r"\bcitizenship\b", r"\bimmigration\b", r"\bpassport\b",
@@ -728,7 +763,7 @@ ADJACENT_TOPICS: dict[str, list[str]] = {
     "tax": [r"\btax(es|ation)?\b", r"\bvat\b", r"\bfees?\b", r"\bstamp duty\b", r"\bzakat\b", r"\bcapital gains?\b",
             r"\btransfer (fee|cost)s?\b", r"\bregistration (fee|cost)s?\b",
             r"ضريب", r"رسوم", r"زكاه"],
-    "ownership": [r"\blegal(ly)?\b", r"\blaws?\b", r"\bregulations?\b", r"\bfreehold\b", r"\bleasehold\b",
+    "ownership": [*_ELIGIBILITY, r"\blegal(ly)?\b", r"\blaws?\b", r"\bregulations?\b", r"\bfreehold\b", r"\bleasehold\b",
                   r"\bforeign(er|ers)?\b.{0,40}\b(own|ownership|buy|purchase)\w*\b",
                   r"\b(own|ownership|buy|purchase)\w*\b.{0,40}\bforeign(er|ers)?\b", r"\bnon[- ]?residents?\b",
                   r"\bcan (a )?(foreigners?|expats?|non[- ]?residents?) (buy|own)\b", r"\bproperty ownership\b",
@@ -939,7 +974,9 @@ def _plan(message: str, store: Store, history: list[dict] | None, flags: dict | 
     if adj and not (_any(CALC, norm) and re.search(r"\d", norm) and not _property_request(norm, ent)) and not re.search(
             r"^(what('?s| is| would be)? ?(the |my )?)?(monthly payments?|mortgage (payment|calculator)|emi|"
             r"loan (payment|calculator)|instal?ments?|القسط الشهري|حاسبه التمويل)\??$", norm):
-        if _property_request(norm, ent):  # mixed: the property part is answered normally, the note is added
+        pure = (adj == "payment" or (adj == "ownership" and _ELIG_RX.search(norm))) and not (
+            ent.project_ids or ent.city or ent.country or ent.property_type or ent.listing_signal())
+        if not pure and _property_request(norm, ent):  # mixed: the property part is answered normally, the note is added
             sub = plan(message, store, history, {**flags, "_skip_adjacent": True})
             if sub.intent not in ("general", "vague", "off_topic"):
                 sub.adjacent, sub.adjacent_topic = True, adj
@@ -953,7 +990,7 @@ def _plan(message: str, store: Store, history: list[dict] | None, flags: dict | 
                  r"loan (payment|calculator)|instal?ments?|القسط الشهري|حاسبه التمويل)\??$", norm):
         return Plan("calculation", ent)  # no figures yet: the calculator asks for them
 
-    fx = fx_follow_up(message, history, store)
+    fx = fx_follow_up(message, history, store, last_entities)
     if fx:
         return Plan("calculation", extract_entities(fx, store), follow_up=True, text=fx)
     if history:

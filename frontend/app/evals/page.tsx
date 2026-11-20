@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PageShell } from "@/components/PageShell";
+import { AllCases } from "@/components/AllCases"; // every measured case and turn: follows the interface language
 import { StressTested } from "@/components/StressTested"; // showcase: follows the interface language
 import { getJSON } from "@/lib/api";
 
@@ -171,6 +172,7 @@ export default function Evals() {
         <h1>Evaluation results</h1>
         <p className="lede">The latest run of the evaluation suite, as recorded. Results below target are shown as they were measured.</p>
         <StressTested variant="full" />
+        <AllCases />
 
         {state === "loading" && <p className="muted" role="status">Loading the latest report…</p>}
         {state === "error" && (

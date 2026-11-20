@@ -101,8 +101,7 @@ export function TurnActions({
         )}
         {usedSources && dataAsOf && (
           <span className={s.asof}>
-            <span className={s.asofLong}>{c.dataAsOf} <time dateTime={dataAsOf}>{fmtDate(dataAsOf, lang)}</time></span>
-            <span className={s.asofShort} aria-hidden="true">{c.dataAsOf} {shortDate(dataAsOf, lang)}</span>
+            {c.dataAsOf} <time dateTime={dataAsOf} data-short={shortDate(dataAsOf, lang)}>{fmtDate(dataAsOf, lang)}</time>
           </span>
         )}
       </div>

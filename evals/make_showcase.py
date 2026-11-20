@@ -319,12 +319,131 @@ def build(results_dir: str, cases_path: str) -> dict:
     }
 
 
+# ------------------------------------------------------------------ every measured case / turn (the /evals "All cases" explorer)
+ALL_EXCERPT_CHARS = 360
+RUN_LABELS = {  # conversation-run label -> (set key, human run name)
+    "before": ("conversations", "before the quality fixes"), "after": ("conversations", "after the quality fixes"),
+    "fix": ("conversations", "fix re-check 1"), "fix2": ("conversations", "fix re-check 2"),
+    "before2": ("conversations", "before, snapshot run (NVIDIA judge)"),
+    "personas_before": ("personas", "before"), "personas_after": ("personas", "after"),
+}
+SET_NAMES = {"mock": "Evaluation suite, model mocked", "live_nvidia": "Evaluation suite, live model via NVIDIA",
+             "live_openrouter": "Evaluation suite, live model via OpenRouter", "conversations": "30 multi-turn conversations",
+             "personas": "Persona set (60 conversations)"}
+LLM_PATHS = ("llm_tool", "llm_understanding", "llm")
+
+
+def _fail_name(f: str) -> str:
+    return str(f).split(":", 1)[0].strip()[:40]
+
+
+def _src_label(provider, model, path, live: bool) -> str:
+    """One of: 'live model via NVIDIA' | 'live model via OpenRouter' | 'model mocked' | 'built by code'."""
+    via = {"nvidia": "NVIDIA", "openrouter": "OpenRouter"}.get(provider or "", provider or "OpenRouter")
+    if not live:
+        return "model mocked" if path in LLM_PATHS else "built by code"
+    if model or path in LLM_PATHS:
+        return f"live model via {via}"
+    return "built by code"
+
+
+def build_all(results_dir: str) -> dict:
+    entries: list[dict] = []
+    sources: list[dict] = []
+
+    def add_source(key, set_key, name, path, d, mode, provider, model):
+        sources.append({"key": key, "set": set_key, "name": name, "file": _rel(path), "run_at": d.get("run_at"), "llm_mode": mode,
+                        "provider": provider, "model": model, "dataset_version": d.get("dataset_version"),
+                        "n": 0, "passed": 0, "failed": 0, "skipped": 0})
+        return sources[-1]
+
+    def put(src, e):
+        e["s"] = src["key"]
+        entries.append(e)
+        src["n"] += 1
+        src["passed" if e["ok"] == 1 else "failed" if e["ok"] == 0 else "skipped"] += 1
+
+    # 1. suites (mock latest + live files)
+    suite_files = [("mock", "latest.json")] + [(f"live_{n}", f"live_{n}.json") for n in ("nvidia", "openrouter")]
+    for key, fn in suite_files:
+        path = os.path.join(results_dir, fn)
+        d = _load(path)
+        if not d or not isinstance(d.get("cases"), list):
+            continue
+        rc = d.get("run_context") or {}
+        mode = rc.get("llm_mode") or ("mock" if key == "mock" else "live")
+        live = mode == "live"
+        prov = rc.get("llm_provider") or ("openrouter" if live else None)
+        src = add_source(key, key, SET_NAMES[key], path, d, mode, prov, rc.get("llm_model"))
+        for c in d["cases"]:
+            turns = c.get("turns") or []
+            last = turns[-1] if turns else {}
+            ans = last.get("answer") if isinstance(last.get("answer"), str) else (last.get("reply_excerpt") or "")
+            ok = 1 if c.get("passed") else (-1 if c.get("status") == "skipped" else 0)
+            fails = [_fail_name(f) for f in (c.get("failures") or [])]
+            e = {"i": c["id"], "c": c.get("category"), "p": None, "l": c.get("lang"), "q": [t.get("say") for t in turns if t.get("say")][:4],
+                 "a": ans[:ALL_EXCERPT_CHARS], "t": len(ans) > ALL_EXCERPT_CHARS, "ok": ok, "f": fails,
+                 "fd": "; ".join(str(f) for f in (c.get("failures") or []))[:160],
+                 "r": last.get("path") or c.get("path"), "m": last.get("model") or c.get("model"),
+                 "n": last.get("llm_calls") if isinstance(last.get("llm_calls"), int) else None,
+                 "src": _src_label(prov, last.get("model") or c.get("model"), last.get("path") or c.get("path"), live)}
+            if ok == -1:
+                e["fd"] = str(c.get("skip_reason") or c.get("reason") or "skipped")[:160]
+                e["a"] = ""
+            put(src, e)
+
+    # 2. conversation runs (30-conversation set and the persona set), one entry per turn
+    for path in sorted(glob.glob(os.path.join(results_dir, "conv_*.json"))):
+        d = _load(path)
+        if not d or not isinstance(d.get("conversations"), list):
+            continue
+        label = str(d.get("label") or os.path.basename(path)[5:-5])
+        set_key, run_name = RUN_LABELS.get(label, ("personas" if "persona" in str(d.get("conversation_file")) else "conversations", label))
+        prov = d.get("provider") or "nvidia"
+        live = (d.get("llm_mode") or "live") == "live"
+        src = add_source(f"{set_key}:{label}", set_key, f"{SET_NAMES[set_key]}, {run_name}", path, d, d.get("llm_mode") or "live", prov, d.get("model"))
+        src["stop_reason"] = d.get("stop_reason")
+        src["llm_calls"] = d.get("llm_calls_counted")
+        src["judge"] = {"model": (d.get("judge") or {}).get("model"), "means": (d.get("summary") or {}).get("judge_means")}
+        for c in d["conversations"]:
+            says = []
+            for t in c.get("turns") or []:
+                says.append(t.get("say"))
+                tr = t.get("trace") or {}
+                ans = t.get("answer") or ""
+                verdicts = [(k, v) for k, v in (t.get("checks") or {}).items() if v.get("pass") is not None]
+                bad = [(k, v) for k, v in verdicts if v.get("pass") is False]
+                j = t.get("judge") or {}
+                e = {"i": f"{c['id']}.{t.get('n')}", "c": c.get("category"), "p": c.get("persona"), "l": c.get("lang"),
+                     "q": [x for x in says if x][-4:], "a": ans[:ALL_EXCERPT_CHARS], "t": len(ans) > ALL_EXCERPT_CHARS,
+                     "ok": 0 if bad else 1, "f": [k for k, _ in bad], "fd": "; ".join(f"{k}: {v.get('detail', '')}" for k, v in bad)[:200],
+                     "x": len(verdicts), "r": tr.get("path"), "m": tr.get("model"),
+                     "n": tr.get("llm_calls") if isinstance(tr.get("llm_calls"), int) else None,
+                     "src": _src_label(tr.get("provider") or prov, tr.get("model"), tr.get("path"), live)}
+                if j.get("judged"):
+                    e["j"] = [j.get("helpful", j.get("helpfulness")), j.get("honest"), j.get("tone"), j.get("persona_fit")]
+                put(src, e)
+    return {"generated_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"), "generator": "evals/make_showcase.py",
+            "excerpt_chars": ALL_EXCERPT_CHARS, "sources": sources, "categories": sorted({e["c"] for e in entries if e.get("c")}),
+            "personas": sorted({e["p"] for e in entries if e.get("p")}), "entries": entries,
+            "note": "Every case of the evaluation suites and every turn of the conversation runs in evals/results, copied as recorded. "
+                    "Older timestamped mock runs are superseded by latest.json and are not repeated."}
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--results-dir", default=os.path.join(HERE, "results"))
     ap.add_argument("--cases", default=os.path.join(HERE, "cases.yaml"))
     ap.add_argument("--out", default=os.path.join(ROOT, "data", "showcase.json"))
+    ap.add_argument("--all-out", default=os.path.join(ROOT, "frontend", "public", "evals-all.json"))
     a = ap.parse_args(argv)
+    allj = build_all(a.results_dir)
+    os.makedirs(os.path.dirname(os.path.abspath(a.all_out)), exist_ok=True)
+    with open(a.all_out, "w", encoding="utf-8") as f:
+        json.dump(allj, f, ensure_ascii=False, separators=(",", ":"))
+    print(f"all-cases explorer: {len(allj['entries'])} entries from {len(allj['sources'])} sources -> {a.all_out}")
+    for sx in allj["sources"]:
+        print(f"  {sx['key']:<28} n={sx['n']:<4} passed={sx['passed']:<4} failed={sx['failed']:<3} skipped={sx['skipped']}")
     out = build(a.results_dir, a.cases)
     if not out["scenarios"]:
         print("no recorded results found; showcase not written", file=sys.stderr)

@@ -110,6 +110,10 @@ In production an official CMS or listings feed beats scraping: freshness, consen
 
 A larger real-model eval run and a native-speaker Arabic evaluation; a paraphrase and cross-lingual retrieval benchmark to decide between hybrid, weighted fusion and BM25-only; a real-model run of the guided find-my-home flow (its eval cases pass on the mock model only); removable filter chips; CRM handoff with explicit consent (an "Ask an advisor" step); investor-relations routing; WhatsApp channel; Arabic voice; more languages with native-speaker evals; analytics on unanswered questions; scheduled re-collection against an official feed; a model judge for Arabic once budget allows.
 
+Observability: export the existing metadata-only traces via OpenTelemetry to a self-hosted Langfuse (or similar), with message content redacted by default and content sampling only with user consent; dashboards for latency, fallback rate, model errors and "no data" rate to drive the next playbook updates. Voice (browser speech or a TTS provider) only after evaluation on Gulf-dialect samples.
+
+Safety: messages that indicate a crisis or self-harm are detected in code before any model call and get a fixed, caring reply with established support resources (no property content); this would be reviewed with a clinical-safety adviser before any public launch.
+
 ## How it was built
 
 Built with an AI-assisted workflow (Claude Code agents for implementation, tests and drafting). Decisions, scope and the final review are mine; the specification (`SPEC.md`) and the binding design and routing documents in `docs/` were written first and the code was held to them.

@@ -34,7 +34,7 @@ from .guardrails import (BANNED, CANARY, clean, context_numbers, is_injection, l
                          redact_pii, screen_input, screen_output)
 from .guardrails import _EMAIL as _G_EMAIL, _PHONE as _G_PHONE, _URL as _G_URL
 from .llm import DEGRADED_REASON, LLMError, LLMResult
-from .planner import (PLACE_ALIASES, Plan, place_display, plan, project_aliases, question_is_info, superlative,
+from .planner import (FX_NO_PRICE, PLACE_ALIASES, Plan, place_display, plan, project_aliases, question_is_info, superlative,
                       unpublished_topic)
 from .arabic import tokenize
 from .retrieval import Hit, Retriever, is_index_like, specific_terms, stem, strip_header
@@ -229,6 +229,18 @@ class ChatRequest:
 
 
 MAX_LAST_ENTITIES = 6
+
+# Above this price per m² (SAR-equivalent) a listing row is treated as a source data-entry error for ranking.
+IMPLAUSIBLE_SAR_PER_M2 = 150_000
+_TO_SAR = {"SAR": 1.0, "AED": 3.75 / 3.6725, "USD": 3.75}
+
+
+def _implausible_price(x: dict) -> bool:
+    price, area = x.get("price_amount") or 0, x.get("area_m2") or 0
+    rate = _TO_SAR.get((x.get("price_currency") or "SAR").upper())
+    if not price or not area or rate is None:
+        return False
+    return price * rate / area > IMPLAUSIBLE_SAR_PER_M2
 
 
 @dataclass
@@ -1003,6 +1015,12 @@ class Engine:
             txt = (f"لا توجد في عيّنة وصلت {what} بقيمة {'سعر' if price else 'مساحة'} منشورة تطابق ذلك."
                    if ar else f"No {what} with a published {'price' if price else 'area'} match that in the Wasalt sample.")
             return Answer("superlative", path="template", text=txt, chips=self._data_chips(lang))
+        # Source data-entry errors (e.g. 832 m² of land at 83.2 billion SAR) would win "most expensive"; leave out rows
+        # whose price per m² is implausible and say so, rather than present them as the top property.
+        dropped = 0
+        if sup == "price_desc":
+            ok = [x for x in rows if not _implausible_price(x)]
+            dropped, rows = len(rows) - len(ok), ok or rows
         rows = sorted(rows, key=lambda x: x[field], reverse=sup.endswith("desc"))
         top, shown = rows[0], rows[:MAX_CARDS]
         loc = ", ".join(v for v in (top.get("district"), top.get("city")) if v)
@@ -1021,6 +1039,10 @@ class Engine:
                    + (f" in {place}" if place else "") + f" in the Wasalt sample is {top.get('title')}"
                    + (f" in {loc}" if loc else "") + f" at {val}"
                    + f"; here {'are' if len(shown) != 1 else 'is'} the top {len(shown)}.")
+        if dropped:
+            txt += (f" استبعدتُ {dropped} من العروض لأن سعرها المنشور للمتر المربع يبدو خطأ إدخال في المصدر." if ar else
+                    f" I left out {dropped} listing{'s' if dropped != 1 else ''} whose published price per m² looks like "
+                    "a data-entry error at the source.")
         return Answer("superlative", path="code", text=txt, listings=shown, total=len(rows),
                       sources=[source_of(x, x.get("title")) for x in shown],
                       chips=self._superlative_chips(e2, lang))
@@ -1618,7 +1640,24 @@ class Engine:
                    f"({pegged}) still work. Please try again a little later.")
         return Answer("calculation", path="template", text=txt)
 
+    def _fx_no_price(self, code: str, lang: str) -> Answer:
+        """A currency view was asked for but no price is on screen yet: say so and offer one tap to get there."""
+        ar = lang == "ar"
+        txt = (f"لا توجد أسعار معروضة بعد لتحويلها إلى {code}. اختر عروضاً أو مشروعاً بسعر منشور، أو جرّب مثالاً، "
+               "وسأحوّله بسعر الصرف المرجعي للبنك المركزي الأوروبي مع تاريخه." if ar else
+               f"There are no prices on screen yet to show in {code}. Pick some listings or a project with a published "
+               "price, or try an example, and I will convert it using the European Central Bank reference rate "
+               "with its date.")
+        chips = [{"label": f"1,000,000 SAR → {code}", "message": f"convert 1000000 SAR to {code}"},
+                 {"label": "شقق للبيع في الرياض" if ar else "Apartments for sale in Riyadh",
+                  "message": "شقق للبيع في الرياض" if ar else "Apartments for sale in Riyadh"},
+                 {"label": "فلل للبيع في جدة" if ar else "Villas for sale in Jeddah",
+                  "message": "فلل للبيع في جدة" if ar else "Villas for sale in Jeddah"}]
+        return Answer("calculation", path="template", text=txt, chips=chips)
+
     def _calculation(self, text: str, lang: str, e=None) -> Answer:
+        if text.startswith(FX_NO_PRICE):
+            return self._fx_no_price(text.split()[-1], lang)
         try:
             calc = calculator.parse_and_compute(text, lang)
         except calculator.RateUnavailable as ex:

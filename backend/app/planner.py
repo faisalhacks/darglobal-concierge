@@ -683,16 +683,19 @@ def last_price_in(history: list[dict] | None, store: Store) -> tuple[float, str]
     return None
 
 
+FX_NO_PRICE = "__fx_no_price__"
+
+
 def fx_follow_up(message: str, history: list[dict] | None, store: Store, last_entities: list[str] | None = None) -> str | None:
     """"How much is that in dollars?" / "in USD?" / "\u0628\u0627\u0644\u062f\u0648\u0644\u0627\u0631": a conversion request without an
     amount. Returns the full request ("convert 1180000 SAR to USD") built from the last price in the conversation."""
     norm = normalize_text(message)
-    if not history or re.search(r"\d", norm) or len(norm.split()) > 10:
+    if re.search(r"\d", norm) or len(norm.split()) > 10:
         return None
     target = fx_target(norm)
     if not target or not (_FX_ASK.search(norm) or len(norm.split()) <= 4):
         return None
-    price = last_price_in(history, store)
+    price = last_price_in(history, store) if history else None
     if not price:  # "show these prices in INR" after cards with no price in the prose: the first carried price
         for i in validate_entity_ids(last_entities or [], store):
             r = store.project_by_id(i) or store.listing_by_id(i)
@@ -702,6 +705,9 @@ def fx_follow_up(message: str, history: list[dict] | None, store: Store, last_en
                 price = (float(amt), str(cur).upper())
                 break
     if not price:
+        # "Show these prices in INR" with nothing priced on screen: ask for a price instead of a dead end.
+        if _FX_ASK.search(norm) or re.search(r"\b(prices?|cost|amount)\b|اسعار|سعر", norm):
+            return f"{FX_NO_PRICE} {target}"
         return None
     amount, src = price
     return f"convert {amount:.0f} {src} to {target}"

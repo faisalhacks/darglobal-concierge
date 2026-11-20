@@ -259,8 +259,25 @@ def number_check(text: str, allowed: set[str], not_published: str = "not publish
     return re.sub(rf"({re.escape(not_published)})\s*[%٪]", r"\1", out)
 
 
-def screen_output(text: str, allowed_numbers: set[str], lang: str = "en") -> str:
-    t = _MD_LINK.sub(r"\1", _fold(text))
+# The one host the crisis (safety) template may name. Only that template passes it; every other answer is screened
+# with an empty allowlist, so no other prose can carry a link.
+SAFETY_ALLOWED_HOSTS = ("findahelpline.com",)
+
+
+def screen_output(text: str, allowed_numbers: set[str], lang: str = "en", allow_hosts: tuple = ()) -> str:
+    keep = {}
+    for i, h in enumerate(allow_hosts):
+        tok = f"\x00H{i}\x00"
+        keep[tok] = h
+        text = re.sub(re.escape(h), tok, text, flags=re.I)
+    t = _screen_output(text, allowed_numbers, lang)
+    for tok, h in keep.items():
+        t = t.replace(tok, h)
+    return t
+
+
+def _screen_output(text: str, allowed_numbers: set[str], lang: str = "en") -> str:
+    t =_MD_LINK.sub(r"\1", _fold(text))
     t = _EMAIL.sub("", t)
     t = _URL.sub("", t)
     t = _PHONE.sub("", t)

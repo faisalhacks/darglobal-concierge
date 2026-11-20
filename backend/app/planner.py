@@ -11,7 +11,7 @@ import re
 from dataclasses import dataclass, field
 
 from .arabic import normalize_text
-from .conversation import _VAGUE_WORDS, _INVEST, _LUXURY, _dist, conversational_intent, is_vague, simple_arithmetic, vague_topic
+from .conversation import _VAGUE_WORDS, _INVEST, _LUXURY, _dist, compound_smalltalk, conversational_intent, is_vague, simple_arithmetic, vague_topic
 from .conversation import Memory, has_reference, is_reset, validate_entity_ids
 from .guardrails import is_injection
 from .store import Store
@@ -908,6 +908,9 @@ def _plan(message: str, store: Store, history: list[dict] | None, flags: dict | 
         step = _fmh_step(history)
         if step:
             return Plan("find_my_home", ent, step=step)
+    cmp_ = compound_smalltalk(message)  # "4+7, what is ur name": the sum and the small talk, both answered
+    if cmp_ and not ent.project_ids:
+        return Plan(cmp_[1], ent, text="compound")
     if _any(BANTER, norm) and not ent.project_ids and not _property_request(norm, ent):
         return Plan("banter", ent)
     conv = conversational_intent(message)  # "hye", "salam", "thanks!", "who r u", "ok" (whole message only)

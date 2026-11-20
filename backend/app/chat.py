@@ -24,10 +24,11 @@ from . import calculator, templates
 from . import playbook as playbook_mod
 from . import understanding
 from .conversation import (CONV_INTENTS, CONVERSATIONAL, STATUS_AR, ar_count, first_sentence, holdings,
-                           simple_arithmetic, spotlight)
+                           simple_arithmetic, spotlight, compound_smalltalk)
 from .arabic import detect_lang, normalize_text
 from .bidi import isolate_latin
 from .config import Settings
+from .safety import is_crisis
 from .guardrails import (CANARY, clean, context_numbers, is_injection, leaks_system_prompt, screen_input,
                          screen_output)
 from .llm import DEGRADED_REASON, LLMError, LLMResult
@@ -310,7 +311,13 @@ class Engine:
         history, _flagged = self._screen_history(req.history)
         last_ids = self._valid_last_entities(getattr(req, "last_entities", None))
 
-        if self.s.maintenance_mode:
+        # SAFETY FIRST: a crisis / self-harm message gets the fixed caring reply before any other intent (maintenance
+        # and injection handling included), with no model call, no cards, no sources and no cache.
+        if is_crisis(req.message) or is_crisis(text):
+            p = Plan("safety", None)  # type: ignore[arg-type]
+            ans = Answer("safety", path="template", text=templates.t("safety", lang), cacheable=False,
+                         chips=templates.chips(lang, "safety"), playbook="safety")
+        elif self.s.maintenance_mode:
             p = Plan("general", None)  # type: ignore[arg-type]
             ans = self._maintenance(lang)
         elif screened.reason == "injection":
@@ -424,7 +431,7 @@ class Engine:
         if ans.tail:
             adv = self._advisor(lang)[1]
             base = [c for c in base if c["label"] != adv["label"]][:3] + [adv]
-        tail.append(("chips", templates.drop_repeats(base, text, lang, asked=asked)))
+        tail.append(("chips", base if ans.intent == "safety" else templates.drop_repeats(base, text, lang, asked=asked)))
         for ev in tail:
             recorded.append(ev)
             yield ev
@@ -465,6 +472,7 @@ class Engine:
                 "banter": ("Kept it light and brought us back to property", "أبقيت الحديث خفيفاً وعدنا إلى العقارات"),
                 "adjacent": ("Pointed to the official bodies and the DarGlobal advisor route",
                              "أشرت إلى الجهات الرسمية وإلى مستشار دار جلوبال"),
+                "safety": ("Replied with care and pointed to people who can help", "أجبت باهتمام وأشرت إلى من يستطيع المساعدة"),
                 "injection": ("Declined an instruction to change my rules", "رفضت طلباً لتغيير قواعدي"),
                 "advice": ("Declined to give investment advice", "امتنعت عن تقديم نصيحة استثمارية")}
         steps = []
@@ -667,6 +675,11 @@ class Engine:
         if i == "superlative":
             return self._superlative(p, lang)
         if i in CONVERSATIONAL:
+            cmp_ = compound_smalltalk(text) if getattr(p, "text", None) == "compound" else None
+            if cmp_:  # "4+7, what is ur name": the sum in code first, then the small-talk reply, then the pivot chips
+                base = self._conversation(i, lang, history)
+                return Answer(i, path="code", text=f"{cmp_[0][0]} = {cmp_[0][1]}. " + (base.facts[0] if base.facts else ""),
+                              chips=base.chips, cacheable=True)
             return self._conversation(i, lang, history)
         if i == "vague":
             return self._vague(p, lang, history)

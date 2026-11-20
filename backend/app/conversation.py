@@ -47,6 +47,8 @@ _PHRASES: dict[str, list[str]] = {
         "how does this work", "help", "help me", "menu", "options", "what do you know", "what can i ask",
         "what should i ask", "introduce yourself", "tell me about yourself", "about you", "are you a bot",
         "are you human", "are you real", "are you ai", "what is your name", "whats your name",
+        "what is ur name", "whats ur name", "what ur name", "wat is ur name", "your name", "ur name", "tell me ur name",
+        "tell me your name", "what do i call you", "what should i call you",
         "من انت", "من انتي", "مين انت", "ماذا تستطيع", "ماذا تستطيع ان تفعل", "ماذا يمكنك", "ماذا يمكنك ان تفعل",
         "ما الذي يمكنك فعله", "ماذا تفعل", "كيف تساعدني", "كيف يمكنك مساعدتي", "مساعده", "ساعدني", "ما اسمك",
         "عرفني بنفسك",
@@ -269,6 +271,30 @@ def simple_arithmetic(message: str) -> tuple[str, str] | None:
     out = str(int(v)) if float(v).is_integer() else f"{v:.4f}".rstrip("0").rstrip(".")
     shown = re.sub(r"\s*([-+*/])\s*", r" \1 ", expr).strip()
     return shown, out
+
+
+_SPLIT = re.compile(r"\s*(?:[,;&?!؟،]|\.(?!\d)|\band\b|\bthen\b|\bplus\b(?=\s+(?:what|who|how|tell))|و(?=\s))\s*")
+
+
+def compound_smalltalk(message: str) -> tuple[tuple[str, str], str] | None:
+    """("4 + 7", "11"), "identity" for a message made only of one harmless sum plus small talk ("4+7, what is ur name"):
+    every segment is either a sum or whole-message small talk. None otherwise (never a dead end for these)."""
+    segs = [x for x in _SPLIT.split(message or "") if x and x.strip()]
+    if len(segs) < 2 or len(segs) > 4:
+        return None
+    calc, intents = None, []
+    for seg in segs:
+        c = simple_arithmetic(seg) if calc is None else None
+        if c:
+            calc = c
+            continue
+        i = conversational_intent(seg)
+        if not i:
+            return None
+        intents.append(i)
+    if not calc or not intents:
+        return None
+    return calc, next((x for x in _PRIORITY if x in intents), intents[0])
 
 
 # ---------------------------------------------------------------- data summary (all numbers counted from rows)

@@ -27,6 +27,21 @@ TEMPLATES: dict[str, dict[str, str]] = {
         "ar": "ملاحظة: يضم هذا النموذج التجريبي بيانات وصلت فقط. تعذّر جمع صفحات دار جلوبال (يحجب الموقع "
               "العملاء الآليين)، لذا لا يمكن الإجابة عن أسئلة دار جلوبال حالياً.",
     },
+    # Crisis / self-harm: fixed, never model-written, no cards or sources. Only resources named here are accurate and
+    # well established: Samaritans (UK) and the findahelpline.com directory. Do not add other hotline numbers.
+    "safety": {
+        "en": "I'm really sorry you're feeling this way, and I'm glad you said something. You deserve support right "
+              "now. I'm only a property-information assistant, so I can't help with this the way a person can. "
+              "Please reach out to someone you trust, a friend, a family member or a doctor, and tell them how you "
+              "feel. If you are in immediate danger, call your local emergency number now.\n\n"
+              "UK: Samaritans 116 123 (free, 24/7)\n"
+              "Elsewhere: find a free, confidential helpline in your country at findahelpline.com",
+        "ar": "يؤسفني جداً أنك تشعر بهذا، وأقدّر أنك تحدثت عنه. أنت تستحق الدعم الآن. أنا مجرد مساعد للمعلومات "
+              "العقارية، ولا أستطيع مساعدتك في هذا كما يستطيع إنسان. أرجو أن تتواصل مع شخص تثق به، صديق أو أحد "
+              "أفراد العائلة أو طبيب، وتخبره بما تشعر به. وإذا كنت في خطر فوري فاتصل برقم الطوارئ في بلدك الآن.\n\n"
+              "المملكة المتحدة: Samaritans على الرقم 116 123 (مجاني، على مدار الساعة)\n"
+              "في بقية الدول: ابحث عن خط مساعدة مجاني وسرّي في بلدك عبر findahelpline.com",
+    },
     "injection": {
         "en": "I can't help with that request. I am here to answer questions about DarGlobal and Wasalt "
               "properties, and I am happy to continue with that.",
@@ -337,6 +352,8 @@ DEFAULT_CHIPS = {
     ],
 }
 
+SAFETY_CHIP = {"en": ("I'm okay — continue", "I'm okay. What can you help me with?"),
+               "ar": ("أنا بخير — لنكمل", "أنا بخير. بماذا يمكنك مساعدتي؟")}
 CONTACT_CHIP = {"en": ("Contact sales", "How do I contact sales?"), "ar": ("تواصل مع المبيعات", "كيف أتواصل مع المبيعات؟")}
 
 
@@ -378,6 +395,8 @@ def chips(lang: str, intent: str, names: list[str] | None = None) -> list[dict]:
             out += [("20% down on 2,000,000 SAR", "20% down on 2,000,000 SAR"),
                     ("Convert 1,000,000 AED to USD", "Convert 1,000,000 AED to USD")]
         out.append(CONTACT_CHIP[lang])
+    elif intent == "safety":
+        out += [SAFETY_CHIP[lang]]
     elif intent == "injection":
         out += DEFAULT_CHIPS[lang][:3]
     else:  # follow-ups never carry the guardrail-test chip (UI council item 18)
